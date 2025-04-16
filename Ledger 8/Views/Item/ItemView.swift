@@ -20,7 +20,7 @@ struct ItemView: View {
             .fill(Color.icon.opacity(0.3))
                 .frame(width: 44, height: 44)
                 .overlay {
-                    FontIcon.text(.awesome5Solid(code: .music), fontsize: 24, color: Color.green)
+                    FontIcon.text(.awesome5Solid(code: item.icon), fontsize: 24, color: Color.green)
                 }
             VStack(alignment: .leading, spacing: 6) {
                 
@@ -29,7 +29,7 @@ struct ItemView: View {
                     .bold()
                     .lineLimit(1)
                 
-                Text("TV")
+                Text("\(item.itemType.rawValue)")
                     .font(.footnote)
                     .opacity(0.7)
                     .lineLimit(1)

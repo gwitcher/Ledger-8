@@ -15,7 +15,9 @@ struct ItemEditView: View {
     var item: Item
     
     @State private var name = ""
+    @State private var itemType = ItemType.overdub
     @State private var fee = Double("")
+    
     
     @FocusState private var isFocused: Bool
     
@@ -45,6 +47,12 @@ struct ItemEditView: View {
                             .textContentType(.name)
                     }
                     
+                    Picker(" Type", selection: $itemType) {
+                        ForEach(ItemType.allCases) {type in
+                            Text(type.rawValue)
+                        }
+                    }
+                    
                     LabeledContent {
                         TextField("$ Fee", value: $fee, formatter: isFocused ? decimalNumberFormatter : currencyNumberFormatter)
                             .keyboardType(.decimalPad)
@@ -57,26 +65,29 @@ struct ItemEditView: View {
                 }
                 .onAppear {
                     name = item.name
+                    itemType = item.itemType
                     fee = item.fee
                 }
-                .toolbar {
-                    ToolbarItem(placement: .topBarLeading) {
-                        Button("Cancel", role: .cancel) {
-                            dismiss()
-                        }
+                
+            }
+            .navigationBarBackButtonHidden()
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel", role: .cancel) {
+                        dismiss()
                     }
-                    
-                    ToolbarItem(placement: .topBarTrailing) {
-                        Button("Done") {
-                            item.name = name
-                            item.fee = fee ?? .zero
-                            dismiss()
-                            
-                        }
+                }
+                
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        item.name = name
+                        item.itemType = itemType
+                        item.fee = fee ?? .zero
+                        dismiss()
+                        
                     }
                 }
             }
-            .navigationBarBackButtonHidden()
         }
     }
     

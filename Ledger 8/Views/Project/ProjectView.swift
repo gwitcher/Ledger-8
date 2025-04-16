@@ -20,7 +20,7 @@ struct ProjectView: View {
             .fill(Color.icon.opacity(0.3))
                 .frame(width: 44, height: 44)
                 .overlay {
-                    FontIcon.text(.awesome5Solid(code: .icons), fontsize: 24, color: Color.icon)
+                    FontIcon.text(.awesome5Solid(code: project.icon), fontsize: 24, color: Color.icon)
                 }
             VStack(alignment: .leading, spacing: 6) {
                 
@@ -50,20 +50,14 @@ struct ProjectView: View {
                     .bold()
                     .lineLimit(1)
                 
-                Text("Open")
+                Text("\(project.mediaType.rawValue)")
                     .font(.footnote)
                     .opacity(0.7)
                     .lineLimit(1)
                 
-//                if project.status == .invoiced {
-//                    Text(project.dateDelivered.formatted(date: .abbreviated, time: .omitted))
-//                        .font(.footnote)
-//                        .foregroundColor(.secondary)
-//                } else if project.status == .closed {
-//                    Text(project.dateClosed.formatted(date: .abbreviated, time: .omitted))
-//                        .font(.footnote)
-//                        .foregroundColor(.secondary)
-//                }
+                Text(" \(project.items?.count ?? 0) Items")
+                    .font(.footnote)
+                    .foregroundColor(.secondary)
                 
                 
             }

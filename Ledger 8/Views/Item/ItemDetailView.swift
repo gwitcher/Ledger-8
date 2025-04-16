@@ -15,7 +15,9 @@ struct ItemDetailView: View {
     var project: Project
     
     @State private var name = ""
+    @State private var itemType = ItemType.overdub
     @State private var fee = Double("")
+    
     
     @FocusState private var isFocused: Bool
     
@@ -43,6 +45,12 @@ struct ItemDetailView: View {
                     }   label: {
                         Text("").foregroundStyle(.secondary)
                             .textContentType(.name)
+                    }
+                    
+                    Picker(" Type", selection: $itemType) {
+                        ForEach(ItemType.allCases) {type in
+                            Text(type.rawValue)
+                        }
                     }
                     
                     LabeledContent {
