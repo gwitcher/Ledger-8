@@ -11,37 +11,43 @@ import SwiftData
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     
-    var projects: [Project]
+    @Query var projects: [Project]
     
     @State private var sheetIsPresented = false
+    @State private var sortSelection: Status = Status.open
     
     var body: some View {
         
         NavigationStack {
-            List {
-                ForEach(projects) { project in
-                    NavigationLink {
-                        ProjectDetailView(project: project)
-                    } label: {
-                        ProjectView(project: project)
+            Group {
+                if !projects.isEmpty {
+                    VStack {
+                        TotalsView(sortSelection: sortSelection)
+                        SortedProjectView(sortSelection: sortSelection)
                     }
-                    .swipeActions {
-                        Button("Delete", role: .destructive) {
-                            modelContext.delete(project)
-                            
-                            guard let _ = try? modelContext.save() else {
-                                print("😡 ERROR: Could not save after delete")
-                                return
-                            }
-                        }
-                    }
-
+                } else {
+                    ContentUnavailableView("Enter your first project", systemImage: "music.note.list" )
                 }
+                
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("", systemImage: "plus") {
                         sheetIsPresented.toggle()
+                    }
+                }
+                
+                if !projects.isEmpty {
+                    ToolbarItem(placement: .bottomBar) {
+                        Picker(selection: $sortSelection) {
+                            ForEach(Status.allCases) { selection in
+                                Text(selection.rawValue)
+                            }
+                        } label: {
+                            Text("")
+                        }
+                        .pickerStyle(.palette)
+                        .animation(.easeIn, value: sortSelection)
                     }
                 }
             }
@@ -56,5 +62,5 @@ struct ProjectListView: View {
 }
 
 #Preview {
-    ProjectListView(projects: [Project]())
+    ProjectListView()
 }

@@ -44,7 +44,7 @@ struct ProjectView: View {
             
             VStack (alignment: .trailing, spacing: 6) {
               
-                Text("$200.00")
+                Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     .font(.subheadline)
                     .foregroundStyle(.yellow)
                     .bold()
@@ -55,7 +55,7 @@ struct ProjectView: View {
                     .opacity(0.7)
                     .lineLimit(1)
                 
-                Text(" \(project.items?.count ?? 0) Items")
+                Text(" ^[\(project.items?.count ?? 0) Items](inflect: true)")
                     .font(.footnote)
                     .foregroundColor(.secondary)
                 

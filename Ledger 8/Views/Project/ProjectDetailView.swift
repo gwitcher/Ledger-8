@@ -78,9 +78,16 @@ struct ProjectDetailView: View {
                         NavigationLink {
                             ItemListView(project: project)
                         } label: {
-                            Text("Items: \(project.items?.count ?? 0)")
+                            HStack{
+                                Text("Items: \(project.items?.count ?? 0)")
+                                
+                                Spacer()
+                                
+                                Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
+                            }
                         }
                     }
+                    
                     
                     Button {
                         sheetIsPresented.toggle()
@@ -210,11 +217,13 @@ struct ProjectDetailView: View {
         
         client = ""
         projectName = ""
+        artist = ""
+        notes = ""
         jobDate = Date()
     }
 }
 
 #Preview {
-    ProjectDetailView(project: Project(client: "test1", projectName: "test1", jobDate: Date.now, items: [Item]()))
+    ProjectDetailView(project: Project(client: "", projectName: "", jobDate: Date.now, items: [Item]()))
         .modelContainer(for: Project.self, inMemory: true)
 }
