@@ -23,12 +23,30 @@ struct ProjectDetailView: View {
         
         NavigationStack {
             Form {
-                Section {
-                    TextField("client", text: $client)
-                    TextField("Project", text: $projectName)
-                    DatePicker("job Date", selection: $jobDate)
+                Section("Project Info") {
+                    LabeledContent {
+                        TextField("", text: $client)
+                        
+                    }   label: {
+                        Text("Client").foregroundStyle(.secondary)
+                            .textContentType(.name)
+                    }
+                    LabeledContent {
+                        TextField("", text: $projectName)
+                        
+                    }   label: {
+                        Text("Project").foregroundStyle(.secondary)
+                            .textContentType(.name)
+                    }
+                    LabeledContent {
+                        DatePicker("", selection: $jobDate)
+                        
+                    }   label: {
+                        Text("Job Date").foregroundStyle(.secondary)
+                            .textContentType(.name)
+                    }
                 }
-                
+                .textFieldStyle(.plain)
                 Section {
                     NavigationLink {
                         ItemListView(project: project)

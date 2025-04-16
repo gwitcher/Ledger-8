@@ -6,17 +6,30 @@
 //
 
 import SwiftUI
+import SwiftData
 
 @main
 struct Ledger_8App: App {
+    let container: ModelContainer
+    let dbName = "GigTracker"
+    
     var body: some Scene {
         WindowGroup {
             ContentView()
-                .modelContainer(for: Project.self)
+//                .modelContainer(for: Project.self)
         }
+        .modelContainer(container)
     }
     
     init() {
+        let schema = Schema([Project.self])
+        let config  = ModelConfiguration(dbName, schema: schema)
+        do{
+            container = try ModelContainer(for: schema, configurations: config)
+        } catch {
+            fatalError("Could not configure the container")
+        }
+        
         print(URL.applicationSupportDirectory.path(percentEncoded: false))
     }
 }

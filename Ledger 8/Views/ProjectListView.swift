@@ -12,6 +12,7 @@ struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     
     var projects: [Project]
+    
     @State private var sheetIsPresented = false
     
     var body: some View {
@@ -22,7 +23,17 @@ struct ProjectListView: View {
                     NavigationLink {
                         ProjectDetailView(project: project)
                     } label: {
-                        Text(project.client)
+                        ProjectView(project: project)
+                    }
+                    .swipeActions {
+                        Button("Delete", role: .destructive) {
+                            modelContext.delete(project)
+                            
+                            guard let _ = try? modelContext.save() else {
+                                print("😡 ERROR: Could not save after delete")
+                                return
+                            }
+                        }
                     }
 
                 }
