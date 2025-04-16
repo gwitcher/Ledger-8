@@ -46,7 +46,7 @@ struct ProjectView: View {
               
                 Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     .font(.subheadline)
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(project.status.statusColor)
                     .bold()
                     .lineLimit(1)
                 
