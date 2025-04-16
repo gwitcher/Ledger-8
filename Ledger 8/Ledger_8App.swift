@@ -12,6 +12,11 @@ struct Ledger_8App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .modelContainer(for: Project.self)
         }
+    }
+    
+    init() {
+        print(URL.applicationSupportDirectory.path(percentEncoded: false))
     }
 }

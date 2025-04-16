@@ -6,17 +6,32 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
+		66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616262DAF2BA100161D7E /* Assets.xcassets */; };
+		66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616272DAF2BA100161D7E /* ContentView.swift */; };
+		66C6162F2DAF2BA100161D7E /* Item.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616282DAF2BA100161D7E /* Item.swift */; };
+		66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616292DAF2BA100161D7E /* Ledger_8App.swift */; };
+		66C616312DAF2BA100161D7E /* Project.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C6162A2DAF2BA100161D7E /* Project.swift */; };
+		66C616332DAF2CB800161D7E /* ProjectDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616322DAF2CB800161D7E /* ProjectDetailView.swift */; };
+		66C616432DAF33F800161D7E /* ProjectListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616422DAF33F800161D7E /* ProjectListView.swift */; };
+		66C616452DAF3B8100161D7E /* ItemDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616442DAF3B8100161D7E /* ItemDetailView.swift */; };
+		66C616472DAF720D00161D7E /* ItemListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616462DAF720D00161D7E /* ItemListView.swift */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		66C6160F2DAF2B2E00161D7E /* Ledger 8.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ledger 8.app"; sourceTree = BUILT_PRODUCTS_DIR; };
+		66C616242DAF2BA100161D7E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
+		66C616262DAF2BA100161D7E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+		66C616272DAF2BA100161D7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+		66C616282DAF2BA100161D7E /* Item.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Item.swift; sourceTree = "<group>"; };
+		66C616292DAF2BA100161D7E /* Ledger_8App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger_8App.swift; sourceTree = "<group>"; };
+		66C6162A2DAF2BA100161D7E /* Project.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Project.swift; sourceTree = "<group>"; };
+		66C616322DAF2CB800161D7E /* ProjectDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailView.swift; sourceTree = "<group>"; };
+		66C616422DAF33F800161D7E /* ProjectListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListView.swift; sourceTree = "<group>"; };
+		66C616442DAF3B8100161D7E /* ItemDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemDetailView.swift; sourceTree = "<group>"; };
+		66C616462DAF720D00161D7E /* ItemListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ItemListView.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
-
-/* Begin PBXFileSystemSynchronizedRootGroup section */
-		66C616112DAF2B2E00161D7E /* Ledger 8 */ = {
-			isa = PBXFileSystemSynchronizedRootGroup;
-			path = "Ledger 8";
-			sourceTree = "<group>";
-		};
-/* End PBXFileSystemSynchronizedRootGroup section */
 
 /* Begin PBXFrameworksBuildPhase section */
 		66C6160C2DAF2B2E00161D7E /* Frameworks */ = {
@@ -32,7 +47,7 @@
 		66C616062DAF2B2E00161D7E = {
 			isa = PBXGroup;
 			children = (
-				66C616112DAF2B2E00161D7E /* Ledger 8 */,
+				66C6162B2DAF2BA100161D7E /* Ledger 8 */,
 				66C616102DAF2B2E00161D7E /* Products */,
 			);
 			sourceTree = "<group>";
@@ -43,6 +58,31 @@
 				66C6160F2DAF2B2E00161D7E /* Ledger 8.app */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		66C616252DAF2BA100161D7E /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				66C616242DAF2BA100161D7E /* Preview Assets.xcassets */,
+			);
+			path = "Preview Content";
+			sourceTree = "<group>";
+		};
+		66C6162B2DAF2BA100161D7E /* Ledger 8 */ = {
+			isa = PBXGroup;
+			children = (
+				66C616252DAF2BA100161D7E /* Preview Content */,
+				66C616262DAF2BA100161D7E /* Assets.xcassets */,
+				66C616272DAF2BA100161D7E /* ContentView.swift */,
+				66C616282DAF2BA100161D7E /* Item.swift */,
+				66C6162A2DAF2BA100161D7E /* Project.swift */,
+				66C616322DAF2CB800161D7E /* ProjectDetailView.swift */,
+				66C616442DAF3B8100161D7E /* ItemDetailView.swift */,
+				66C616292DAF2BA100161D7E /* Ledger_8App.swift */,
+				66C616422DAF33F800161D7E /* ProjectListView.swift */,
+				66C616462DAF720D00161D7E /* ItemListView.swift */,
+			);
+			path = "Ledger 8";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -59,9 +99,6 @@
 			buildRules = (
 			);
 			dependencies = (
-			);
-			fileSystemSynchronizedGroups = (
-				66C616112DAF2B2E00161D7E /* Ledger 8 */,
 			);
 			name = "Ledger 8";
 			packageProductDependencies = (
@@ -109,6 +146,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */,
+				66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -119,6 +158,14 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */,
+				66C6162F2DAF2BA100161D7E /* Item.swift in Sources */,
+				66C616452DAF3B8100161D7E /* ItemDetailView.swift in Sources */,
+				66C616472DAF720D00161D7E /* ItemListView.swift in Sources */,
+				66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */,
+				66C616332DAF2CB800161D7E /* ProjectDetailView.swift in Sources */,
+				66C616432DAF33F800161D7E /* ProjectListView.swift in Sources */,
+				66C616312DAF2BA100161D7E /* Project.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
