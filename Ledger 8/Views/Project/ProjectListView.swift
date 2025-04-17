@@ -22,7 +22,7 @@ struct ProjectListView: View {
             Group {
                 if !projects.isEmpty {
                     VStack {
-                        TotalsView(sortSelection: sortSelection)
+                        PrimaryTotalsView(sortSelection: sortSelection)
                         SortedProjectView(sortSelection: sortSelection)
                     }
                 } else {

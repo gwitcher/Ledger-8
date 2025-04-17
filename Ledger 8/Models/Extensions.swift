@@ -18,5 +18,12 @@ extension Project {
         return total
     }
     
+    func projectsFeeTotal(projects: [Project]) -> Double {
+        var projectTotal = 0.0
+        for project in projects {
+            projectTotal += project.calculateFeeTotal(items: project.items!)
+        }
+        return projectTotal
+    }
     
 }
