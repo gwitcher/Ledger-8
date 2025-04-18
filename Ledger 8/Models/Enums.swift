@@ -10,7 +10,7 @@ import SwiftUI
 
 enum Status: String, CaseIterable, Identifiable, Codable {
     case open = "Open"
-    case invoiced = "Invoiced"
+    case delivered = "Delivered"
     case closed = "Paid"
     
     var id: Self {self}
@@ -19,7 +19,7 @@ enum Status: String, CaseIterable, Identifiable, Codable {
         switch self {
         case .open:
                 .yellow
-        case .invoiced:
+        case .delivered:
                 .red
         case .closed:
                 .green
@@ -29,11 +29,11 @@ enum Status: String, CaseIterable, Identifiable, Codable {
     var feeTotalLabel: String {
         switch self {
         case .open:
-            "UPCOMING"
-        case .invoiced:
-            "DUE"
+            "UPCOMING PROJECTS"
+        case .delivered:
+            "PAYMENTS"
         case .closed:
-            "PAID"
+            "PROJECTS PAID"
         }
     }
 }

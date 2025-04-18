@@ -22,7 +22,7 @@ struct ProjectListView: View {
             Group {
                 if !projects.isEmpty {
                     VStack {
-                        PrimaryTotalsView(sortSelection: sortSelection)
+                        FeeTotalsView(sortSelection: sortSelection)
                         SortedProjectView(sortSelection: sortSelection)
                     }
                 } else {
@@ -30,6 +30,7 @@ struct ProjectListView: View {
                 }
                 
             }
+            .navigationTitle("Project Ledger")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("", systemImage: "plus") {
@@ -55,7 +56,7 @@ struct ProjectListView: View {
                 ProjectDetailView(project: Project())
             }
         }
-        .navigationTitle("Projects")
+        
         
         
     }

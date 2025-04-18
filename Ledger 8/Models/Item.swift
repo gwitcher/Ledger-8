@@ -14,16 +14,19 @@ class Item: Identifiable {
     var name: String
     var fee: Double
     var itemType: ItemType
+    var notes: String
     
     init(
         name: String = "",
         fee: Double = .zero,
         itemType: ItemType = .overdub,
+        notes: String = "",
         project: Project? = nil
     ) {
         self.name = name
         self.fee = fee
         self.itemType = itemType
+        self.notes = notes
         self.project = project
     }
     

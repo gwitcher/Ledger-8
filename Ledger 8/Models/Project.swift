@@ -19,7 +19,7 @@ class Project: Identifiable {
     var status: Status
     var mediaType: MediaType
     var notes: String
-    var invoiced: Bool
+    var delivered: Bool
     var paid: Bool
     var dateOpened: Date
     var dateDelivered: Date
@@ -50,7 +50,7 @@ class Project: Identifiable {
         self.status = status
         self.mediaType = mediaType
         self.notes = notes
-        self.invoiced = invoiced
+        self.delivered = invoiced
         self.paid = paid
         self.dateOpened = dateOpened
         self.dateDelivered = dateDelivered

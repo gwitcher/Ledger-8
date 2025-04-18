@@ -17,6 +17,7 @@ struct ItemDetailView: View {
     @State private var name = ""
     @State private var itemType = ItemType.overdub
     @State private var fee = Double("")
+    @State private var notes = ""
     
     
     @FocusState private var isFocused: Bool
@@ -64,6 +65,10 @@ struct ItemDetailView: View {
                     .keyboardType(.decimalPad)
                 }
                 
+                Section("Notes") {
+                    TextField("", text: $notes, axis: .vertical)
+                }
+                
                 
             }
             .toolbar {
@@ -75,7 +80,7 @@ struct ItemDetailView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Add") {
-                        saveItem(name: name, fee: fee ?? .zero)
+                        saveItem(name: name, fee: fee ?? .zero, itemType: itemType, notes: notes)
                         dismiss()
 //                        name = ""
 //                        fee = .zero
@@ -86,8 +91,8 @@ struct ItemDetailView: View {
         .navigationBarBackButtonHidden()
     }
     
-    func saveItem(name: String, fee: Double) {
-        let newItem = Item(name: name, fee: fee)
+    func saveItem(name: String, fee: Double, itemType: ItemType, notes: String) {
+        let newItem = Item(name: name, fee: fee, itemType: itemType, notes: notes)
         
         project.items?.append(newItem)
         

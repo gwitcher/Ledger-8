@@ -18,9 +18,9 @@ struct SortedProjectView: View {
         self.sortSelection = sortSelection
         switch self.sortSelection {
         case .open:
-            _projects = Query(filter: #Predicate<Project> {$0.invoiced == false && $0.paid == false})
-        case .invoiced:
-            _projects = Query(filter: #Predicate<Project> {$0.invoiced == true && $0.paid == false})
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false})
+        case .delivered:
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false})
         case .closed:
             _projects = Query(filter: #Predicate<Project> {$0.paid == true})
         }
@@ -38,6 +38,25 @@ struct SortedProjectView: View {
                         modelContext.delete(project)
                     }
                 }
+                .swipeActions(edge: .leading) {
+                    Button("Paid") {
+                        if !project.delivered {
+                            project.dateDelivered = Date.now
+                        }
+                        project.dateClosed = Date.now
+                        project.paid.toggle()
+                    }
+                    .tint(.green)
+                }
+                .swipeActions(edge: .leading) {
+                    Button("Delivered") {
+                        project.dateDelivered = Date.now
+                        project.delivered.toggle()
+                    }
+                    .tint(.orange)
+                }
+                
+                
             }
             
         }

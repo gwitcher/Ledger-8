@@ -20,12 +20,13 @@ struct ProjectDetailView: View {
     @State private var jobDate = Date()
     @State private var mediaType = MediaType.recording
     @State private var notes = ""
-    @State private var invoiced = false
+    @State private var delivered = false
     @State private var paid = false
     @State private var dateDelivered = Date()
     @State private var dateClosed = Date()
     @State private var status = Status.open
     @State private var sheetIsPresented = false
+    
     
     var body: some View {
         
@@ -87,8 +88,6 @@ struct ProjectDetailView: View {
                             }
                         }
                     }
-                    
-                    
                     Button {
                         sheetIsPresented.toggle()
                     } label: {
@@ -99,24 +98,35 @@ struct ProjectDetailView: View {
                     }
                 }
                 
+                Button {
+                    _ = project.render(project: project)
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                        Text("Add Invoice")
+                    }
+                }
+                
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)
                 }
                 
+                //TODO: create invoice section
+                
+                
+                
                 Section {
-                    Toggle(isOn: $invoiced) {
-                        if !invoiced {
-                            Text("Invoiced")
+                    Toggle(isOn: $delivered) {
+                        if !delivered {
+                            Text("Delivered")
                         } else {
                             HStack{
-                                Text("Invoiced")
+                                Text("Delivered")
                                 DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
                                     .datePickerStyle(.automatic)
                                     .padding(.horizontal)
                             }
-                            
                         }
-                        
                     }
                     .tint(paid ? .green : .red)
                     
@@ -133,13 +143,13 @@ struct ProjectDetailView: View {
                         }
                     }
                 }
-                .onChange(of: invoiced) {
+                .onChange(of: delivered) {
                     dateDelivered = Date.now
-                    if invoiced && paid {
+                    if delivered && paid {
                         status = .closed
-                    } else if invoiced && !paid {
-                        status = .invoiced
-                    } else if !invoiced && paid {
+                    } else if delivered && !paid {
+                        status = .delivered
+                    } else if !delivered && paid {
                         status = .closed
                     } else {
                         status = .open
@@ -147,11 +157,11 @@ struct ProjectDetailView: View {
                 }
                 .onChange(of: paid) {
                     dateClosed = Date.now
-                    if invoiced && paid {
+                    if delivered && paid {
                         status = .closed
-                    } else if invoiced && !paid {
-                        status = .invoiced
-                    } else if !invoiced && paid {
+                    } else if delivered && !paid {
+                        status = .delivered
+                    } else if !delivered && paid {
                         status = .closed
                     } else {
                         status = .open
@@ -165,7 +175,7 @@ struct ProjectDetailView: View {
                 jobDate = project.jobDate
                 mediaType = project.mediaType
                 notes = project.notes
-                invoiced = project.invoiced
+                delivered = project.delivered
                 paid = project.paid
                 dateDelivered = project.dateDelivered
                 dateClosed = project.dateClosed
@@ -203,7 +213,7 @@ struct ProjectDetailView: View {
         project.jobDate = jobDate
         project.mediaType = mediaType
         project.notes = notes
-        project.invoiced = invoiced
+        project.delivered = delivered
         project.paid = paid
         project.dateDelivered = dateDelivered
         project.dateClosed = dateClosed

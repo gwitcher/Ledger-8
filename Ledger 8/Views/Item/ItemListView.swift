@@ -42,6 +42,7 @@ struct ItemListView: View {
                 }
             }
         }
+        .navigationTitle(project.projectName)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {

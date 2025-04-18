@@ -8,11 +8,11 @@
 import SwiftUI
 import SwiftData
 
-struct PrimaryTotalsView: View {
+struct FeeTotalsView: View {
     @Environment(\.modelContext) var modelContext
     @Query var projects: [Project]
-    @Query(filter: #Predicate<Project> {$0.invoiced == false && $0.paid == false}) var projectsOpen: [Project]
-    @Query(filter: #Predicate<Project> {$0.invoiced == true && $0.paid == false}) var projectsInvoiced: [Project]
+    @Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false}) var projectsOpen: [Project]
+    @Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false}) var projectsInvoiced: [Project]
     @Query(filter: #Predicate<Project> {$0.paid == true}) var projectsClosed: [Project]
     
     let sortSelection: Status
@@ -22,9 +22,9 @@ struct PrimaryTotalsView: View {
         self.sortSelection = sortSelection
         switch self.sortSelection {
         case .open:
-            _projects = Query(filter: #Predicate<Project> {$0.invoiced == false && $0.paid == false})
-        case .invoiced:
-            _projects = Query(filter: #Predicate<Project> {$0.invoiced == true && $0.paid == false})
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false})
+        case .delivered:
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false})
         case .closed:
             _projects = Query(filter: #Predicate<Project> {$0.paid == true})
         }
@@ -39,16 +39,20 @@ struct PrimaryTotalsView: View {
             
             VStack (alignment: .leading, spacing: 8) {
                 Group {
-                    sortSelection == .open ? Text("^[\(projects.count) \(sortSelection.feeTotalLabel) PROJECTS](inflect: true)") : Text("^[\(projects.count) PROJECTS](inflect: true) \(sortSelection.feeTotalLabel)")
+                    if sortSelection == .delivered {
+                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true) DUE")
+                    } else {
+                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true)")
+                    }
                 }
-                .font(.title3)
+                .font(.headline)
                 .fontWeight(.medium)
                 .lineLimit(1)
                 .minimumScaleFactor(0.5)
                 .padding(.horizontal)
                 
                 Text("\(projectsFeeTotal(projects: projects).formatted(.currency(code: "USD")))")
-                    .font(.title)
+                    .font(.title2)
                     .fontWeight(.bold)
                     .foregroundStyle(sortSelection.statusColor)
                     .padding([.bottom, .horizontal])
@@ -60,17 +64,17 @@ struct PrimaryTotalsView: View {
             
             Group {
                 if sortSelection == .open {
-                    VStack (alignment: .trailing, spacing: 5) {
+                    VStack (alignment: .trailing, spacing: 8) {
                         Text("\(invoicedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
-                            .foregroundStyle(Status.invoiced.statusColor)
+                            .foregroundStyle(Status.delivered.statusColor)
                         Text("\(closedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
                             .foregroundStyle(Status.closed.statusColor)
                     }
                     .padding([.horizontal, .bottom])
                     
-                } else if sortSelection == .invoiced {
+                } else if sortSelection == .delivered {
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(openTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
@@ -87,7 +91,7 @@ struct PrimaryTotalsView: View {
                             .foregroundStyle(Status.open.statusColor)
                         Text("\(invoicedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
-                            .foregroundStyle(Status.invoiced.statusColor)
+                            .foregroundStyle(Status.delivered.statusColor)
                     }
                     .padding([.horizontal, .bottom])
                 }
@@ -104,5 +108,5 @@ struct PrimaryTotalsView: View {
     }
 }
 #Preview {
-    PrimaryTotalsView(sortSelection: Status.open)
+    FeeTotalsView(sortSelection: Status.open)
 }
