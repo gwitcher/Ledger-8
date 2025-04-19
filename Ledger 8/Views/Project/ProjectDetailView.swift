@@ -7,6 +7,7 @@
 
 import SwiftUI
 import SwiftData
+import ContactsUI
 
 struct ProjectDetailView: View {
     @Environment(\.modelContext) var modelContext
@@ -26,20 +27,20 @@ struct ProjectDetailView: View {
     @State private var dateClosed = Date()
     @State private var status = Status.open
     @State private var sheetIsPresented = false
+    @State private var selectedContact: CNContact?
+    @State private var contactSheetIsPresented = false
     
     
     var body: some View {
         
         NavigationStack {
             Form {
+                
+                Section("Client") {
+                    ContactPickerView()
+                }
+                
                 Section("Project Info") {
-                    LabeledContent {
-                        TextField("", text: $client)
-                        
-                    }   label: {
-                        Text("Client").foregroundStyle(.secondary)
-                            .autocorrectionDisabled()
-                    }
                     
                     LabeledContent {
                         TextField("", text: $projectName)
@@ -112,6 +113,8 @@ struct ProjectDetailView: View {
                 }
                 
                 //TODO: create invoice section
+                
+                
                 
                 
                 
