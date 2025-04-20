@@ -12,7 +12,7 @@ import SwiftUIFontIcon
 
 @Model
 class Project: Identifiable {
-    var client: String
+    var client: Client?
     var projectName: String
     var artist:String
     var jobDate: Date
@@ -29,7 +29,7 @@ class Project: Identifiable {
     
     
     init(
-        client: String = "",
+        //client: Client = Client(),
         projectName: String = "",
         artist: String = "",
         jobDate: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!,
@@ -43,7 +43,7 @@ class Project: Identifiable {
         dateClosed: Date = Date.distantFuture,
         items: [Item] = []
     ) {
-        self.client = client
+        //self.client = client
         self.projectName = projectName
         self.artist = artist
         self.jobDate = jobDate

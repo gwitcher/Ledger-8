@@ -15,7 +15,7 @@ struct ProjectDetailView: View {
     
     var project: Project
     
-    @State private var client = ""
+    @State private var client: Client?
     @State private var projectName = ""
     @State private var artist = ""
     @State private var jobDate = Date()
@@ -29,6 +29,7 @@ struct ProjectDetailView: View {
     @State private var sheetIsPresented = false
     @State private var selectedContact: CNContact?
     @State private var contactSheetIsPresented = false
+    @State private var clientSheetIsPresented = false
     
     
     var body: some View {
@@ -37,8 +38,29 @@ struct ProjectDetailView: View {
             Form {
                 
                 Section("Client") {
-                    ContactPickerView()
+                    if project.client != nil {
+                        NavigationLink {
+                            ClientDetailView(project: project)
+                        } label: {
+                            Text("\(project.client?.givenName ?? "") \(project.client?.familyName ?? "")")
+                        }
+
+                    } else {
+                        Button {
+                            clientSheetIsPresented.toggle()
+                        } label: {
+                            HStack {
+                                Image(systemName: "plus.circle.fill")
+                                    .foregroundStyle(.green)
+                                Text("Add Client")
+                                    .tint(.primary)
+                            }
+                        }
+                        
+                    }
+                    
                 }
+                
                 
                 Section("Project Info") {
                     
@@ -94,7 +116,9 @@ struct ProjectDetailView: View {
                     } label: {
                         HStack {
                             Image(systemName: "plus.circle.fill")
+                                .foregroundStyle(.green)
                             Text("Add Item")
+                                .tint(.primary)
                         }
                     }
                 }
@@ -104,7 +128,9 @@ struct ProjectDetailView: View {
                 } label: {
                     HStack {
                         Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(.green)
                         Text("Add Invoice")
+                            .tint(.primary)
                     }
                 }
                 
@@ -113,11 +139,6 @@ struct ProjectDetailView: View {
                 }
                 
                 //TODO: create invoice section
-                
-                
-                
-                
-                
                 Section {
                     Toggle(isOn: $delivered) {
                         if !delivered {
@@ -202,9 +223,14 @@ struct ProjectDetailView: View {
             .navigationTitle("Project Details")
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarBackButtonHidden()
+            .sheet(isPresented: $clientSheetIsPresented) {
+                ClientDetailView(project: project)
+            }
+            
             .sheet(isPresented: $sheetIsPresented) {
                 ItemDetailView(project: project)
             }
+            
             
         }
     }
@@ -228,7 +254,7 @@ struct ProjectDetailView: View {
             return
         }
         
-        client = ""
+        //client = Client()
         projectName = ""
         artist = ""
         notes = ""
@@ -237,6 +263,6 @@ struct ProjectDetailView: View {
 }
 
 #Preview {
-    ProjectDetailView(project: Project(client: "", projectName: "", jobDate: Date.now, items: [Item]()))
+    ProjectDetailView(project: Project(projectName: "", jobDate: Date.now, items: [Item]()))
         .modelContainer(for: Project.self, inMemory: true)
 }

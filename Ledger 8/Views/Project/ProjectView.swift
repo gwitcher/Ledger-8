@@ -24,7 +24,7 @@ struct ProjectView: View {
                 }
             VStack(alignment: .leading, spacing: 6) {
                 
-                Text(project.client)
+                Text("\(project.client?.givenName ?? "") \(project.client?.familyName ?? "")")
                     .font(.subheadline)
                     .bold()
                     .lineLimit(1)
@@ -68,6 +68,6 @@ struct ProjectView: View {
 }
 
 #Preview {
-    ProjectView(project: Project(client: "Dummy", projectName: "Dummy", jobDate: Date(), items: []))
+    ProjectView(project: Project(projectName: "Dummy", jobDate: Date(), items: []))
     
 }

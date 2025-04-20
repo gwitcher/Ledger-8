@@ -15,6 +15,7 @@ class Item: Identifiable {
     var fee: Double
     var itemType: ItemType
     var notes: String
+    var project: Project?
     
     init(
         name: String = "",
@@ -30,7 +31,7 @@ class Item: Identifiable {
         self.project = project
     }
     
-    var project: Project?
+    
     
     var icon: FontAwesomeCode {
         switch itemType {

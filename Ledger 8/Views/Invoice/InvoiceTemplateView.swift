@@ -110,5 +110,5 @@ struct InvoiceTemplateView: View {
 }
 
 #Preview {
-    InvoiceTemplateView( project: Project(client: "Dummy Dums", projectName: "Dummy", artist: "Dummy", jobDate: Date()))
+    InvoiceTemplateView( project: Project(projectName: "Dummy", artist: "Dummy", jobDate: Date()))
 }
