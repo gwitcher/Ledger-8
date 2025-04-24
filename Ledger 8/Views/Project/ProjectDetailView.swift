@@ -15,8 +15,6 @@ struct ProjectDetailView: View {
     
     var project: Project
     
-    
-    //@State private var client = ""
     @State private var projectName = ""
     @State private var artist = ""
     @State private var jobDate = Date()
@@ -28,8 +26,8 @@ struct ProjectDetailView: View {
     @State private var dateClosed = Date()
     @State private var status = Status.open
     @State private var sheetIsPresented = false
-    @State private var selectedContact: CNContact?
     @State private var clientSheetIsPresented = false
+    @State private var selectedClient: Client? = nil
     
     
     
@@ -38,16 +36,15 @@ struct ProjectDetailView: View {
         NavigationStack {
             Form {
                 Section("Client") {
-                    if project.client != nil {
-                        NavigationLink {
-                            ClientEditView(contact: project.client ?? Client())
-                        } label: {
-                            Text(project.client?.name ?? "")
-                        }
+                    if selectedClient != nil {
+                        Text(selectedClient!.name)
+                            .onTapGesture {
+                                print("Shown Client: \(selectedClient?.name ?? "NIL")")
+                                clientSheetIsPresented.toggle()
+                            }
 
                     } else {
                         Button {
-                            //saveEmptyProject()
                             clientSheetIsPresented.toggle()
                         } label: {
                             HStack {
@@ -59,8 +56,6 @@ struct ProjectDetailView: View {
                     }
                     
                 }
-                
-                
                 
                 Section("Project Info") {
                                         
@@ -193,6 +188,8 @@ struct ProjectDetailView: View {
                 }
             }
             .onAppear {
+                print("ON APPEAR: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                selectedClient = project.client
                 projectName = project.projectName
                 artist = project.artist
                 jobDate = project.jobDate
@@ -223,11 +220,13 @@ struct ProjectDetailView: View {
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarBackButtonHidden()
             .sheet(isPresented: $clientSheetIsPresented) {
-                ClientListView()
+                ClientSelectView(selectedClient: $selectedClient)
             }
-            
             .sheet(isPresented: $sheetIsPresented) {
                 ItemDetailView(project: project)
+            }
+            .onChange(of: selectedClient) {
+                print("onChange Selected Client: \(selectedClient?.name ?? "NIL")")
             }
             
             
@@ -243,6 +242,9 @@ struct ProjectDetailView: View {
 //    }
     
     func saveProject() {
+        print("Save before: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
+        project.client = selectedClient
+        print("Save after: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
         project.projectName = projectName
         project.artist = artist
         project.jobDate = jobDate
