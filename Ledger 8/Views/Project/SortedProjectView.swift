@@ -45,6 +45,7 @@ struct SortedProjectView: View {
                         }
                         project.dateClosed = Date.now
                         project.paid.toggle()
+                        project.status = .closed
                     }
                     .tint(.green)
                 }
@@ -52,6 +53,7 @@ struct SortedProjectView: View {
                     Button("Delivered") {
                         project.dateDelivered = Date.now
                         project.delivered.toggle()
+                        project.status = .delivered
                     }
                     .tint(.orange)
                 }
@@ -62,7 +64,7 @@ struct SortedProjectView: View {
         }
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        .shadow(color: Color.primary.opacity(0.2), radius: 10, x: 0, y: 5)
+        //.shadow(color: Color.primary.opacity(0.2), radius: 10, x: 0, y: 5)
     }
 }
 

@@ -11,7 +11,7 @@ struct PayerView: View {
     @Environment(\.modelContext) var modelContext
     
     var project: Project
-    @State private var client = Client()
+    @State private var client = ""
     @State private var projectName = ""
     @State private var artist = ""
     @State private var jobDate = Date().formatted(date: .long, time: .omitted)
@@ -34,7 +34,7 @@ struct PayerView: View {
                     Text("Client: ")
                         .fontWeight(.medium)
                         .foregroundStyle(.secondary)
-                    Text(project.client?.givenName ?? "")
+                    Text(project.client?.name ?? "")
                         .fontWeight(.regular)
                 }
                 
@@ -78,7 +78,7 @@ struct PayerView: View {
         }
         .padding()
         .onAppear {
-            client = project.client ?? Client()
+            client = project.client?.name ?? ""
             projectName = project.projectName
             artist = project.artist
             jobDate = project.jobDate.formatted(date: .long, time: .omitted)

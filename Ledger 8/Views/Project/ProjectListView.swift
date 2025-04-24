@@ -23,6 +23,15 @@ struct ProjectListView: View {
                 if !projects.isEmpty {
                     VStack {
                         FeeTotalsView(sortSelection: sortSelection)
+                        Picker(selection: $sortSelection) {
+                            ForEach(Status.allCases) { selection in
+                                Text(selection.rawValue)
+                            }
+                        } label: {
+                            Text("")
+                        }
+                        .pickerStyle(.palette)
+                        .animation(.easeIn, value: sortSelection)
                         SortedProjectView(sortSelection: sortSelection)
                     }
                 } else {
@@ -39,16 +48,8 @@ struct ProjectListView: View {
                 }
                 
                 if !projects.isEmpty {
-                    ToolbarItem(placement: .bottomBar) {
-                        Picker(selection: $sortSelection) {
-                            ForEach(Status.allCases) { selection in
-                                Text(selection.rawValue)
-                            }
-                        } label: {
-                            Text("")
-                        }
-                        .pickerStyle(.palette)
-                        .animation(.easeIn, value: sortSelection)
+                    ToolbarItem(placement: .navigation) {
+                        
                     }
                 }
             }

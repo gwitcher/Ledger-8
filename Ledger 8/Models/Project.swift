@@ -8,11 +8,12 @@
 import Foundation
 import SwiftData
 import SwiftUIFontIcon
+import Contacts
 
 
 @Model
 class Project: Identifiable {
-    var client: Client?
+    //var client: String
     var projectName: String
     var artist:String
     var jobDate: Date
@@ -27,9 +28,11 @@ class Project: Identifiable {
     
     @Relationship(deleteRule: .cascade) var items: [Item]?
     
+    var client: Client?
+    
     
     init(
-        //client: Client = Client(),
+        //client: String = "",
         projectName: String = "",
         artist: String = "",
         jobDate: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!,

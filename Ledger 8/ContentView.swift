@@ -15,7 +15,8 @@ struct ContentView: View {
     
     var body: some View {
         NavigationStack{
-            ProjectListView()
+            //ProjectListView()
+            ClientListView()
         }
         .navigationTitle("Projects")
     }

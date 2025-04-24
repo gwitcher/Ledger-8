@@ -15,7 +15,8 @@ struct ProjectDetailView: View {
     
     var project: Project
     
-    @State private var client: Client?
+    
+    //@State private var client = ""
     @State private var projectName = ""
     @State private var artist = ""
     @State private var jobDate = Date()
@@ -28,42 +29,41 @@ struct ProjectDetailView: View {
     @State private var status = Status.open
     @State private var sheetIsPresented = false
     @State private var selectedContact: CNContact?
-    @State private var contactSheetIsPresented = false
     @State private var clientSheetIsPresented = false
+    
     
     
     var body: some View {
         
         NavigationStack {
             Form {
-                
                 Section("Client") {
                     if project.client != nil {
                         NavigationLink {
-                            ClientDetailView(project: project)
+                            ClientEditView(contact: project.client ?? Client())
                         } label: {
-                            Text("\(project.client?.givenName ?? "") \(project.client?.familyName ?? "")")
+                            Text(project.client?.name ?? "")
                         }
 
                     } else {
                         Button {
+                            //saveEmptyProject()
                             clientSheetIsPresented.toggle()
                         } label: {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
-                                    .foregroundStyle(.green)
+                                    .tint(.green)
                                 Text("Add Client")
-                                    .tint(.primary)
                             }
                         }
-                        
                     }
                     
                 }
                 
                 
+                
                 Section("Project Info") {
-                    
+                                        
                     LabeledContent {
                         TextField("", text: $projectName)
                         
@@ -138,7 +138,7 @@ struct ProjectDetailView: View {
                     TextField("", text: $notes, axis: .vertical)
                 }
                 
-                //TODO: create invoice section
+                
                 Section {
                     Toggle(isOn: $delivered) {
                         if !delivered {
@@ -193,7 +193,6 @@ struct ProjectDetailView: View {
                 }
             }
             .onAppear {
-                client = project.client
                 projectName = project.projectName
                 artist = project.artist
                 jobDate = project.jobDate
@@ -224,7 +223,7 @@ struct ProjectDetailView: View {
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarBackButtonHidden()
             .sheet(isPresented: $clientSheetIsPresented) {
-                ClientDetailView(project: project)
+                ClientListView()
             }
             
             .sheet(isPresented: $sheetIsPresented) {
@@ -235,8 +234,15 @@ struct ProjectDetailView: View {
         }
     }
     
+//    func saveEmptyProject() {
+//        modelContext.insert(project)
+//        guard let _ = try? modelContext.save() else{
+//            print("😡 ERROR: Cannot save")
+//            return
+//        }
+//    }
+    
     func saveProject() {
-        project.client = client
         project.projectName = projectName
         project.artist = artist
         project.jobDate = jobDate
@@ -253,8 +259,7 @@ struct ProjectDetailView: View {
             print("😡 ERROR: Cannot save")
             return
         }
-        
-        //client = Client()
+
         projectName = ""
         artist = ""
         notes = ""

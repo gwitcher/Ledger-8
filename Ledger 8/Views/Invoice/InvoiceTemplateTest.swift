@@ -28,7 +28,7 @@ struct InvoiceTemplateTest: View {
             
             
             VStack{
-                Text(project.client?.givenName ?? "")
+                Text(project.client?.name ?? "")
                 Text(project.artist)
                 Text(project.projectName)
                 Text(project.jobDate.formatted(date: .numeric, time: .omitted))

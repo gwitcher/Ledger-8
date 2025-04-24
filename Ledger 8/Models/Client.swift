@@ -1,49 +1,32 @@
 //
-//  Client.swift
+//  Contact.swift
 //  Ledger 8
 //
-//  Created by Gabe Witcher on 4/19/25.
+//  Created by Gabe Witcher on 4/22/25.
 //
 
 import Foundation
 import SwiftData
-import Contacts
 
 @Model
-class Client {
-    var givenName: String
-    var familyName: String
+class Client: Identifiable {
+    var id: UUID
+    var name: String
     var email: String
     var phone: String
-    var address: String
-    var city: String
-    var state: String
-    var zip: String
-    var companyName: String
-    var project: Project?
+    
+    var project: [Project]?
     
     init(
-        givenName: String = "",
-        familyName: String = "",
+        id: UUID = UUID(),
+        name: String = "",
         email: String = "",
-        phone: String = "",
-        address: String = "",
-        city: String = "",
-        state: String = "",
-        zip: String = "",
-        companyName: String = ""
+        phone: String = ""
     ) {
-        self.givenName = givenName
-        self.familyName = familyName
+        self.id = id
+        self.name = name
         self.email = email
         self.phone = phone
-        self.address = address
-        self.city = city
-        self.state = state
-        self.zip = zip
-        self.companyName = companyName
     }
-    
 }
-
 
