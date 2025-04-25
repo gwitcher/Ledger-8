@@ -32,30 +32,45 @@ struct ClientListView: View {
     var body: some View {
         
         NavigationStack {
-            List {
-                ForEach(filteredClient) {contact in
-                    NavigationLink(destination: {
-                        ClientEditView(contact: contact)
-                    }, label: {
-                        Text(contact.name)
-                    })
+            
+            Group {
+                if !allClients.isEmpty {
+                    List {
+                        ForEach(filteredClient) {contact in
+                            NavigationLink(destination: {
+                                ClientEditView(contact: contact)
+                            }, label: {
+                                Text(contact.name)
+                            })
+                            .swipeActions {
+                                Button("Delete", role: .destructive) {
+                                    modelContext.delete(contact)
+                                    
+                                    guard let _ = try? modelContext.save() else {
+                                        print("😡 ERROR: Could not save after delete")
+                                        return
+                                    }
+                                }
+                            }
+                        }
+                    }
+                    .listStyle(.plain)
+                    .searchable(text: $searchText)
+                    
+                    
+                } else {
+                    ContentUnavailableView("Add Clients", systemImage: "person.crop.circle.badge.questionmark")
                 }
             }
-            .listStyle(.plain)
-            .searchable(text: $searchText)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("", systemImage: "plus") {
                         clientSheetIsPresented.toggle()
                     }
                 }
-                
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
+
             }
+
         }
         .sheet(isPresented: $clientSheetIsPresented) {
             ClientDetailView(client: Client())

@@ -43,9 +43,10 @@ struct ItemDetailView: View {
                 Section("Item Info") {
                     LabeledContent {
                         TextField("Item Name", text: $name)
+                            .textContentType(.name)
                     }   label: {
                         Text("").foregroundStyle(.secondary)
-                            .textContentType(.name)
+                            
                     }
                     
                     Picker(" Type", selection: $itemType) {
@@ -68,8 +69,6 @@ struct ItemDetailView: View {
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)
                 }
-                
-                
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
@@ -82,8 +81,6 @@ struct ItemDetailView: View {
                     Button("Add") {
                         saveItem(name: name, fee: fee ?? .zero, itemType: itemType, notes: notes)
                         dismiss()
-//                        name = ""
-//                        fee = .zero
                     }
                 }
             }

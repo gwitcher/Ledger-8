@@ -24,26 +24,28 @@ struct ClientDetailView: View {
             Form {
                 LabeledContent {
                     TextField("", text: $name)
+                        .autocorrectionDisabled()
                     
                 }   label: {
                     Text("Contact").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
+                        
                 }
                 
                 LabeledContent {
                     TextField("", text: $email)
+                        .autocorrectionDisabled()
                     
                 }   label: {
                     Text("Email").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
+                        
                 }
                 
                 LabeledContent {
                     TextField("", text: $phone)
-                    
+                        .autocorrectionDisabled()
                 }   label: {
                     Text("Phone").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
+                        
                 }
                 
             }

@@ -61,18 +61,18 @@ struct ProjectDetailView: View {
                                         
                     LabeledContent {
                         TextField("", text: $projectName)
-                        
+                            .autocorrectionDisabled()
                     }   label: {
                         Text("Project").foregroundStyle(.secondary)
-                            .autocorrectionDisabled()
+                            
                     }
                     
                     LabeledContent {
                         TextField("", text: $artist)
-                        
+                            .autocorrectionDisabled()
                     }   label: {
                         Text("Artist").foregroundStyle(.secondary)
-                            .autocorrectionDisabled()
+                            
                     }
                     
                     LabeledContent {
@@ -118,16 +118,7 @@ struct ProjectDetailView: View {
                     }
                 }
                 
-                Button {
-                    _ = project.render(project: project)
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundStyle(.green)
-                        Text("Add Invoice")
-                            .tint(.primary)
-                    }
-                }
+                //AddInvoiceView(project: project)
                 
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)
@@ -225,21 +216,8 @@ struct ProjectDetailView: View {
             .sheet(isPresented: $sheetIsPresented) {
                 ItemDetailView(project: project)
             }
-            .onChange(of: selectedClient) {
-                print("onChange Selected Client: \(selectedClient?.name ?? "NIL")")
-            }
-            
-            
         }
     }
-    
-//    func saveEmptyProject() {
-//        modelContext.insert(project)
-//        guard let _ = try? modelContext.save() else{
-//            print("😡 ERROR: Cannot save")
-//            return
-//        }
-//    }
     
     func saveProject() {
         print("Save before: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")

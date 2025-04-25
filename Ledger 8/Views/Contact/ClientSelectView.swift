@@ -18,6 +18,7 @@ struct ClientSelectView: View {
     
     @Binding var selectedClient:  Client?
     @State private var searchText = ""
+    @State private var clientSheetIsPresented = false
     
     var filteredClient: [Client] {
         if searchText.isEmpty {
@@ -31,29 +32,47 @@ struct ClientSelectView: View {
     
     var body: some View {
         NavigationStack {
-            List {
-                ForEach(filteredClient) {client in
-                    Text(client.name)
-                        .contentShape(Rectangle())
-                        .onTapGesture {
-                            selectedClient = client
-                            print("Client Select View Selected Client on tap: \(selectedClient?.name ?? "NIL")")
-                            dismiss()
+            
+            Group {
+                if !allClients.isEmpty {
+                    List {
+                        ForEach(filteredClient) {client in
+                            Text(client.name)
+                                .contentShape(Rectangle())
+                                .onTapGesture {
+                                    selectedClient = client
+                                    print("Client Select View Selected Client on tap: \(selectedClient?.name ?? "NIL")")
+                                    dismiss()
+                                }
                         }
+                        
+                    }
+                    .listStyle(.plain)
+                    .searchable(text: $searchText)
+                    
+                    
+                } else {
+                    ContentUnavailableView("Add Client", systemImage: "person.crop.circle.badge.questionmark")
                 }
-                
             }
-            .listStyle(.plain)
-            .searchable(text: $searchText)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
                     Button("Cancel") {
                         dismiss()
                     }
                 }
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("", systemImage: "plus") {
+                        clientSheetIsPresented.toggle()
+                    }
+                }
             }
         }
+        
+        .sheet(isPresented: $clientSheetIsPresented) {
+            ClientDetailView(client: Client())
     }
+}
 
 }
 

@@ -22,28 +22,27 @@ struct ClientEditView: View {
             Form {
                 LabeledContent {
                     TextField("", text: $name)
+                        .autocorrectionDisabled()
                     
                 }   label: {
                     Text("Contact").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
+                        
                 }
                 
                 LabeledContent {
                     TextField("", text: $email)
-                    
+                        .autocorrectionDisabled()
                 }   label: {
                     Text("Email").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
+                        
                 }
                 
                 LabeledContent {
                     TextField("", text: $phone)
-                    
+                        .autocorrectionDisabled()
                 }   label: {
                     Text("Phone").foregroundStyle(.secondary)
-                        .autocorrectionDisabled()
                 }
-                
             }
             .onAppear {
                 name = contact.name
@@ -51,21 +50,12 @@ struct ClientEditView: View {
                 phone = contact.phone
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel", role: .cancel) {
-                        dismiss()
-                    }
-                }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                     
-                        
                         contact.name = name
                         contact.email = email
                         contact.phone = phone
                         dismiss()
-                        
                     }
                 }
             }
