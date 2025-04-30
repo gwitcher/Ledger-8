@@ -21,6 +21,7 @@ struct MainView: View {
                     Label("Clients", systemImage: "person.crop.circle")
                 }
         }
+        .padding()
     }
 }
 

@@ -29,6 +29,7 @@ class Project: Identifiable {
     @Relationship(deleteRule: .cascade) var items: [Item]?
     
     var client: Client?
+    @Relationship(deleteRule: .cascade) var invoice: Invoice?
     
     
     init(

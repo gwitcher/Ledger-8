@@ -27,21 +27,25 @@ extension Project {
         return projectTotal
     }
     
-    func render(project: Project) -> URL {
+    func renderInvoice(project: Project, invoiceNumbers: [Int]) -> Invoice {
+        let invoiceDate = Date.now
+        let nextInvoiceNumber = (invoiceNumbers.max() ?? 0) + 1
+        let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.name ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
+        
            // 1: Render Hello World with some modifiers
            let renderer = ImageRenderer(content:
                                             InvoiceTemplateTest(project: project)
            )
 
            // 2: Save it to our documents directory
-           let url = URL.documentsDirectory.appending(path: "Invoice_1111_PROJECT_DATE.pdf")
+        let url = URL.documentsDirectory.appending(path: invoiceName)
         
         
 
            // 3: Start the rendering process
            renderer.render { size, context in
                // 4: Tell SwiftUI our PDF should be the same size as the views we're rendering
-               var box = CGRect(x: 0, y: 0, width: size.width, height: size.height)
+               var box = CGRect(x: 0, y: 0, width: 612, height: 792)
 
                // 5: Create the CGContext for our PDF pages
                guard let pdf = CGContext(url as CFURL, mediaBox: &box, nil) else {
@@ -58,8 +62,14 @@ extension Project {
                pdf.endPDFPage()
                pdf.closePDF()
            }
-
-           return url
+        print("Invoice Name: \(invoiceName)")
+        
+        let newInvoice = Invoice(id: UUID(), number: nextInvoiceNumber, invoiceDate: invoiceDate, name: invoiceName, urlString: url.absoluteString)
+        
+        
+        
+        
+        return newInvoice
        }
     
 }

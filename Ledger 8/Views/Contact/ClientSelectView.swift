@@ -38,19 +38,16 @@ struct ClientSelectView: View {
                     List {
                         ForEach(filteredClient) {client in
                             Text(client.name)
-                                .contentShape(Rectangle())
+                                .border(.red)
                                 .onTapGesture {
                                     selectedClient = client
                                     print("Client Select View Selected Client on tap: \(selectedClient?.name ?? "NIL")")
                                     dismiss()
                                 }
                         }
-                        
                     }
                     .listStyle(.plain)
                     .searchable(text: $searchText)
-                    
-                    
                 } else {
                     ContentUnavailableView("Add Client", systemImage: "person.crop.circle.badge.questionmark")
                 }
@@ -71,9 +68,9 @@ struct ClientSelectView: View {
         
         .sheet(isPresented: $clientSheetIsPresented) {
             ClientDetailView(client: Client())
+        }
     }
-}
-
+    
 }
 
 //#Preview {

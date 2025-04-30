@@ -32,7 +32,6 @@ struct ClientListView: View {
     var body: some View {
         
         NavigationStack {
-            
             Group {
                 if !allClients.isEmpty {
                     List {
@@ -68,8 +67,15 @@ struct ClientListView: View {
                         clientSheetIsPresented.toggle()
                     }
                 }
+                
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                }
 
             }
+            .navigationTitle("Clients")
 
         }
         .sheet(isPresented: $clientSheetIsPresented) {

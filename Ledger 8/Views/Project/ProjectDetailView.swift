@@ -38,6 +38,7 @@ struct ProjectDetailView: View {
                 Section("Client") {
                     if selectedClient != nil {
                         Text(selectedClient!.name)
+                            .contentShape(Rectangle())
                             .onTapGesture {
                                 print("Shown Client: \(selectedClient?.name ?? "NIL")")
                                 clientSheetIsPresented.toggle()
@@ -118,7 +119,8 @@ struct ProjectDetailView: View {
                     }
                 }
                 
-                //AddInvoiceView(project: project)
+                AddInvoiceView(project: project)
+                
                 
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)

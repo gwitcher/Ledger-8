@@ -6,6 +6,34 @@
 //
 
 import Foundation
+import SwiftData
+
+@Model
+class Invoice: Identifiable {
+    var id: UUID
+    var number: Int
+    var invoiceDate: Date
+    var name: String
+    var urlString: String?
+    var project: Project?
+    
+    init(
+        id: UUID = UUID(),
+        number: Int = 0,
+        invoiceDate: Date = Date.now,
+        name: String = "",
+        urlString: String?
+    ) {
+        self.id = id
+        self.number = number
+        self.invoiceDate = invoiceDate
+        self.name = name
+        
+    }
+
+}
+
+
 
 struct Company {
     var name = "MFGW Family Group, Inc."

@@ -62,7 +62,7 @@ struct ProjectView: View {
                 
             }
         }
-        .padding([.top, .bottom], 8)
+        .padding([.top, .bottom], 6)
         
     }
 }
