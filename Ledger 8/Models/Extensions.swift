@@ -46,7 +46,7 @@ extension Project {
            // 3: Start the rendering process
            renderer.render { size, context in
                // 4: Tell SwiftUI our PDF should be the same size as the views we're rendering
-               var box = CGRect(x: 0, y: 0, width: size.width, height: size.width) //Letter size w: 612, h: 792
+               var box = CGRect(x: 0, y: 0, width: 612, height: 792) //Letter size w: 612, h: 792
 
                // 5: Create the CGContext for our PDF pages
                guard let pdf = CGContext(url as CFURL, mediaBox: &box, nil) else {

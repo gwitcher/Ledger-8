@@ -15,53 +15,6 @@ struct PayerView: View {
     var body: some View {
         
         HStack {
-//            VStack (alignment: .leading) {
-//                Text("To:")
-//                    .font(.title3)
-//                    .fontWeight(.regular)
-//                
-//                HStack{
-//                    Text("Client: ")
-//                        .fontWeight(.medium)
-//                        .foregroundStyle(.secondary)
-//                    Text(project.client?.name ?? "")
-//                        .fontWeight(.regular)
-//                }
-//                
-//                HStack{
-//                    Text("Artist: ")
-//                        .fontWeight(.medium)
-//                        .foregroundStyle(.secondary)
-//                    Text(project.artist)
-//                        .fontWeight(.regular)
-//                }
-//                HStack{
-//                    Text("Attn: ")
-//                        .fontWeight(.medium)
-//                        .foregroundStyle(.secondary)
-//                    Text("Mock")
-//                        .fontWeight(.regular)
-//                }
-//                HStack{
-//                    Text("Address: ")
-//                        .fontWeight(.medium)
-//                        .foregroundStyle(.secondary)
-//                    Text("111 Main St.")
-//                        .fontWeight(.regular)
-//                }
-//                HStack{
-//                    Text("Address: ")
-//                    
-//                        .fontWeight(.medium)
-//                        .lineLimit(1)
-//                        .foregroundStyle(.secondary)
-//                    Text("Los Angeles, CA 90028")
-//                        .fontWeight(.regular)
-//                        .lineLimit(2)
-//                }
-//                
-//                
-//            }
             VStack(spacing: 6) {
                 LabeledContent("Client: ") {
                     Text("\(project.client?.name ?? "")")
@@ -78,6 +31,11 @@ struct PayerView: View {
                     Spacer()
                 }
                 
+                LabeledContent("Email: ") {
+                    Text("\(project.client?.email ?? "")")
+                    Spacer()
+                }
+                
                 LabeledContent {
                     VStack(alignment: .leading){
                         Text("1111 Main St")
@@ -87,13 +45,16 @@ struct PayerView: View {
                     
                 } label: {
                     Text("Address: ")
-                    Text("")
+                    Text(" ")
+                       
                 }
             }
             .font(.headline)
             .minimumScaleFactor(0.5)
+            Spacer()
         }
-        .padding()
+        //.padding()
+        
     }
 }
 

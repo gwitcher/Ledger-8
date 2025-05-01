@@ -71,6 +71,7 @@ struct InvoiceTemplateView: View {
                     .overlay {
                         HStack {
                             PayerView(project: project)
+                                .padding()
                             
                         }
                         
@@ -78,9 +79,8 @@ struct InvoiceTemplateView: View {
                
                
             }
-            .frame(width: .infinity, height: 100)
-            .minimumScaleFactor(0.5)
-            //.border(.black)
+            .frame(width: 200, height: 120)
+            .border(.black)
            
             
             

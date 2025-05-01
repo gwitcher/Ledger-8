@@ -19,7 +19,7 @@ class Invoice: Identifiable {
     
     init(
         id: UUID = UUID(),
-        number: Int = 0,
+        number: Int = 1000,
         invoiceDate: Date = Date.now,
         name: String = ""
     ) {
