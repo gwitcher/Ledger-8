@@ -11,78 +11,89 @@ struct PayerView: View {
     @Environment(\.modelContext) var modelContext
     
     var project: Project
-    @State private var client = ""
-    @State private var projectName = ""
-    @State private var artist = ""
-    @State private var jobDate = Date().formatted(date: .long, time: .omitted)
-    
-    let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.dateStyle = .long
-            return formatter
-        }()
     
     var body: some View {
         
         HStack {
-            VStack (alignment: .leading) {
-                Text("To:")
-                    .font(.title2)
-                    .fontWeight(.semibold)
-                
-                HStack{
-                    Text("Client: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text(project.client?.name ?? "")
-                        .fontWeight(.regular)
+//            VStack (alignment: .leading) {
+//                Text("To:")
+//                    .font(.title3)
+//                    .fontWeight(.regular)
+//                
+//                HStack{
+//                    Text("Client: ")
+//                        .fontWeight(.medium)
+//                        .foregroundStyle(.secondary)
+//                    Text(project.client?.name ?? "")
+//                        .fontWeight(.regular)
+//                }
+//                
+//                HStack{
+//                    Text("Artist: ")
+//                        .fontWeight(.medium)
+//                        .foregroundStyle(.secondary)
+//                    Text(project.artist)
+//                        .fontWeight(.regular)
+//                }
+//                HStack{
+//                    Text("Attn: ")
+//                        .fontWeight(.medium)
+//                        .foregroundStyle(.secondary)
+//                    Text("Mock")
+//                        .fontWeight(.regular)
+//                }
+//                HStack{
+//                    Text("Address: ")
+//                        .fontWeight(.medium)
+//                        .foregroundStyle(.secondary)
+//                    Text("111 Main St.")
+//                        .fontWeight(.regular)
+//                }
+//                HStack{
+//                    Text("Address: ")
+//                    
+//                        .fontWeight(.medium)
+//                        .lineLimit(1)
+//                        .foregroundStyle(.secondary)
+//                    Text("Los Angeles, CA 90028")
+//                        .fontWeight(.regular)
+//                        .lineLimit(2)
+//                }
+//                
+//                
+//            }
+            VStack(spacing: 6) {
+                LabeledContent("Client: ") {
+                    Text("\(project.client?.name ?? "")")
+                    Spacer()
                 }
                 
-                HStack{
-                    Text("Artist: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text(artist)
-                        .fontWeight(.regular)
+                LabeledContent("Artist: ") {
+                    Text("\(project.artist)")
+                    Spacer()
                 }
-                HStack{
-                    Text("Attn: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text("Mock")
-                        .fontWeight(.regular)
+                
+                LabeledContent("Attn: ") {
+                    Text("\(project.client?.name ?? "")")
+                    Spacer()
                 }
-                HStack{
-                    Text("Address: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text("111 Main St.")
-                        .fontWeight(.regular)
-                }
-                HStack{
-                    Text("Address: ")
+                
+                LabeledContent {
+                    VStack(alignment: .leading){
+                        Text("1111 Main St")
+                        Text("Burbank, Ca 91506")
+                    }
+                    Spacer()
                     
-                        .fontWeight(.medium)
-                        .lineLimit(1)
-                        .foregroundStyle(.secondary)
-                    Text("Los Angeles, CA 90028")
-                        .fontWeight(.regular)
-                        .lineLimit(2)
+                } label: {
+                    Text("Address: ")
+                    Text("")
                 }
-                
-                
             }
-            .font(.subheadline)
+            .font(.headline)
             .minimumScaleFactor(0.5)
-            
         }
         .padding()
-        .onAppear {
-            client = project.client?.name ?? ""
-            projectName = project.projectName
-            artist = project.artist
-            jobDate = project.jobDate.formatted(date: .long, time: .omitted)
-        }
     }
 }
 

@@ -20,10 +20,12 @@ struct InvoiceTemplateTest: View {
         let total = project.calculateFeeTotal(items: project.items ?? [])
         
         VStack{
-            VStack{
+            VStack (alignment: .leading){
                 Text(company.name)
                     .font(.largeTitle)
                 Text(company.contact)
+                Text(company.address)
+                Text(company.cityStateZip)
             }
             
             

@@ -16,99 +16,85 @@ struct InvoiceTemplateView: View {
     
     var body: some View {
         
-        HStack  {
-            RoundedRectangle(cornerRadius: 5, style: .continuous)
-                .foregroundStyle(.icon)
-                .opacity(0.2)
-                .overlay {
-                    HStack (alignment: .top) {
-                        mfgwLogoView()
-                            .frame(width: 170, height: 60)
-                            .padding()
-                            .minimumScaleFactor(0.5)
-                            //.border(.black)
-                        
-                        Spacer()
-                        
-                        VStack (alignment: .center) {
-                            Text("Invoice: 1003")
-                                .font(.caption)
-                                .padding(.horizontal)
-                                //.border(.blue)
-                           
-                            
-                            Text("Total Due: $200.00")
-                                .font(.caption)
-                                .fontWeight(.black)
+        
+        VStack {
+            HStack  {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .foregroundStyle(.icon)
+                    .opacity(0.2)
+                    .overlay {
+                        HStack (alignment: .top) {
+                            mfgwLogoView()
+                                .frame(width: 170, height: 60)
+                                .padding()
                                 .minimumScaleFactor(0.5)
-                                .lineLimit(1)
-                                .padding(8)
-                                .background(.red.opacity(0.5), in: Capsule())
+                            
+                            
+                            Spacer()
+                            
+                            VStack (alignment: .center) {
+                                Text("Invoice: \(project.invoice?.number ?? 0)")
+                                    .font(.caption)
+                                    .padding(.horizontal)
+                                //.border(.blue)
                                 
-                                //.border(.green)
-                            
-                            
+                                RoundedRectangle(cornerRadius: 30)
+                                    .scaleEffect(1)
+                                    .opacity(0.6)
+                                    .foregroundStyle(.red)
+                                    .overlay {
+                                        Text("Total Due: $200.00")
+                                            .font(.caption)
+                                            .fontWeight(.bold)
+                                            .minimumScaleFactor(0.5)
+                                            .lineLimit(1)
+                                            .padding(8)
+                                    }
+                                
+                                
+                                
+                            }
+                            .padding()
                             
                         }
-                        .padding()
-                        //.frame(width: .infinity)
-                        
-                        //.border(.red)
-                        
+                        .padding(.horizontal)
+                    }
+            }
+            .frame(width: 400, height: 100)
+            
+            
+            
+            HStack {
+                RoundedRectangle(cornerRadius: 5, style: .continuous)
+                    .foregroundStyle(.clear)
+                    .opacity(0.1)
+                    .overlay {
+                        HStack {
+                            PayerView(project: project)
+                            
+                        }
                         
                     }
-                    .padding(.horizontal)
-                }
-        }
-        .frame(width: 400, height: 100)
-            
+               
+               
+            }
+            .frame(width: .infinity, height: 100)
+            .minimumScaleFactor(0.5)
+            //.border(.black)
            
-       
             
             
-       
-        HStack (alignment: .bottom) {
-            PayerView(project: project)
-                .frame(width: 170, height: 60)
+            ItemTableView(project: project)
                 .padding()
                 .minimumScaleFactor(0.5)
-                .background(Color(.secondarySystemBackground).opacity(0.75),
-                                        in: RoundedRectangle(cornerRadius: 10.0, style: .continuous))
-                //.border(.black)
             
             Spacer()
             
-            VStack (alignment: .trailing) {
-                HStack{
-                    Text("Job Date: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text(project.jobDate.formatted(date: .long, time: .omitted))
-                        .fontWeight(.thin)
-                }
-                HStack{
-                    Text("Project: ")
-                        .fontWeight(.medium)
-                        .foregroundStyle(.secondary)
-                    Text(project.projectName)
-                        .fontWeight(.thin)
-                }
-            }
-            .font(.caption)
-            .fontWeight(.medium)
-            .minimumScaleFactor(0.5)
-            .lineLimit(1)
-           
         }
-        .padding()
-        Spacer()
-        
-        ItemTableView()
-            .minimumScaleFactor(0.5)
-        
     }
 }
 
 #Preview {
     InvoiceTemplateView( project: Project(projectName: "Dummy", artist: "Dummy", jobDate: Date()))
 }
+
