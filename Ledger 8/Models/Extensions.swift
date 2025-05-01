@@ -27,9 +27,9 @@ extension Project {
         return projectTotal
     }
     
-    func renderInvoice(project: Project, invoiceNumbers: [Int]) -> Invoice {
+    func renderInvoice(project: Project, invoiceNumber: Int) -> Invoice {
         let invoiceDate = Date.now
-        let nextInvoiceNumber = (invoiceNumbers.max() ?? 0) + 1
+        let nextInvoiceNumber = invoiceNumber + 1
         let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.name ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
         
            // 1: Render Hello World with some modifiers
@@ -64,10 +64,8 @@ extension Project {
            }
         print("Invoice Name: \(invoiceName)")
         
-        let newInvoice = Invoice(id: UUID(), number: nextInvoiceNumber, invoiceDate: invoiceDate, name: invoiceName, urlString: url.absoluteString)
-        
-        
-        
+        let newInvoice = Invoice(id: UUID(), number: nextInvoiceNumber, invoiceDate: invoiceDate, name: invoiceName)
+        newInvoice.url = url
         
         return newInvoice
        }

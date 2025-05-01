@@ -27,8 +27,7 @@ struct ProjectDetailView: View {
     @State private var status = Status.open
     @State private var sheetIsPresented = false
     @State private var clientSheetIsPresented = false
-    @State private var selectedClient: Client? = nil
-    
+    @State private var selectedClient: Client?
     
     
     var body: some View {
@@ -43,7 +42,7 @@ struct ProjectDetailView: View {
                                 print("Shown Client: \(selectedClient?.name ?? "NIL")")
                                 clientSheetIsPresented.toggle()
                             }
-
+                        
                     } else {
                         Button {
                             clientSheetIsPresented.toggle()
@@ -59,13 +58,13 @@ struct ProjectDetailView: View {
                 }
                 
                 Section("Project Info") {
-                                        
+                    
                     LabeledContent {
                         TextField("", text: $projectName)
                             .autocorrectionDisabled()
                     }   label: {
                         Text("Project").foregroundStyle(.secondary)
-                            
+                        
                     }
                     
                     LabeledContent {
@@ -73,7 +72,7 @@ struct ProjectDetailView: View {
                             .autocorrectionDisabled()
                     }   label: {
                         Text("Artist").foregroundStyle(.secondary)
-                            
+                        
                     }
                     
                     LabeledContent {
@@ -119,19 +118,26 @@ struct ProjectDetailView: View {
                     }
                 }
                 
-                AddInvoiceView(project: project)
-                
+                if (delivered || paid)  {
+                    Section("Invoice"){
+                        if project.invoice == nil {
+                            AddInvoiceView(project: project)
+                        } else {
+                            InvoiceLinkView(project: project)
+                        }
+                    }
+                }
                 
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)
                 }
-                
                 
                 Section {
                     Toggle(isOn: $delivered) {
                         if !delivered {
                             Text("Delivered")
                         } else {
+                            //statusChange = true
                             HStack{
                                 Text("Delivered")
                                 DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
@@ -145,7 +151,9 @@ struct ProjectDetailView: View {
                     Toggle(isOn: $paid) {
                         if !paid {
                             Text("Paid")
+                            
                         } else {
+                            //statusChange = true
                             HStack{
                                 Text("Paid")
                                 DatePicker("", selection: $dateClosed, displayedComponents: [.date])
@@ -181,8 +189,9 @@ struct ProjectDetailView: View {
                 }
             }
             .onAppear {
-                print("ON APPEAR: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 selectedClient = project.client
+                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 projectName = project.projectName
                 artist = project.artist
                 jobDate = project.jobDate
@@ -218,13 +227,19 @@ struct ProjectDetailView: View {
             .sheet(isPresented: $sheetIsPresented) {
                 ItemDetailView(project: project)
             }
+            .onChange(of: selectedClient) {
+                print("Selected Client on Change: \(selectedClient?.name ?? "NIL")")
+            }
         }
     }
     
     func saveProject() {
         print("Save before: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
+        
         project.client = selectedClient
+        
         print("Save after: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
+        
         project.projectName = projectName
         project.artist = artist
         project.jobDate = jobDate
@@ -237,11 +252,12 @@ struct ProjectDetailView: View {
         project.status = status
         
         modelContext.insert(project)
+        
         guard let _ = try? modelContext.save() else{
             print("😡 ERROR: Cannot save")
             return
         }
-
+        
         projectName = ""
         artist = ""
         notes = ""

@@ -40,7 +40,7 @@ class Project: Identifiable {
         status: Status = Status.open,
         mediaType: MediaType = MediaType.recording,
         notes: String = "",
-        invoiced: Bool = false,
+        delivered: Bool = false,
         paid: Bool = false,
         dateOpened: Date = Date.now,
         dateDelivered: Date = Date.distantPast,
@@ -54,7 +54,7 @@ class Project: Identifiable {
         self.status = status
         self.mediaType = mediaType
         self.notes = notes
-        self.delivered = invoiced
+        self.delivered = delivered
         self.paid = paid
         self.dateOpened = dateOpened
         self.dateDelivered = dateDelivered

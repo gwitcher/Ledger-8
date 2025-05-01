@@ -14,15 +14,14 @@ class Invoice: Identifiable {
     var number: Int
     var invoiceDate: Date
     var name: String
-    var urlString: String?
+    var url: URL?
     var project: Project?
     
     init(
         id: UUID = UUID(),
         number: Int = 0,
         invoiceDate: Date = Date.now,
-        name: String = "",
-        urlString: String?
+        name: String = ""
     ) {
         self.id = id
         self.number = number
