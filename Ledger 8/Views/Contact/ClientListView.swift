@@ -14,8 +14,7 @@ struct ClientListView: View {
     @Environment(\.dismiss) var dismiss
     
     @Query(sort: \Client.name) var allClients: [Client]
-    
-    @State private var selectedContact =  Client()
+
     @State private var searchText = ""
     @State private var clientSheetIsPresented = false
     
@@ -79,7 +78,7 @@ struct ClientListView: View {
 
         }
         .sheet(isPresented: $clientSheetIsPresented) {
-            ClientDetailView(client: Client())
+            NewClientView()
         }
     }
 }

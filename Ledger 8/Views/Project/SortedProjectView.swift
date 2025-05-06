@@ -57,14 +57,11 @@ struct SortedProjectView: View {
                     }
                     .tint(.orange)
                 }
-                
-                
             }
             
         }
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        //.shadow(color: Color.primary.opacity(0.2), radius: 10, x: 0, y: 5)
     }
 }
 

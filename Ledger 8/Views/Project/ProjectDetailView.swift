@@ -26,8 +26,10 @@ struct ProjectDetailView: View {
     @State private var dateClosed = Date()
     @State private var status = Status.open
     @State private var sheetIsPresented = false
-    @State private var clientSheetIsPresented = false
+    @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
+    @State private var statusChange = false
+    //@State private var invoiceSheetIsPresented = false
     
     
     var body: some View {
@@ -40,12 +42,12 @@ struct ProjectDetailView: View {
                             .contentShape(Rectangle())
                             .onTapGesture {
                                 print("Shown Client: \(selectedClient?.name ?? "NIL")")
-                                clientSheetIsPresented.toggle()
+                                clientSelectSheetIsPresented.toggle()
                             }
                         
                     } else {
                         Button {
-                            clientSheetIsPresented.toggle()
+                            clientSelectSheetIsPresented.toggle()
                         } label: {
                             HStack {
                                 Image(systemName: "plus.circle.fill")
@@ -118,18 +120,23 @@ struct ProjectDetailView: View {
                     }
                 }
                 
-                if (delivered || paid)  {
+                //TODO: invoice stuff
+            
+                if (statusChange) {
                     Section("Invoice"){
-                        if project.invoice == nil {
-                            AddInvoiceView(project: project)
-                        } else {
+                        if (project.invoice) != nil {
                             InvoiceLinkView(project: project)
-                        }
+                        } else {
+                            AddInvoiceView(project: project)
+                            }
                     }
                 }
+
+                
+                
                 
                 Section("Notes") {
-                    TextField("", text: $notes, axis: .vertical)
+                    TextField("\(status)", text: $notes, axis: .vertical)
                 }
                 
                 Section {
@@ -137,7 +144,6 @@ struct ProjectDetailView: View {
                         if !delivered {
                             Text("Delivered")
                         } else {
-                            //statusChange = true
                             HStack{
                                 Text("Delivered")
                                 DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
@@ -151,9 +157,7 @@ struct ProjectDetailView: View {
                     Toggle(isOn: $paid) {
                         if !paid {
                             Text("Paid")
-                            
                         } else {
-                            //statusChange = true
                             HStack{
                                 Text("Paid")
                                 DatePicker("", selection: $dateClosed, displayedComponents: [.date])
@@ -174,6 +178,7 @@ struct ProjectDetailView: View {
                     } else {
                         status = .open
                     }
+                    saveProject()
                 }
                 .onChange(of: paid) {
                     dateClosed = Date.now
@@ -186,12 +191,20 @@ struct ProjectDetailView: View {
                     } else {
                         status = .open
                     }
+                    saveProject()
+                }
+                .onChange(of: status) {
+                    if status == .closed || status == .delivered  {
+                        statusChange = true
+                    } else {
+                        statusChange = false
+                    }
                 }
             }
             .onAppear {
-                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+//                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 selectedClient = project.client
-                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+//                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 projectName = project.projectName
                 artist = project.artist
                 jobDate = project.jobDate
@@ -221,7 +234,7 @@ struct ProjectDetailView: View {
             .navigationTitle("Project Details")
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarBackButtonHidden()
-            .sheet(isPresented: $clientSheetIsPresented) {
+            .sheet(isPresented: $clientSelectSheetIsPresented) {
                 ClientSelectView(selectedClient: $selectedClient)
             }
             .sheet(isPresented: $sheetIsPresented) {

@@ -32,43 +32,52 @@ extension Project {
         let nextInvoiceNumber = invoiceNumber + 1
         let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.name ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
         
-           // 1: Render Hello World with some modifiers
-           let renderer = ImageRenderer(content:
-                                            InvoiceTemplateView(project: project)
-                                       
-           )
-
-           // 2: Save it to our documents directory
+        // 1: Render Hello World with some modifiers
+        let renderer = ImageRenderer(content:
+                                        InvoiceTemplateView(project: project)
+                                     
+        )
+        
+        // 2: Save it to our documents directory
         let url = URL.documentsDirectory.appending(path: invoiceName)
         
         
-
-           // 3: Start the rendering process
-           renderer.render { size, context in
-               // 4: Tell SwiftUI our PDF should be the same size as the views we're rendering
-               var box = CGRect(x: 0, y: 0, width: 612, height: 792) //Letter size w: 612, h: 792
-
-               // 5: Create the CGContext for our PDF pages
-               guard let pdf = CGContext(url as CFURL, mediaBox: &box, nil) else {
-                   return
-               }
-
-               // 6: Start a new PDF page
-               pdf.beginPDFPage(nil)
-
-               // 7: Render the SwiftUI view data onto the page
-               context(pdf)
-
-               // 8: End the page and close the file
-               pdf.endPDFPage()
-               pdf.closePDF()
-           }
+        
+        // 3: Start the rendering process
+        renderer.render { size, context in
+            // 4: Tell SwiftUI our PDF should be the same size as the views we're rendering
+            var box = CGRect(x: 0, y: 0, width: size.width, height: size.height) //Letter size w: 612, h: 792
+            
+            // 5: Create the CGContext for our PDF pages
+            guard let pdf = CGContext(url as CFURL, mediaBox: &box, nil) else {
+                return
+            }
+            
+            // 6: Start a new PDF page
+            pdf.beginPDFPage(nil)
+            
+            // 7: Render the SwiftUI view data onto the page
+            context(pdf)
+            
+            // 8: End the page and close the file
+            pdf.endPDFPage()
+            pdf.closePDF()
+        }
         print("Invoice Name: \(invoiceName)")
         
-        let newInvoice = Invoice(id: UUID(), number: nextInvoiceNumber, invoiceDate: invoiceDate, name: invoiceName)
+        let newInvoice = Invoice(number: nextInvoiceNumber,name: invoiceName, url: url)
         newInvoice.url = url
         
         return newInvoice
-       }
+    }
     
+    func nextInvoiceNumber(projects: [Project], defaultInvoiceNumber: Int) -> Int{
+        var invoiceNumbers: [Int] = []
+        for project in projects {
+            invoiceNumbers.append(project.invoice?.number ?? 0)
+        }
+        return invoiceNumbers.max() ?? defaultInvoiceNumber
+        
+        
+    }
 }

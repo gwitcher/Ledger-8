@@ -10,29 +10,16 @@ import SwiftData
 
 @Model
 class Invoice: Identifiable {
-    var id: UUID
     var number: Int
-    var invoiceDate: Date
     var name: String
     var url: URL?
-    var project: Project?
     
-    init(
-        id: UUID = UUID(),
-        number: Int = 1000,
-        invoiceDate: Date = Date.now,
-        name: String = ""
-    ) {
-        self.id = id
+    init(number: Int, name: String, url: URL? = nil) {
         self.number = number
-        self.invoiceDate = invoiceDate
         self.name = name
-        
+        self.url = url
     }
-
 }
-
-
 
 struct Company {
     var name = "MFGW Family Group, Inc."

@@ -11,22 +11,20 @@ import SwiftData
 struct AddInvoiceView: View {
     @Environment(\.modelContext) var modelContext
     
+    @Query private var projects: [Project]
     var project: Project
     
-    @Query var invoices: [Invoice]
+    let defaultInvoiceNumber = 1000
     
-    //let invoiceNumbers = [1002, 1003, 1004, 1007, 1009, 1012]
-    
-    @State private var newInvoice: Invoice?
     
     var body: some View {
+        let nextInvoiceNumber = project.nextInvoiceNumber(projects: projects, defaultInvoiceNumber: defaultInvoiceNumber)
         
             Button {
                 
-                let newInvoice = project.renderInvoice(project: project, invoiceNumber: nextInvoiceNumber(invoices: invoices))
+                let newInvoice = project.renderInvoice(project: project, invoiceNumber: nextInvoiceNumber)
                 print("\(newInvoice.url?.absoluteString ?? "No URL")")
-                    saveInvoice(invoice: newInvoice)
-                
+                saveInvoice(newInvoice: newInvoice)
                 
             } label: {
                 HStack {
@@ -37,24 +35,14 @@ struct AddInvoiceView: View {
                 }
             }
     }
-    
-    
-    func saveInvoice(invoice: Invoice) {
-        project.invoice = invoice
+    func saveInvoice(newInvoice: Invoice) {
+        project.invoice = newInvoice
         
-        modelContext.insert(invoice)
         guard let _ = try? modelContext.save() else{
             print("😡 ERROR: Cannot save")
             return
         }
-    }
-    
-    func nextInvoiceNumber(invoices: [Invoice]) -> Int{
-        var invoiceNumbers: [Int] = []
-        for invoice in invoices {
-            invoiceNumbers.append(invoice.number)
-        }
-        return invoiceNumbers.max() ?? 0
+        
     }
 }
 

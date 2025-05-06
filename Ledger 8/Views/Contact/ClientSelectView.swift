@@ -38,7 +38,7 @@ struct ClientSelectView: View {
                     List {
                         ForEach(filteredClient) {client in
                             Text(client.name)
-                                .border(.red)
+                                //.border(.red)
                                 .onTapGesture {
                                     selectedClient = client
                                     print("Client Select View Selected Client on tap: \(selectedClient?.name ?? "NIL")")
@@ -65,9 +65,8 @@ struct ClientSelectView: View {
                 }
             }
         }
-        
         .sheet(isPresented: $clientSheetIsPresented) {
-            ClientDetailView(client: Client())
+            NewClientView()
         }
     }
     

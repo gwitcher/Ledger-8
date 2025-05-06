@@ -13,7 +13,6 @@ import Contacts
 
 @Model
 class Project: Identifiable {
-    //var client: String
     var projectName: String
     var artist:String
     var jobDate: Date
@@ -26,10 +25,9 @@ class Project: Identifiable {
     var dateDelivered: Date
     var dateClosed: Date
     
+    @Relationship(deleteRule: .cascade)var invoice: Invoice?
     @Relationship(deleteRule: .cascade) var items: [Item]?
-    
-    var client: Client?
-    @Relationship(deleteRule: .cascade) var invoice: Invoice?
+    @Relationship var client: Client?
     
     
     init(
