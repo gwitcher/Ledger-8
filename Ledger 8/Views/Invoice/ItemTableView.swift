@@ -13,45 +13,46 @@ struct ItemTableView: View {
     
     var project: Project
     
-//    var items: [Item] = [
-//        Item(name: "Item 1", fee: 200.00, itemType: .arrangement),
-//        Item(name: "Item 2", fee: 200.00, itemType: .concert),
-//        Item(name: "Item 3", fee: 200.00, itemType: .overdub),
-//        Item(name: "Item 4", fee: 200.00, itemType: .session),
-//    ]
+    //    var items: [Item] = [
+    //        Item(name: "Item 1", fee: 200.00, itemType: .arrangement),
+    //        Item(name: "Item 2", fee: 200.00, itemType: .concert),
+    //        Item(name: "Item 3", fee: 200.00, itemType: .overdub),
+    //        Item(name: "Item 4", fee: 200.00, itemType: .session),
+    //    ]
     
     var body: some View {
-        HStack{
-            
-            VStack (alignment: .leading) {
-                HStack{
+        VStack {
+            HStack{
+                VStack (alignment: .leading) {
                     Text("Job Date: ")
                         .font(.caption)
                         .fontWeight(.medium)
                     
-                    Text(project.jobDate.formatted(date: .numeric, time: .omitted))
-                        .foregroundStyle(.opacity(0.8))
-                }
-                HStack{
                     Text("Project: ")
                         .font(.caption)
                         .fontWeight(.medium)
+                    
+                }
+                
+                VStack(alignment: .trailing) {
+                    
+                    Text(project.jobDate.formatted(date: .numeric, time: .omitted))
+                        .foregroundStyle(.opacity(0.8))
                     Text(project.projectName)
                         .foregroundStyle(.opacity(0.8))
+                    
                 }
+                Spacer()
             }
             .font(.caption)
             .fontWeight(.medium)
             .minimumScaleFactor(0.5)
             .lineLimit(1)
-            //.border(.blue)
-            Spacer()
+            .padding(.bottom, 8)
+           
             
-        }
-       // .padding(.horizontal)
-        // .border(.blue)
-        
-        
+            
+            
             Group {
                 Grid(verticalSpacing: 5){
                     GridRow {
@@ -81,16 +82,17 @@ struct ItemTableView: View {
                     GridRow {
                         Text("")
                         Text("")
-                        Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
+                        Text("Total:  \(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                             .font(.subheadline)
                             .bold()
                     }
                     .gridCellAnchor(UnitPoint(x: 1, y: 0.5))
                 }
             }
-            
+        }
         
-    
+        
+        
     }
 }
 

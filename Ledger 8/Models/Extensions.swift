@@ -32,6 +32,10 @@ extension Project {
         let nextInvoiceNumber = invoiceNumber + 1
         let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.name ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
         
+        let newInvoice = Invoice(number: nextInvoiceNumber, name: invoiceName)
+        
+        project.invoice = newInvoice
+        
         // 1: Render Hello World with some modifiers
         let renderer = ImageRenderer(content:
                                         InvoiceTemplateView(project: project)
@@ -65,7 +69,6 @@ extension Project {
         }
         print("Invoice Name: \(invoiceName)")
         
-        let newInvoice = Invoice(number: nextInvoiceNumber,name: invoiceName, url: url)
         newInvoice.url = url
         
         return newInvoice

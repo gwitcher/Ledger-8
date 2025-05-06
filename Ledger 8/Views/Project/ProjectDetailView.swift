@@ -131,10 +131,6 @@ struct ProjectDetailView: View {
                             }
                     }
                 }
-
-                
-                
-                
                 Section("Notes") {
                     TextField("\(status)", text: $notes, axis: .vertical)
                 }
@@ -194,10 +190,14 @@ struct ProjectDetailView: View {
                     saveProject()
                 }
                 .onChange(of: status) {
-                    if status == .closed || status == .delivered  {
-                        statusChange = true
-                    } else {
+                    
+                    switch status {
+                    case .open:
                         statusChange = false
+                    case .delivered:
+                        statusChange = true
+                    case .closed:
+                        statusChange = true
                     }
                 }
             }
@@ -227,6 +227,7 @@ struct ProjectDetailView: View {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         saveProject()
+                        clearTextFields()
                         dismiss()
                     }
                 }
@@ -271,6 +272,9 @@ struct ProjectDetailView: View {
             return
         }
         
+    }
+    
+    func clearTextFields() {
         projectName = ""
         artist = ""
         notes = ""

@@ -31,7 +31,6 @@ struct InvoiceLinkView: View {
                     .minimumScaleFactor(0.5)
             }
             .onTapGesture {
-                //TODO: Add tap action
                 invoiceSheetIsPresented.toggle()
                 print("Invoice url: \(String(describing: path))")
             }
@@ -57,11 +56,11 @@ struct InvoiceLinkView: View {
         
     }
     func deletePdf(invoice: Invoice) {
-        if let url = invoice.url {
+        if let fileUrl = invoice.url {
             do {
-                try FileManager.default.removeItem(at: url)
+                try FileManager.default.removeItem(at: fileUrl)
             } catch {
-                print("😡ERROR: Con not remove file at path: \(url.lastPathComponent)")
+                print("😡ERROR: Can not remove file at path: \(fileUrl.lastPathComponent), \(error.localizedDescription)")
             }
             modelContext.delete(invoice)
             

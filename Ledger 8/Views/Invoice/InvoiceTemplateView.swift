@@ -16,11 +16,10 @@ struct InvoiceTemplateView: View {
     
     var body: some View {
         
-        
         VStack {
             HStack  {
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .foregroundStyle(.icon)
+                    .foregroundStyle(.blue)
                     .opacity(0.2)
                     .overlay {
                         HStack (alignment: .top) {
@@ -43,13 +42,17 @@ struct InvoiceTemplateView: View {
                                     .opacity(0.6)
                                     .foregroundStyle(.red)
                                     .overlay {
-                                        Text("Total Due: $200.00")
-                                            .font(.caption)
-                                            .fontWeight(.bold)
-                                            .minimumScaleFactor(0.5)
-                                            .lineLimit(1)
-                                            .padding(8)
+                                        if let items = project.items {
+                                            Text("Due: \(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))")
+                                        } else {
+                                            Text("Due: $0.00")
+                                        }
                                     }
+                                    .font(.caption)
+                                    .fontWeight(.bold)
+                                    .minimumScaleFactor(0.5)
+                                    .lineLimit(1)
+                                    .padding(8)
                                 
                                 
                                 
@@ -65,22 +68,16 @@ struct InvoiceTemplateView: View {
             
             
             HStack {
-                RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .foregroundStyle(.clear)
-                    .opacity(0.1)
-                    .overlay {
-                        HStack {
-                            PayerView(project: project)
-                                .padding()
-                            
-                        }
-                        
-                    }
-               
-               
+                PayerView(project: project)
+                .padding()
+                
+                    
             }
-            .frame(width: 200, height: 120)
-            .border(.black)
+            .frame(width: .greatestFiniteMagnitude, height: 140)
+            .containerRelativeFrame(.horizontal, alignment: .leading)
+            .background(.quinary)
+            
+            
            
             
             

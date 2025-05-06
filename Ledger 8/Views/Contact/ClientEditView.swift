@@ -62,7 +62,7 @@ struct ClientEditView: View {
                         Text("Address").foregroundStyle(.secondary)
                     }
                     LabeledContent {
-                        TextField("", text: $address)
+                        TextField("", text: $address2)
                             .autocorrectionDisabled()
                             .textContentType(.streetAddressLine2)
                     }   label: {

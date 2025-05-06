@@ -23,9 +23,7 @@ struct ShowInvoice: View {
             }
             .toolbar {
                 ToolbarItem {
-                    Button("", systemImage: "square.and.arrow.up") {
-                        //TODO: Share action
-                    }
+                    ShareLink(item: pdfURL)
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {

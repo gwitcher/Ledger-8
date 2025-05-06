@@ -18,30 +18,30 @@ struct PayerView: View {
             VStack(spacing: 6) {
                 LabeledContent("Client: ") {
                     Text("\(project.client?.name ?? "")")
-                    Spacer()
+                    //Spacer()
                 }
                 
                 LabeledContent("Artist: ") {
                     Text("\(project.artist)")
-                    Spacer()
+                    //Spacer()
                 }
                 
                 LabeledContent("Attn: ") {
                     Text("\(project.client?.name ?? "")")
-                    Spacer()
+                    //Spacer()
                 }
                 
                 LabeledContent("Email: ") {
                     Text("\(project.client?.email ?? "")")
-                    Spacer()
+                    //Spacer()
                 }
                 
                 LabeledContent {
                     VStack(alignment: .leading){
-                        Text("1111 Main St")
-                        Text("Burbank, Ca 91506")
+                        Text(project.client?.address ?? "")
+                        Text(project.client?.address2 ?? "")
                     }
-                    Spacer()
+                    //Spacer()
                     
                 } label: {
                     Text("Address: ")
@@ -49,8 +49,8 @@ struct PayerView: View {
                        
                 }
             }
-            .font(.headline)
-            .minimumScaleFactor(0.5)
+            .font(.caption)
+            //.minimumScaleFactor(0.5)
             Spacer()
         }
         //.padding()
