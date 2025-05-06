@@ -24,8 +24,8 @@ struct InvoiceTemplateView: View {
                     .overlay {
                         HStack (alignment: .top) {
                             mfgwLogoView()
-                                .frame(width: 170, height: 60)
-                                .padding()
+                                .frame(width: 170, height: 100)
+                                .padding(.top)
                                 .minimumScaleFactor(0.5)
                             
                             
@@ -52,7 +52,7 @@ struct InvoiceTemplateView: View {
                                     .fontWeight(.bold)
                                     .minimumScaleFactor(0.5)
                                     .lineLimit(1)
-                                    .padding(8)
+                                    .padding()
                                 
                                 
                                 
@@ -63,22 +63,19 @@ struct InvoiceTemplateView: View {
                         .padding(.horizontal)
                     }
             }
-            .frame(width: 400, height: 100)
+            .frame(width: 400, height: 150)
             
             
             
             HStack {
                 PayerView(project: project)
-                .padding()
+                    .padding()
                 
                     
             }
-            .frame(width: .greatestFiniteMagnitude, height: 140)
+            .frame(width: 200, height: 150)
             .containerRelativeFrame(.horizontal, alignment: .leading)
             .background(.quinary)
-            
-            
-           
             
             
             ItemTableView(project: project)

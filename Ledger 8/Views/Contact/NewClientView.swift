@@ -76,7 +76,7 @@ struct NewClientView: View {
                             
                     }
                     LabeledContent {
-                        TextField("", text: $address)
+                        TextField("", text: $address2)
                             .autocorrectionDisabled()
                             .textContentType(.streetAddressLine2)
                         

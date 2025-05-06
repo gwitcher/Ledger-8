@@ -13,6 +13,7 @@ struct PayerView: View {
     var project: Project
     
     var body: some View {
+        let cityStateZip = "\(project.client?.city ?? ""), \(project.client?.state ?? "") \(project.client?.zip ?? "")"
         
         HStack {
             VStack(spacing: 6) {
@@ -40,18 +41,20 @@ struct PayerView: View {
                     VStack(alignment: .leading){
                         Text(project.client?.address ?? "")
                         Text(project.client?.address2 ?? "")
+                        Text(cityStateZip)
                     }
                     //Spacer()
                     
                 } label: {
                     Text("Address: ")
-                    Text(" ")
+                    Text("")
+                    Text("")
+                    Text("")
                        
                 }
             }
             .font(.caption)
-            //.minimumScaleFactor(0.5)
-            Spacer()
+            //Spacer()
         }
         //.padding()
         

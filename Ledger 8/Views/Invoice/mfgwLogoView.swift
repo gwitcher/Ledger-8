@@ -32,9 +32,6 @@ struct mfgwLogoView: View {
             .font(.caption)
             .minimumScaleFactor(0.5)
             .foregroundStyle(.opacity(0.8))
-            
-            
-            
         }
     }
 }
