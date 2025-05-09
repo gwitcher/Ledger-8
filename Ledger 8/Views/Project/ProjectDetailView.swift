@@ -29,7 +29,7 @@ struct ProjectDetailView: View {
     @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
     @State private var statusChange = false
-    //@State private var invoiceSheetIsPresented = false
+    @FocusState private var focusField: ProjectField?
     
     
     var body: some View {
@@ -64,6 +64,11 @@ struct ProjectDetailView: View {
                     LabeledContent {
                         TextField("", text: $projectName)
                             .autocorrectionDisabled()
+                            .submitLabel(.next)
+                            .focused($focusField, equals: .project)
+                            .onSubmit {
+                                focusField = .artist
+                            }
                     }   label: {
                         Text("Project").foregroundStyle(.secondary)
                         
@@ -72,6 +77,10 @@ struct ProjectDetailView: View {
                     LabeledContent {
                         TextField("", text: $artist)
                             .autocorrectionDisabled()
+                            .focused($focusField, equals: .artist)
+                            .onSubmit {
+                                focusField = nil
+                            }
                     }   label: {
                         Text("Artist").foregroundStyle(.secondary)
                         
@@ -132,7 +141,7 @@ struct ProjectDetailView: View {
                     }
                 }
                 Section("Notes") {
-                    TextField("\(status)", text: $notes, axis: .vertical)
+                    TextField("", text: $notes, axis: .vertical)
                 }
                 
                 Section {

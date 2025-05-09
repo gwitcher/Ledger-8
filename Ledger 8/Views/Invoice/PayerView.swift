@@ -13,9 +13,8 @@ struct PayerView: View {
     var project: Project
     
     var body: some View {
-        let cityStateZip = "\(project.client?.city ?? ""), \(project.client?.state ?? "") \(project.client?.zip ?? "")"
+        let cityState = "\(project.client?.city ?? ""), \(project.client?.state ?? "")"
         
-        HStack {
             VStack(spacing: 6) {
                 LabeledContent("Client: ") {
                     Text("\(project.client?.name ?? "")")
@@ -38,10 +37,11 @@ struct PayerView: View {
                 }
                 
                 LabeledContent {
-                    VStack(alignment: .leading){
+                    VStack(alignment: .trailing){
                         Text(project.client?.address ?? "")
                         Text(project.client?.address2 ?? "")
-                        Text(cityStateZip)
+                        Text(cityState)
+                        Text(project.client?.zip ?? "")
                     }
                     //Spacer()
                     
@@ -55,9 +55,8 @@ struct PayerView: View {
             }
             .font(.caption)
             //Spacer()
-        }
-        //.padding()
         
+       
     }
 }
 

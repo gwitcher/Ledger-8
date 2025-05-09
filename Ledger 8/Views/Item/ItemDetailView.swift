@@ -83,6 +83,14 @@ struct ItemDetailView: View {
                         dismiss()
                     }
                 }
+                
+                
+                ToolbarItem(placement: .keyboard){
+                    Button("Submit") {
+                        isFocused = false
+                    }
+                    
+                }
             }
         }
         .navigationBarBackButtonHidden()

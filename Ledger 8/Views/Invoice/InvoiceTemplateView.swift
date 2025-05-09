@@ -33,7 +33,7 @@ struct InvoiceTemplateView: View {
                             
                             VStack (alignment: .center) {
                                 Text("Invoice: \(project.invoice?.number ?? 0)")
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .padding(.horizontal)
                                 //.border(.blue)
                                 
@@ -48,9 +48,9 @@ struct InvoiceTemplateView: View {
                                             Text("Due: $0.00")
                                         }
                                     }
-                                    .font(.caption)
+                                    .font(.subheadline)
                                     .fontWeight(.bold)
-                                    .minimumScaleFactor(0.5)
+                                    .minimumScaleFactor(0.2)
                                     .lineLimit(1)
                                     .padding()
                                 
@@ -65,25 +65,31 @@ struct InvoiceTemplateView: View {
             }
             .frame(width: 400, height: 150)
             
-            
-            
             HStack {
                 PayerView(project: project)
-                    .padding()
+                    .frame(width: 250, height: 150)
+                    //.border(.black)
                 
-                    
+                Spacer()
             }
-            .frame(width: 200, height: 150)
-            .containerRelativeFrame(.horizontal, alignment: .leading)
-            .background(.quinary)
-            
+            .padding()
+            //.background(.quinary)
             
             ItemTableView(project: project)
                 .padding()
                 .minimumScaleFactor(0.5)
             
-            Spacer()
             
+            
+            HStack {
+                BankingInfoView()
+                    .frame(width: 300, height: 150)
+                    //.border(.black)
+                
+                Spacer()
+                
+            }
+            .padding()
         }
     }
 }

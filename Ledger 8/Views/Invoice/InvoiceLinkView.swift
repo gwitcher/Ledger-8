@@ -11,6 +11,7 @@ import PDFKit
 
 struct InvoiceLinkView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
     
     var project: Project
     
@@ -46,8 +47,26 @@ struct InvoiceLinkView: View {
                 print("\(path ?? "No URL")")
             }
             .sheet(isPresented: $invoiceSheetIsPresented) {
-                if let url = project.invoice?.url! {
-                    ShowInvoice(pdfURL: url, pdfTitle: project.invoice!.name)
+                if let pdfURL = project.invoice?.url! {
+                    //ShowInvoice(pdfURL: url, pdfTitle: project.invoice!.name)
+                    NavigationStack {
+                        VStack{
+                            WebkitPdfView(pdfURL: pdfURL, pdfTitle: project.invoice!.name)
+                        }
+                        .navigationTitle(project.invoice!.name)
+                        .navigationBarTitleDisplayMode(.inline)
+                        .toolbar {
+                            ToolbarItem(placement: .topBarLeading) {
+                                Button("Done") {
+                                    dismiss()
+                                }
+                            }
+                            
+                            ToolbarItem(placement: .topBarTrailing) {
+                                ShareLink(item: pdfURL)
+                            }
+                        }
+                    }
                 } else {
                     Text("No Invoice")
                 }

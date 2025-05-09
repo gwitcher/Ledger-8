@@ -29,8 +29,8 @@ struct mfgwLogoView: View {
                 Text(company.phone)
                 Text(company.email)
             }
-            .font(.caption)
-            .minimumScaleFactor(0.5)
+            .font(.subheadline)
+           // .minimumScaleFactor(0.5)
             .foregroundStyle(.opacity(0.8))
         }
     }

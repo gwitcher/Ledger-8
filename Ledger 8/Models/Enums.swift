@@ -65,4 +65,14 @@ enum ItemType: String, CaseIterable, Identifiable, Codable {
     
 }
 
+enum ProjectField {
+    case project, artist
+}
 
+enum ItemField {
+    case itemName, Fee
+}
+
+enum clientField {
+    case contact, email, phone, attn, address, address2, city, state, zip
+}

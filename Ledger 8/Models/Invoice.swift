@@ -21,11 +21,4 @@ class Invoice: Identifiable {
     }
 }
 
-struct Company {
-    var name = "MFGW Family Group, Inc."
-    let contact = "Gabe Witcher | Mary Faber"
-    let address = "1132 N Reese Pl"
-    let cityStateZip = "Burbank, CA 91506"
-    let phone = "818-554-7384"
-    let email = "gabewitcher@gmail.com"
-}
+

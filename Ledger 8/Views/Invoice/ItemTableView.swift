@@ -13,13 +13,6 @@ struct ItemTableView: View {
     
     var project: Project
     
-    //    var items: [Item] = [
-    //        Item(name: "Item 1", fee: 200.00, itemType: .arrangement),
-    //        Item(name: "Item 2", fee: 200.00, itemType: .concert),
-    //        Item(name: "Item 3", fee: 200.00, itemType: .overdub),
-    //        Item(name: "Item 4", fee: 200.00, itemType: .session),
-    //    ]
-    
     var body: some View {
         VStack {
             HStack{
@@ -46,9 +39,9 @@ struct ItemTableView: View {
             }
             .font(.caption)
             .fontWeight(.medium)
-            .minimumScaleFactor(0.5)
+           // .minimumScaleFactor(0.5)
             .lineLimit(1)
-            .padding(.bottom, 8)
+            .padding(.bottom, 20)
            
             
             
@@ -74,11 +67,11 @@ struct ItemTableView: View {
                             Text(item.fee.formatted(.currency(code: "USD")))
                                 .gridCellAnchor(UnitPoint(x: 1, y: 0.5))
                         }
-                        .font(.caption2)
+                        .font(.headline)
+                        .foregroundStyle(.secondary)
                         .gridCellUnsizedAxes(.vertical)
                         Divider()
                     }
-                    //Divider()
                     GridRow {
                         Text("")
                         Text("")

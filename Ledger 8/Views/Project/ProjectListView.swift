@@ -15,6 +15,7 @@ struct ProjectListView: View {
     
     @State private var sheetIsPresented = false
     @State private var clientListIsPresented = false
+    @State private var userInfoSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
     
     var body: some View {
@@ -58,8 +59,11 @@ struct ProjectListView: View {
                     }
                 }
                 
-                
-            
+                ToolbarItem(placement: .bottomBar) {
+                    Button("", systemImage: "ellipsis.circle") {
+                        //TODO: Setting Button Action
+                    }
+                }
             }
             .sheet(isPresented: $sheetIsPresented) {
                 ProjectDetailView(project: Project())
