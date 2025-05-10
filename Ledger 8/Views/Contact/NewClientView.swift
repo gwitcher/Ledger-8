@@ -23,7 +23,9 @@ struct NewClientView: View {
     @State private var city = ""
     @State private var state = ""
     @State private var zip = ""
+    @State private var notes = ""
     
+    @FocusState private var focusField: clientField?
     
     var body: some View {
         NavigationStack {
@@ -32,6 +34,12 @@ struct NewClientView: View {
                     LabeledContent {
                         TextField("", text: $name)
                             .autocorrectionDisabled()
+                            .textContentType(.name)
+                            .focused($focusField, equals: .contact)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .email
+                            }
                         
                     }   label: {
                         Text("Contact").foregroundStyle(.secondary)
@@ -42,6 +50,12 @@ struct NewClientView: View {
                         TextField("", text: $email)
                             .autocorrectionDisabled()
                             .textContentType(.emailAddress)
+                            .keyboardType(.emailAddress)
+                            .focused($focusField, equals: .email)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .phone
+                            }
                         
                     }   label: {
                         Text("Email").foregroundStyle(.secondary)
@@ -52,6 +66,11 @@ struct NewClientView: View {
                         TextField("", text: $phone)
                             .autocorrectionDisabled()
                             .textContentType(.telephoneNumber)
+                            .focused($focusField, equals: .phone)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .attn
+                            }
                     }   label: {
                         Text("Phone").foregroundStyle(.secondary)
                             
@@ -61,6 +80,12 @@ struct NewClientView: View {
                     LabeledContent {
                         TextField("", text: $attention)
                             .autocorrectionDisabled()
+                            .textContentType(.name)
+                            .focused($focusField, equals: .attn)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .address
+                            }
                         
                     }   label: {
                         Text("Attn:").foregroundStyle(.secondary)
@@ -70,6 +95,11 @@ struct NewClientView: View {
                         TextField("", text: $address)
                             .autocorrectionDisabled()
                             .textContentType(.streetAddressLine1)
+                            .focused($focusField, equals: .address)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .address2
+                            }
                         
                     }   label: {
                         Text("Address").foregroundStyle(.secondary)
@@ -79,6 +109,11 @@ struct NewClientView: View {
                         TextField("", text: $address2)
                             .autocorrectionDisabled()
                             .textContentType(.streetAddressLine2)
+                            .focused($focusField, equals: .address2)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .city
+                            }
                         
                     }   label: {
                         Text("Address 2").foregroundStyle(.secondary)
@@ -88,6 +123,11 @@ struct NewClientView: View {
                         TextField("", text: $city)
                             .autocorrectionDisabled()
                             .textContentType(.addressCity)
+                            .focused($focusField, equals: .city)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .state
+                            }
                         
                     }   label: {
                         Text("City").foregroundStyle(.secondary)
@@ -97,6 +137,11 @@ struct NewClientView: View {
                         TextField("", text: $state)
                             .autocorrectionDisabled()
                             .textContentType(.addressState)
+                            .focused($focusField, equals: .state)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .zip
+                            }
                     }   label: {
                         Text("State").foregroundStyle(.secondary)
                             
@@ -105,11 +150,19 @@ struct NewClientView: View {
                         TextField("", text: $zip)
                             .autocorrectionDisabled()
                             .textContentType(.postalCode)
+                            .focused($focusField, equals: .zip)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .notes
+                            }
                         
                     }   label: {
                         Text("Zip").foregroundStyle(.secondary)
                             
                     }
+                }
+                Section("Notes") {
+                    TextField("Notes", text: $notes, axis: .vertical)
                 }
                 
             }
@@ -122,7 +175,7 @@ struct NewClientView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                        saveClient(name: name, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip)
+                        saveClient(name: name, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes)
                         
                         name = ""
                         email = ""
@@ -133,6 +186,7 @@ struct NewClientView: View {
                         city = ""
                         state = ""
                         zip = ""
+                        notes = ""
                         
                         dismiss()
                         
@@ -143,7 +197,7 @@ struct NewClientView: View {
         
     }
     
-    func saveClient(name: String, email: String, phone: String, attention: String, address: String, address2: String, city: String, state: String, zip: String ) {
+    func saveClient(name: String, email: String, phone: String, attention: String, address: String, address2: String, city: String, state: String, zip: String, notes: String ) {
         client.name = name
         client.email = email
         client.phone = phone
@@ -153,6 +207,7 @@ struct NewClientView: View {
         client.city = city
         client.state = state
         client.zip = zip
+        client.notes = notes
         
         
         modelContext.insert(client)

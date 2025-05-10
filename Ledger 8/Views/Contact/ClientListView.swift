@@ -14,6 +14,7 @@ struct ClientListView: View {
     @Environment(\.dismiss) var dismiss
     
     @Query(sort: \Client.name) var allClients: [Client]
+    
 
     @State private var searchText = ""
     @State private var clientSheetIsPresented = false
@@ -36,7 +37,7 @@ struct ClientListView: View {
                     List {
                         ForEach(filteredClient) {contact in
                             NavigationLink(destination: {
-                                ClientEditView(contact: contact)
+                                ClientEditView(client: contact)
                             }, label: {
                                 Text(contact.name)
                             })

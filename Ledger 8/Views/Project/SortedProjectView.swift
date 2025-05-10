@@ -12,11 +12,11 @@ struct SortedProjectView: View {
     @Environment(\.modelContext) var modelContext
     @Query var projects: [Project]
     
-    let sortSelection: Status
+    let filterSelection: Status
     
     init(sortSelection: Status) {
-        self.sortSelection = sortSelection
-        switch self.sortSelection {
+        self.filterSelection = sortSelection
+        switch self.filterSelection {
         case .open:
             _projects = Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false})
         case .delivered:
@@ -62,6 +62,7 @@ struct SortedProjectView: View {
         }
         .background(Color.white)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        
     }
 }
 

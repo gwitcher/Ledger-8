@@ -20,6 +20,7 @@ class Client: Identifiable {
     var city: String
     var state: String
     var zip: String
+    var notes: String
     
     
     @Relationship(inverse: \Project.client) var project: [Project]?
@@ -34,7 +35,8 @@ class Client: Identifiable {
         address2: String = "",
         city: String = "",
         state: String = "",
-        zip: String = ""
+        zip: String = "",
+        notes: String = ""
         
     ) {
         self.id = id
@@ -47,6 +49,7 @@ class Client: Identifiable {
         self.city = city
         self.state = state
         self.zip = zip
+        self.notes = notes
         
     }
 }

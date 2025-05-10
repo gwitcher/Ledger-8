@@ -40,6 +40,7 @@ struct ProjectListView: View {
                         .pickerStyle(.palette)
                         .animation(.easeIn, value: sortSelection)
                     }
+                    .animation(.easeInOut(duration: 0.25), value: sortSelection)
                 } else {
                     ContentUnavailableView("Enter your first project", systemImage: "music.note.list" )
                 }
@@ -59,7 +60,7 @@ struct ProjectListView: View {
                     }
                 }
                 
-                ToolbarItem(placement: .bottomBar) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button("", systemImage: "ellipsis.circle") {
                         //TODO: Setting Button Action
                     }

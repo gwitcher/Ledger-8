@@ -140,6 +140,7 @@ struct ProjectDetailView: View {
                             }
                     }
                 }
+                
                 Section("Notes") {
                     TextField("", text: $notes, axis: .vertical)
                 }

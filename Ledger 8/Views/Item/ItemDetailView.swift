@@ -21,6 +21,7 @@ struct ItemDetailView: View {
     
     
     @FocusState private var isFocused: Bool
+    @FocusState private var focusField: ItemField?
     
     private let currencyNumberFormatter = {
         let formatter = NumberFormatter()
@@ -44,6 +45,11 @@ struct ItemDetailView: View {
                     LabeledContent {
                         TextField("Item Name", text: $name)
                             .textContentType(.name)
+                            .focused($focusField, equals: .itemName)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .fee
+                            }
                     }   label: {
                         Text("").foregroundStyle(.secondary)
                             
@@ -59,6 +65,7 @@ struct ItemDetailView: View {
                         TextField("$ Fee", value: $fee, formatter: isFocused ? decimalNumberFormatter : currencyNumberFormatter)
                             .keyboardType(.decimalPad)
                             .focused($isFocused)
+                            .focused($focusField, equals: .fee)
                         
                     } label: {
                         Text("")

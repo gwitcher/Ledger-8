@@ -70,9 +70,9 @@ enum ProjectField {
 }
 
 enum ItemField {
-    case itemName, Fee
+    case itemName, fee
 }
 
 enum clientField {
-    case contact, email, phone, attn, address, address2, city, state, zip
+    case contact, email, phone, attn, address, address2, city, state, zip, notes
 }

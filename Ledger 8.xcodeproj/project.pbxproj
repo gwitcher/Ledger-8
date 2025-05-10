@@ -16,7 +16,7 @@
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
-		66175B1D2DB0E3AB008F6D80 /* Ledger-8-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist; path = "Ledger-8-Info.plist"; sourceTree = SOURCE_ROOT; };
+		66175B1D2DB0E3AB008F6D80 /* Ledger-8-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Ledger-8-Info.plist"; sourceTree = SOURCE_ROOT; };
 		66BD1F1A2DB9F68200ACC1B6 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		66C6160F2DAF2B2E00161D7E /* Ledger 8.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ledger 8.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C616242DAF2BA100161D7E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
