@@ -15,9 +15,12 @@ struct ProjectDetailView: View {
     
     var project: Project
     
+    let dateAlertMessage = "The start date must be before the end date"
+    
     @State private var projectName = ""
     @State private var artist = ""
-    @State private var jobDate = Date()
+    @State private var startDate = Date()
+    @State private var endDate = Date()
     @State private var mediaType = MediaType.recording
     @State private var notes = ""
     @State private var delivered = false
@@ -29,7 +32,11 @@ struct ProjectDetailView: View {
     @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
     @State private var statusChange = false
+    @State private var showAlert = false
+    @State private var endDateSelected = false
+    
     @FocusState private var focusField: ProjectField?
+    
     
     
     var body: some View {
@@ -87,10 +94,15 @@ struct ProjectDetailView: View {
                     }
                     
                     LabeledContent {
-                        DatePicker("", selection: $jobDate)
-                        
+                        DatePicker("", selection: $startDate)
                     }   label: {
-                        Text("Job Date").foregroundStyle(.secondary)
+                        Text("Start").foregroundStyle(.secondary)
+                    }
+                    LabeledContent {
+                        DatePicker("", selection: $endDate)
+                    }
+                    label: {
+                        Text("End").foregroundStyle(.secondary)
                     }
                 }
                 .textFieldStyle(.plain)
@@ -130,14 +142,14 @@ struct ProjectDetailView: View {
                 }
                 
                 //TODO: invoice stuff
-            
+                
                 if (statusChange) {
                     Section("Invoice"){
                         if (project.invoice) != nil {
                             InvoiceLinkView(project: project)
                         } else {
                             AddInvoiceView(project: project)
-                            }
+                        }
                     }
                 }
                 
@@ -211,13 +223,21 @@ struct ProjectDetailView: View {
                     }
                 }
             }
+            .alert(isPresented: $showAlert) {
+                Alert(
+                    title: Text("Cannot Save Project"),
+                    message: Text(dateAlertMessage),
+                    dismissButton: .default(Text("OK"))
+                )
+            }
             .onAppear {
-//                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                //                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 selectedClient = project.client
-//                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                //                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
                 projectName = project.projectName
                 artist = project.artist
-                jobDate = project.jobDate
+                startDate = project.startDate
+                endDate = project.endDate
                 mediaType = project.mediaType
                 notes = project.notes
                 delivered = project.delivered
@@ -225,6 +245,7 @@ struct ProjectDetailView: View {
                 dateDelivered = project.dateDelivered
                 dateClosed = project.dateClosed
                 status = project.status
+                endDateSelected = project.endDateSelected
                 
             }
             .toolbar {
@@ -236,9 +257,14 @@ struct ProjectDetailView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                        saveProject()
-                        clearTextFields()
-                        dismiss()
+                        if endDate < startDate {
+                            showAlert.toggle()
+                        }else {
+                            saveProject()
+                            clearTextFields()
+                            dismiss()
+                        }
+                        
                     }
                 }
             }
@@ -251,8 +277,19 @@ struct ProjectDetailView: View {
             .sheet(isPresented: $sheetIsPresented) {
                 ItemDetailView(project: project)
             }
-            .onChange(of: selectedClient) {
-                print("Selected Client on Change: \(selectedClient?.name ?? "NIL")")
+            .onChange(of: startDate) {
+                if !endDateSelected {
+                    print("🟢 On Change initialized")
+                    print("End Date selected: \(endDateSelected)")
+                    endDate = startDate.adding(hours: 1)
+                }
+            }
+            .onChange(of: endDate) {
+                if endDate != startDate.adding(hours: 1) {
+                    endDateSelected = true
+                    print("End Date selected: \(endDateSelected)")
+                }
+                
             }
         }
     }
@@ -266,7 +303,8 @@ struct ProjectDetailView: View {
         
         project.projectName = projectName
         project.artist = artist
-        project.jobDate = jobDate
+        project.startDate = startDate
+        project.endDate = endDate
         project.mediaType = mediaType
         project.notes = notes
         project.delivered = delivered
@@ -274,6 +312,7 @@ struct ProjectDetailView: View {
         project.dateDelivered = dateDelivered
         project.dateClosed = dateClosed
         project.status = status
+        project.endDateSelected = endDateSelected
         
         modelContext.insert(project)
         
@@ -281,18 +320,17 @@ struct ProjectDetailView: View {
             print("😡 ERROR: Cannot save")
             return
         }
-        
     }
     
     func clearTextFields() {
         projectName = ""
         artist = ""
         notes = ""
-        jobDate = Date()
+        startDate = Date()
     }
 }
 
 #Preview {
-    ProjectDetailView(project: Project(projectName: "", jobDate: Date.now, items: [Item]()))
+    ProjectDetailView(project: Project(projectName: "", startDate: Date.now, items: [Item]()))
         .modelContainer(for: Project.self, inMemory: true)
 }

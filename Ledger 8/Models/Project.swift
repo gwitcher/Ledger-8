@@ -15,7 +15,8 @@ import Contacts
 class Project: Identifiable {
     var projectName: String
     var artist:String
-    var jobDate: Date
+    var startDate: Date
+    var endDate: Date
     var status: Status
     var mediaType: MediaType
     var notes: String
@@ -24,6 +25,7 @@ class Project: Identifiable {
     var dateOpened: Date
     var dateDelivered: Date
     var dateClosed: Date
+    var endDateSelected: Bool
     
     @Relationship(deleteRule: .cascade)var invoice: Invoice?
     @Relationship(deleteRule: .cascade) var items: [Item]?
@@ -33,7 +35,8 @@ class Project: Identifiable {
     init(
         projectName: String = "",
         artist: String = "",
-        jobDate: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!,
+        startDate: Date = Calendar.current.date(bySettingHour: 9, minute: 0, second: 0, of: Date())!,
+        endDate: Date = Calendar.current.date(bySettingHour: 10, minute: 0, second: 0, of: Date())!,
         status: Status = Status.open,
         mediaType: MediaType = MediaType.recording,
         notes: String = "",
@@ -42,11 +45,13 @@ class Project: Identifiable {
         dateOpened: Date = Date.now,
         dateDelivered: Date = Date.distantPast,
         dateClosed: Date = Date.distantFuture,
+        endDateSelected: Bool = false,
         items: [Item] = []
     ) {
         self.projectName = projectName
         self.artist = artist
-        self.jobDate = jobDate
+        self.startDate = startDate
+        self.endDate = endDate
         self.status = status
         self.mediaType = mediaType
         self.notes = notes
@@ -55,6 +60,7 @@ class Project: Identifiable {
         self.dateOpened = dateOpened
         self.dateDelivered = dateDelivered
         self.dateClosed = dateClosed
+        self.endDateSelected = endDateSelected
         self.items = [Item]()
     }
     

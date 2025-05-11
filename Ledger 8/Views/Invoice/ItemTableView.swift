@@ -29,7 +29,7 @@ struct ItemTableView: View {
                 
                 VStack(alignment: .trailing) {
                     
-                    Text(project.jobDate.formatted(date: .numeric, time: .omitted))
+                    Text(project.startDate.formatted(date: .numeric, time: .omitted))
                         .foregroundStyle(.opacity(0.8))
                     Text(project.projectName)
                         .foregroundStyle(.opacity(0.8))

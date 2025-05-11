@@ -34,7 +34,7 @@ struct ProjectView: View {
                     .opacity(0.7)
                     .lineLimit(1)
                 
-                Text(project.jobDate.formatted(date: .abbreviated, time: .omitted))
+                Text(project.startDate.formatted(date: .abbreviated, time: .omitted))
                     .font(.footnote)
                     .foregroundColor(.secondary)
                 
@@ -68,6 +68,6 @@ struct ProjectView: View {
 }
 
 #Preview {
-    ProjectView(project: Project(projectName: "Dummy", jobDate: Date(), items: []))
+    ProjectView(project: Project(projectName: "Dummy", startDate: Date(), items: []))
     
 }
