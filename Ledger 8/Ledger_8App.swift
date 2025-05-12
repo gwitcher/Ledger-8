@@ -15,9 +15,7 @@ struct Ledger_8App: App {
     
     var body: some Scene {
         WindowGroup {
-            //ProjectListView()
-            ContentView()
-           // MainView()
+           MainView()
            
         }
         .modelContainer(container)
