@@ -9,7 +9,7 @@ import SwiftUI
 
 struct BankingInfoView: View {
     
-    @State private var userData = UserData()
+    @AppStorage("userData") var userData = UserData()
     
     
     var body: some View {
@@ -74,5 +74,5 @@ struct BankingInfoView: View {
 }
 
 #Preview {
-    BankingInfoView()
+    BankingInfoView(userData: UserData())
 }

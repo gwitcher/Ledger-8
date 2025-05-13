@@ -11,6 +11,8 @@ import SwiftData
 struct InvoiceTemplateView: View {
     @Environment(\.modelContext) var modelContext
     
+    @AppStorage("userData") var userData = UserData()
+    
     var project: Project
     
     
@@ -23,7 +25,7 @@ struct InvoiceTemplateView: View {
                     .opacity(0.2)
                     .overlay {
                         HStack (alignment: .top) {
-                            mfgwLogoView()
+                            CompanyInfoView()
                                 .frame(width: 170, height: 100)
                                 .padding(.top)
                                 .minimumScaleFactor(0.5)
@@ -82,7 +84,7 @@ struct InvoiceTemplateView: View {
             
             
             HStack {
-                BankingInfoView()
+                BankingInfoView(userData: userData)
                     .frame(width: 300, height: 150)
                     //.border(.black)
                 

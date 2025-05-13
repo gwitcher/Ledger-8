@@ -32,17 +32,57 @@ struct BankingInfo: Codable {
     var venmo = ""
 }
 
-@Model
-class UserData: Identifiable {
-    var userName: String
-    var company: Company
-    var bankingInfo: BankingInfo
-    var addToCalendar: Bool
+
+struct UserData: Codable {
+    var userName = ""
+    var company = Company()
+    var bankingInfo = BankingInfo()
+    var addToCalendar = false
     
-    init(userName: String = "", company: Company = Company(), bankingInfo: BankingInfo = BankingInfo(), addToCalendar: Bool = false) {
-        self.userName = userName
-        self.company = company
-        self.bankingInfo = bankingInfo
-        self.addToCalendar = addToCalendar
+    init() {}
+    
+    enum CodingKeys: CodingKey {
+        case userName
+        case company
+        case bankingInfo
+        case addToCalendar
+    }
+    
+    init(from decoder: any Decoder) throws {
+        let container = try decoder.container(keyedBy: CodingKeys.self)
+        self.userName = try container.decode(String.self, forKey: .userName)
+        self.company = try container.decode(Company.self, forKey: .company)
+        self.bankingInfo = try container.decode(BankingInfo.self, forKey: .bankingInfo)
+        self.addToCalendar = try container.decode(Bool.self, forKey: .addToCalendar)
+    }
+    func encode(to encoder: any Encoder) throws {
+        var container = encoder.container(keyedBy: CodingKeys.self)
+        try container.encode(self.userName, forKey: .userName)
+        try container.encode(self.company, forKey: .company)
+        try container.encode(self.bankingInfo, forKey: .bankingInfo)
+        try container.encode(self.addToCalendar, forKey: .addToCalendar)
     }
 }
+
+
+extension UserData: RawRepresentable {
+    var rawValue: String {
+        guard let data = try? JSONEncoder().encode(self),
+              let userDataString = String(data: data, encoding: .utf8)
+        else {
+            return "{}"
+        }
+        return userDataString
+    }
+    
+     init?(rawValue: String) {
+        guard let data = rawValue.data(using: .utf8 ),
+              let userData = try? JSONDecoder().decode(UserData.self, from: data)
+        else {
+            return nil
+        }
+        self = userData
+                
+    }
+}
+

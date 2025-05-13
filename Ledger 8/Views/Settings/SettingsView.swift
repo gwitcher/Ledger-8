@@ -9,16 +9,19 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
-    @State private var userData = UserData()
+    
+    @AppStorage("userData") var userData = UserData()
+     
     
     var body: some View {
+       
         
         NavigationStack {
             List {
                 
                 Section("User"){
                     NavigationLink {
-                        UserNameView()
+                        UserNameView(userData: userData)
                     } label: {
                         HStack {
                             Image(systemName: "person")
@@ -30,7 +33,7 @@ struct SettingsView: View {
                 
                 Section("Invoice Info") {
                     NavigationLink {
-                        CompanyInfoView()
+                        CompanyInfoView(userData: userData)
                     } label: {
                         HStack {
                             Image(systemName: "building.2")
@@ -38,7 +41,7 @@ struct SettingsView: View {
                         }
                     }
                     NavigationLink {
-                        BankingInfoView()
+                        BankingInfoView(userData: userData)
                     } label: {
                         HStack {
                             Image(systemName: "building.columns")
@@ -47,8 +50,8 @@ struct SettingsView: View {
                     }
                 }
 
-                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
-                    .foregroundStyle(.black)
+//                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
+//                    .foregroundStyle(.black)
             }
             .navigationTitle("Settings")
             

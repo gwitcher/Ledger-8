@@ -10,7 +10,7 @@ import SwiftUI
 
 struct UserNameView: View {
     
-    @State private var userData = UserData()
+    @AppStorage("userData") var userData = UserData()
     
     var body: some View {
         NavigationStack{
@@ -25,5 +25,5 @@ struct UserNameView: View {
 }
 
 #Preview {
-    UserNameView()
+    UserNameView(userData: UserData())
 }

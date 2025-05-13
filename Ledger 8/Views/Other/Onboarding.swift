@@ -8,29 +8,42 @@
 import SwiftUI
 
 struct Onboarding: View {
+    @Environment(\.modelContext) var modelContext
     
     @AppStorage("onboard_complete") var onboardComplete: Bool = false
+    @AppStorage("userData") var userData = UserData()
     
     let appName = "Gig Tracker"
+    let transition: AnyTransition = .asymmetric(
+        insertion: .move(edge: .trailing),
+        removal: .move(edge: .leading)
+    )
     
-    @State private var user = UserData()
+    
     @State private var onboardingState: Int = 0
+    
+    
     
     var body: some View {
         ZStack {
-            //TODO: Content
+            //Content
             ZStack {
                 switch onboardingState {
                 case 0:
                     welcomeSection
+                        .transition(transition)
                 case 1:
                     companyName
+                        .transition(transition)
                 case 2:
                     companyContact
+                        .transition(transition)
                 case 3:
                     companyAddress
+                        .transition(transition)
                 case 4:
                     bankingInfo
+                        .transition(transition)
                     
                 default:
                     Text("Default")
@@ -61,29 +74,35 @@ struct Onboarding: View {
 extension Onboarding {
     private var bottomButtons: some View {
         HStack{
-            if onboardingState > 1 {
-                
-                Button("Back") {
-                    onboardingState -= 1
-                }
-                .font(.headline)
-                .foregroundStyle(.blue)
-                .frame(minHeight: 55)
-                .frame(maxWidth: .infinity)
-                .background(Color.white)
-                .cornerRadius(10)
-                
-            }
+//            if onboardingState > 1 {
+//                
+//                Button("Back") {
+//                    withAnimation(.spring()){
+//                        onboardingState -= 1
+//                    }
+//                    
+//                }
+//                .font(.headline)
+//                .foregroundStyle(.blue)
+//                .frame(minHeight: 55)
+//                .frame(maxWidth: .infinity)
+//                .background(Color.white)
+//                .cornerRadius(10)
+//                
+//            }
             
             Button(action: {
                 if onboardingState == 4 {
                     onboardComplete = true
-                } else { onboardingState += 1
+                } else {
+                    withAnimation(.spring()){
+                        onboardingState += 1
+                    }
+                    
                 }
             }, label: {
-                 onboardingState == 4 ? Text("Finish") : Text("Continue")
+                 onboardingState == 4 ? Text("Finish") : Text("Next")
             })
-            
             .font(.headline)
             .foregroundStyle(.blue)
             .frame(minHeight: 55)
@@ -117,7 +136,7 @@ extension Onboarding {
                 .fontWeight(.medium)
                 .foregroundStyle(.white)
             
-            TextField("Your Name Here...", text: $user.userName)
+            TextField("Your Name Here...", text: $userData.userName)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -154,7 +173,7 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
             
-            TextField("Your Company Name Here...", text: $user.company.name)
+            TextField("Your Company Name Here...", text: $userData.company.name)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -172,7 +191,7 @@ extension Onboarding {
     
     private var companyContact: some View {
         VStack {
-            Text("\(user.company.name)")
+            Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.leading)
@@ -188,7 +207,7 @@ extension Onboarding {
             
             Spacer()
             
-            TextField("Company contact", text: $user.company.contact)
+            TextField("Company contact", text: $userData.company.contact)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -198,14 +217,14 @@ extension Onboarding {
             
             //Spacer()
             
-            TextField("Email", text: $user.company.email)
+            TextField("Email", text: $userData.company.email)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("Phone", text: $user.company.phone)
+            TextField("Phone", text: $userData.company.phone)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -224,7 +243,7 @@ extension Onboarding {
     
     private var companyAddress: some View {
         VStack {
-            Text("\(user.company.name)")
+            Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.leading)
@@ -239,35 +258,35 @@ extension Onboarding {
                 .padding(.horizontal)
             
             Spacer()
-            TextField("Address", text: $user.company.address)
+            TextField("Address", text: $userData.company.address)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("Address 2", text: $user.company.address2)
+            TextField("Address 2", text: $userData.company.address2)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("City", text: $user.company.city)
+            TextField("City", text: $userData.company.city)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("State", text: $user.company.state)
+            TextField("State", text: $userData.company.state)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("Zip Code", text: $user.company.zip)
+            TextField("Zip Code", text: $userData.company.zip)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -282,7 +301,7 @@ extension Onboarding {
     
     private var bankingInfo: some View {
         VStack {
-            Text("\(user.company.name)")
+            Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.leading)
@@ -297,28 +316,28 @@ extension Onboarding {
                 .padding(.horizontal)
             
             Spacer()
-            TextField("Bank Name", text: $user.bankingInfo.bank)
+            TextField("Bank Name", text: $userData.bankingInfo.bank)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("Name on Account", text: $user.bankingInfo.accountName)
+            TextField("Name on Account", text: $userData.bankingInfo.accountName)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("routing Number", text: $user.bankingInfo.routingNumber)
+            TextField("routing Number", text: $userData.bankingInfo.routingNumber)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
-            TextField("Account Number", text: $user.bankingInfo.accountNumber)
+            TextField("Account Number", text: $userData.bankingInfo.accountNumber)
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
@@ -328,14 +347,14 @@ extension Onboarding {
             Spacer()
             
             VStack {
-                TextField("Zelle", text: $user.bankingInfo.zelle)
+                TextField("Zelle", text: $userData.bankingInfo.zelle)
                     .font(.headline)
                     .frame(height: 55)
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
                 
-                TextField("Venmo", text: $user.bankingInfo.venmo)
+                TextField("Venmo", text: $userData.bankingInfo.venmo)
                     .font(.headline)
                     .frame(height: 55)
                     .padding(.horizontal)
@@ -349,5 +368,4 @@ extension Onboarding {
         }
         .padding(20)
     }
-    
 }

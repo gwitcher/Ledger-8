@@ -9,7 +9,7 @@ import SwiftUI
 
 struct CompanyInfoView: View {
     
-    @State private var userData = UserData()
+    @AppStorage("userData") var userData = UserData()
     
     var body: some View {
         Form {
@@ -80,5 +80,5 @@ struct CompanyInfoView: View {
 }
 
 #Preview {
-    CompanyInfoView()
+    CompanyInfoView(userData: UserData())
 }

@@ -16,6 +16,7 @@ struct ProjectListView: View {
     @State private var sheetIsPresented = false
     @State private var clientListIsPresented = false
     @State private var userInfoSheetIsPresented = false
+    @State private var settingsSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
     
     var body: some View {
@@ -62,7 +63,7 @@ struct ProjectListView: View {
                 
                 ToolbarItem(placement: .topBarLeading) {
                     Button("", systemImage: "ellipsis.circle") {
-                        //TODO: Setting Button Action
+                        settingsSheetIsPresented.toggle()
                     }
                 }
             }
@@ -71,6 +72,9 @@ struct ProjectListView: View {
             }
             .sheet(isPresented: $clientListIsPresented) {
                 ClientListView()
+            }
+            .sheet(isPresented: $settingsSheetIsPresented) {
+                SettingsView()
             }
         }
     }

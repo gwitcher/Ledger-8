@@ -10,24 +10,25 @@ import SwiftUI
 
 struct mfgwLogoView: View {
     
-    var company = Company()
+    @AppStorage("userData") var userData = UserData()
+    //var company = Company()
     
     var body: some View {
         
         VStack (alignment: .leading) {
-            Text(company.name)
+            Text(userData.company.name)
                 .font(.title)
                 .fontWeight(.semibold)
             
-            Text(company.contact)
+            Text(userData.company.contact)
                 .font(.headline)
                 .fontWeight(.medium)
                 .foregroundStyle(.opacity(0.7))
             Group {
-                Text(company.address)
-                Text(company.cityStateZip)
-                Text(company.phone)
-                Text(company.email)
+                Text(userData.company.address)
+                Text(userData.company.cityStateZip)
+                Text(userData.company.phone)
+                Text(userData.company.email)
             }
             .font(.subheadline)
            // .minimumScaleFactor(0.5)
@@ -37,5 +38,5 @@ struct mfgwLogoView: View {
 }
 
 #Preview {
-    mfgwLogoView(company: Company())
+    mfgwLogoView(userData: UserData())
 }
