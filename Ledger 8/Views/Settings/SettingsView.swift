@@ -9,6 +9,8 @@ import SwiftUI
 import SwiftData
 
 struct SettingsView: View {
+    @Environment(\.modelContext) var modelContext
+    @Environment(\.dismiss) var dismiss
     
     @AppStorage("userData") var userData = UserData()
      
@@ -54,6 +56,13 @@ struct SettingsView: View {
 //                    .foregroundStyle(.black)
             }
             .navigationTitle("Settings")
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
             
            
             

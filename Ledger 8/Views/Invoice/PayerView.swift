@@ -18,23 +18,22 @@ struct PayerView: View {
             VStack(spacing: 6) {
                 LabeledContent("Client: ") {
                     Text("\(project.client?.name ?? "")")
-                    //Spacer()
+                        .multilineTextAlignment(.trailing)
                 }
                 
                 LabeledContent("Artist: ") {
                     Text("\(project.artist)")
-                    //Spacer()
+                        .multilineTextAlignment(.trailing)
                 }
                 
                 LabeledContent("Attn: ") {
                     Text("\(project.client?.name ?? "")")
-                    //Spacer()
+                        .multilineTextAlignment(.trailing)
                 }
                 
                 LabeledContent("Email: ") {
                     Text("\(project.client?.email ?? "")")
-                    //Spacer()
-                }
+                    .multilineTextAlignment(.trailing)                }
                 
                 LabeledContent {
                     VStack(alignment: .trailing){

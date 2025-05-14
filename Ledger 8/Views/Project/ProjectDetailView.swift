@@ -38,7 +38,6 @@ struct ProjectDetailView: View {
     @FocusState private var focusField: ProjectField?
     
     
-    
     var body: some View {
         
         NavigationStack {
@@ -292,6 +291,7 @@ struct ProjectDetailView: View {
                 
             }
         }
+        
     }
     
     func saveProject() {

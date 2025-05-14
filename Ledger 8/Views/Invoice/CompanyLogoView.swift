@@ -8,7 +8,7 @@
 import SwiftUI
 
 
-struct mfgwLogoView: View {
+struct CompanyLogoView: View {
     
     @AppStorage("userData") var userData = UserData()
     //var company = Company()
@@ -38,5 +38,5 @@ struct mfgwLogoView: View {
 }
 
 #Preview {
-    mfgwLogoView(userData: UserData())
+    CompanyLogoView(userData: UserData())
 }

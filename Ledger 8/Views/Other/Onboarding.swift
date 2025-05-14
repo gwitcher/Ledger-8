@@ -14,6 +14,7 @@ struct Onboarding: View {
     @AppStorage("userData") var userData = UserData()
     
     let appName = "Gig Tracker"
+    let textFrameHeight: CGFloat = 50
     let transition: AnyTransition = .asymmetric(
         insertion: .move(edge: .trailing),
         removal: .move(edge: .leading)
@@ -49,6 +50,7 @@ struct Onboarding: View {
                     Text("Default")
                 }
             }
+            .padding()
             
             VStack{
                 Spacer()
@@ -121,7 +123,7 @@ extension Onboarding {
             Image(systemName: "music.note.list")
                 .resizable()
                 .scaledToFit()
-                .frame(width: 200, height: 200)
+                .frame(width: 230, height: 220)
                 .foregroundStyle(.white)
             
             Text("Welcome to Gig Tracker")
@@ -138,7 +140,7 @@ extension Onboarding {
             
             TextField("Your Name Here...", text: $userData.userName)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
@@ -160,14 +162,14 @@ extension Onboarding {
                 .frame(width: 200, height: 200)
                 .foregroundStyle(.white)
             
-            Text("Company Info")
+            Text("Company Name")
                 .font(.largeTitle)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .minimumScaleFactor(0.5)
                 .lineLimit(1)
             
-            Text("Enter your company name as you want it to appear on your Invoice:")
+            Text("Enter your company name as you would like it to appear on your Invoices:")
             //.font(.caption)
                 .fontWeight(.medium)
                 .foregroundStyle(.white)
@@ -180,10 +182,9 @@ extension Onboarding {
                 .background(Color.white)
                 .cornerRadius(10)
             
-            
-            
             Spacer()
             Spacer()
+            
             
         }
         .padding(30)
@@ -191,15 +192,30 @@ extension Onboarding {
     
     private var companyContact: some View {
         VStack {
+            Image(systemName: "person.crop.circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 180)
+                .foregroundStyle(.white)
+            Spacer()
+            
             Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-                .padding()
+            
+            Text("Contact Info")
+                .font(.title)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+                .padding(.bottom)
             
             Text("Enter your company contact info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+                .font(.subheadline)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
@@ -209,30 +225,31 @@ extension Onboarding {
             
             TextField("Company contact", text: $userData.company.contact)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
-                .padding(.bottom, 40)
+                //.padding(.bottom, 20)
             
             //Spacer()
             
             TextField("Email", text: $userData.company.email)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("Phone", text: $userData.company.phone)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             
             
+            Spacer()
             Spacer()
             Spacer()
         }
@@ -243,15 +260,32 @@ extension Onboarding {
     
     private var companyAddress: some View {
         VStack {
+            
+            Image(systemName: "envelope.open")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 150)
+                .foregroundStyle(.white)
+            Spacer()
+            
             Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-                .padding()
+           
+            
+            Text("Address")
+                .font(.title)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+                .padding(.bottom)
             
             Text("Enter your company address info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+                .font(.subheadline)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
@@ -260,35 +294,35 @@ extension Onboarding {
             Spacer()
             TextField("Address", text: $userData.company.address)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("Address 2", text: $userData.company.address2)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("City", text: $userData.company.city)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("State", text: $userData.company.state)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("Zip Code", text: $userData.company.zip)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
@@ -301,15 +335,31 @@ extension Onboarding {
     
     private var bankingInfo: some View {
         VStack {
+            Image(systemName: "building.columns.circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 150)
+                .foregroundStyle(.white)
+            Spacer()
+            
             Text("\(userData.company.name)")
                 .font(.title)
                 .fontWeight(.bold)
-                .multilineTextAlignment(.leading)
+                .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-                .padding()
+           
+            
+            Text("Address")
+                .font(.title)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+                .padding(.bottom)
             
             Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+                .font(.subheadline)
                 .fontWeight(.bold)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
@@ -318,28 +368,28 @@ extension Onboarding {
             Spacer()
             TextField("Bank Name", text: $userData.bankingInfo.bank)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("Name on Account", text: $userData.bankingInfo.accountName)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("routing Number", text: $userData.bankingInfo.routingNumber)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
             
             TextField("Account Number", text: $userData.bankingInfo.accountNumber)
                 .font(.headline)
-                .frame(height: 55)
+                .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
@@ -349,14 +399,14 @@ extension Onboarding {
             VStack {
                 TextField("Zelle", text: $userData.bankingInfo.zelle)
                     .font(.headline)
-                    .frame(height: 55)
+                    .frame(height: textFrameHeight)
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
                 
                 TextField("Venmo", text: $userData.bankingInfo.venmo)
                     .font(.headline)
-                    .frame(height: 55)
+                    .frame(height: textFrameHeight)
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)

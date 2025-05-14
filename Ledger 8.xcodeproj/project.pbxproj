@@ -7,6 +7,7 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		66630B112DD410F800F6C602 /* SegmentedPicker in Frameworks */ = {isa = PBXBuildFile; productRef = 66630B102DD410F800F6C602 /* SegmentedPicker */; };
 		66BD1F1B2DB9F68200ACC1B6 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BD1F1A2DB9F68200ACC1B6 /* MainView.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
 		66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616262DAF2BA100161D7E /* Assets.xcassets */; };
@@ -44,6 +45,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66C616602DB00BBF00161D7E /* SwiftUIFontIcon in Frameworks */,
+				66630B112DD410F800F6C602 /* SegmentedPicker in Frameworks */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -111,6 +113,7 @@
 			name = "Ledger 8";
 			packageProductDependencies = (
 				66C6165F2DB00BBF00161D7E /* SwiftUIFontIcon */,
+				66630B102DD410F800F6C602 /* SegmentedPicker */,
 			);
 			productName = "Ledger 8";
 			productReference = 66C6160F2DAF2B2E00161D7E /* Ledger 8.app */;
@@ -142,6 +145,7 @@
 			minimizedProjectReferenceProxies = 1;
 			packageReferences = (
 				66C6165E2DB00BBF00161D7E /* XCRemoteSwiftPackageReference "SwiftUIFontIcon" */,
+				66630B0F2DD410F800F6C602 /* XCRemoteSwiftPackageReference "SwiftySegmentedPicker" */,
 			);
 			preferredProjectObjectVersion = 77;
 			productRefGroup = 66C616102DAF2B2E00161D7E /* Products */;
@@ -388,6 +392,14 @@
 /* End XCConfigurationList section */
 
 /* Begin XCRemoteSwiftPackageReference section */
+		66630B0F2DD410F800F6C602 /* XCRemoteSwiftPackageReference "SwiftySegmentedPicker" */ = {
+			isa = XCRemoteSwiftPackageReference;
+			repositoryURL = "https://github.com/KazaiMazai/SwiftySegmentedPicker.git";
+			requirement = {
+				kind = upToNextMajorVersion;
+				minimumVersion = 0.0.4;
+			};
+		};
 		66C6165E2DB00BBF00161D7E /* XCRemoteSwiftPackageReference "SwiftUIFontIcon" */ = {
 			isa = XCRemoteSwiftPackageReference;
 			repositoryURL = "https://github.com/huybuidac/SwiftUIFontIcon";
@@ -399,6 +411,11 @@
 /* End XCRemoteSwiftPackageReference section */
 
 /* Begin XCSwiftPackageProductDependency section */
+		66630B102DD410F800F6C602 /* SegmentedPicker */ = {
+			isa = XCSwiftPackageProductDependency;
+			package = 66630B0F2DD410F800F6C602 /* XCRemoteSwiftPackageReference "SwiftySegmentedPicker" */;
+			productName = SegmentedPicker;
+		};
 		66C6165F2DB00BBF00161D7E /* SwiftUIFontIcon */ = {
 			isa = XCSwiftPackageProductDependency;
 			package = 66C6165E2DB00BBF00161D7E /* XCRemoteSwiftPackageReference "SwiftUIFontIcon" */;

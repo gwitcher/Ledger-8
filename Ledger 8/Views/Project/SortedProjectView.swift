@@ -60,8 +60,9 @@ struct SortedProjectView: View {
             }
             
         }
-        .background(Color.white)
+        .background(Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        //.shadow(radius: 10)
         
     }
 }

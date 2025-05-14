@@ -21,11 +21,11 @@ struct InvoiceTemplateView: View {
         VStack {
             HStack  {
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
-                    .foregroundStyle(.blue)
+                    .foregroundStyle(Color.invoice1)
                     .opacity(0.2)
                     .overlay {
                         HStack (alignment: .top) {
-                            CompanyInfoView()
+                            CompanyLogoView()
                                 .frame(width: 170, height: 100)
                                 .padding(.top)
                                 .minimumScaleFactor(0.5)
@@ -84,7 +84,7 @@ struct InvoiceTemplateView: View {
             
             
             HStack {
-                BankingInfoView(userData: userData)
+                BankingInvoiceView()
                     .frame(width: 300, height: 150)
                     //.border(.black)
                 

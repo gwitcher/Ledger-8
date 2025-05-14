@@ -32,6 +32,8 @@ struct FeeTotalsView: View {
     
     var body: some View {
         
+        
+        
         HStack {
             let openTotal = projectsFeeTotal(projects: projectsOpen)
             let invoicedTotal = projectsFeeTotal(projects: projectsInvoiced)
@@ -58,12 +60,15 @@ struct FeeTotalsView: View {
                     .padding([.bottom, .horizontal])
                 
             }
-            .background(Color.white)
+            .background(Color.clear)
+            //.animation(.easeInOut(duration: 0.3), value: sortSelection)
             
             Spacer()
             
             Group {
-                if sortSelection == .open {
+                
+                switch sortSelection {
+                case .open:
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(invoicedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
@@ -72,9 +77,10 @@ struct FeeTotalsView: View {
                             .font(.subheadline)
                             .foregroundStyle(Status.closed.statusColor)
                     }
+                    .fontWeight(.bold)
                     .padding([.horizontal, .bottom])
                     
-                } else if sortSelection == .delivered {
+                case .delivered:
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(openTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
@@ -83,8 +89,10 @@ struct FeeTotalsView: View {
                             .font(.subheadline)
                             .foregroundStyle(Status.closed.statusColor)
                     }
+                    .fontWeight(.bold)
                     .padding([.horizontal, .bottom])
-                } else {
+                    
+                case .closed:
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(openTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
@@ -93,10 +101,17 @@ struct FeeTotalsView: View {
                             .font(.subheadline)
                             .foregroundStyle(Status.delivered.statusColor)
                     }
+                    .fontWeight(.bold)
                     .padding([.horizontal, .bottom])
+                    
                 }
+                   
             }
+            //.animation(.easeInOut(duration: 0.4), value: sortSelection)
+            
         }
+        .animation(.easeInOut(duration: 0.2), value: sortSelection)
+        
     }
     
     func projectsFeeTotal(projects: [Project]) -> Double {
@@ -110,3 +125,4 @@ struct FeeTotalsView: View {
 #Preview {
     FeeTotalsView(sortSelection: Status.open)
 }
+

@@ -22,7 +22,6 @@ struct CompanyInfoView: View {
                     Text("Company:").foregroundStyle(.secondary)
                     
                 }
-                
                 LabeledContent {
                     TextField("", text: $userData.company.contact)
                         .autocorrectionDisabled()
@@ -32,6 +31,22 @@ struct CompanyInfoView: View {
                     
                 }
                 
+                LabeledContent {
+                    TextField("", text: $userData.company.email)
+                        .autocorrectionDisabled()
+                    
+                }   label: {
+                    Text("Email:").foregroundStyle(.secondary)
+                    
+                }
+                LabeledContent {
+                    TextField("", text: $userData.company.phone)
+                        .autocorrectionDisabled()
+                    
+                }   label: {
+                    Text("Phone:").foregroundStyle(.secondary)
+                    
+                }
                 LabeledContent {
                     TextField("", text: $userData.company.address)
                         .autocorrectionDisabled()

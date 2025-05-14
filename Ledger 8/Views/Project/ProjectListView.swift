@@ -8,74 +8,101 @@
 import SwiftUI
 import SwiftData
 
+
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     
-    @Query var projects: [Project]
+    //@Query var projects: [Project]
     
-    @State private var sheetIsPresented = false
+    let projects = [Project(projectName: "Butthead", artist: "Beavis", startDate: Date(), endDate: Date(), status: .open, mediaType: .tv, notes: "", delivered: false, paid: false, dateOpened: Date(), dateDelivered: Date(), dateClosed: Date(), endDateSelected: false, items: [Item(name: "Song 1", fee: 200, itemType: .rental, notes: "", project: nil)])]
+    
+    @State private var projectSheetIsPresented = false
     @State private var clientListIsPresented = false
     @State private var userInfoSheetIsPresented = false
     @State private var settingsSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
+    @State var selectedIndex: Int?
+    
+    init() {
+        // Large Navigation Title
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        // Inline Navigation Title
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.purple]
+    }
     
     var body: some View {
         
         NavigationStack {
-            Group {
-                if !projects.isEmpty {
-                    VStack {
-                        FeeTotalsView(sortSelection: sortSelection)
-                        
-                        SortedProjectView(sortSelection: sortSelection)
-                            .padding(4)
-                        
-                        Picker(selection: $sortSelection) {
-                            ForEach(Status.allCases) { selection in
-                                Text(selection.rawValue)
-                            }
-                        } label: {
-                            Text("")
-                        }
-                        .padding(4)
-                        .pickerStyle(.palette)
-                        .animation(.easeIn, value: sortSelection)
-                    }
-                    .animation(.easeInOut(duration: 0.25), value: sortSelection)
-                } else {
-                    ContentUnavailableView("Enter your first project", systemImage: "music.note.list" )
-                }
+            ZStack{
+                RadialGradient(
+                    gradient: Gradient(colors: [Color.stormyMorning4, Color.stormyMorning1]),
+                    center: .top,
+                    startRadius: 1,
+                    endRadius: UIScreen.main.bounds.height)
+                .ignoresSafeArea()
                 
+                
+                Group {
+                    if !projects.isEmpty {
+                        VStack {
+                            FeeTotalsView(sortSelection: sortSelection)
+                            
+                            SortedProjectView(sortSelection: sortSelection)
+                                .padding(4)
+                            
+                            CustomPickerView(sortSelection: $sortSelection)
+                        }
+                    } else {
+                        ContentUnavailableView("Enter your first project", systemImage: "music.note.list" )
+                        
+                    }
+                    
+                }
             }
             .navigationTitle("Project Ledger")
+            .foregroundStyle(.white)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("", systemImage: "person.circle") {
+                    Button {
                         clientListIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "person.circle")
+                            .foregroundStyle(.white)
                     }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("", systemImage: "plus") {
-                        sheetIsPresented.toggle()
+                    Button {
+                        projectSheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "plus")
+                            .foregroundStyle(.white)
                     }
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("", systemImage: "ellipsis.circle") {
+                    Button {
                         settingsSheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "gear")
+                            .foregroundStyle(.white)
                     }
                 }
             }
-            .sheet(isPresented: $sheetIsPresented) {
+            .fullScreenCover(isPresented: $projectSheetIsPresented, content: {
                 ProjectDetailView(project: Project())
-            }
+            })
+            
+//            .sheet(isPresented: $projectSheetIsPresented) {
+//                ProjectDetailView(project: Project())
+//            }
             .sheet(isPresented: $clientListIsPresented) {
                 ClientListView()
             }
-            .sheet(isPresented: $settingsSheetIsPresented) {
+            .fullScreenCover(isPresented: $settingsSheetIsPresented, content: {
                 SettingsView()
-            }
+            })
+            
         }
     }
 }

@@ -16,7 +16,7 @@ struct MainView: View {
     var body: some View {
         ZStack {
             RadialGradient(
-                gradient: Gradient(colors: [Color.gradient1, Color.gradient2]),
+                gradient: Gradient(colors: [Color.mintyFresh3, Color.mintyFresh4]),
                 center: .top,
                 startRadius: 5,
                 endRadius: UIScreen.main.bounds.height)
@@ -26,6 +26,7 @@ struct MainView: View {
             switch onboardComplete {
             case true:
                 ContentView()
+                //Onboarding()
             case false:
                     Onboarding()
             }

@@ -18,11 +18,11 @@ enum Status: String, CaseIterable, Identifiable, Codable {
     var statusColor: Color {
         switch self {
         case .open:
-                .yellow
+                .limeMargarita2
         case .delivered:
-                .red
+                .sharpEdge3
         case .closed:
-                .green
+                .sharpEdge5
         }
     }
     

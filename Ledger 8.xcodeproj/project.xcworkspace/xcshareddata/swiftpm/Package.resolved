@@ -1,5 +1,5 @@
 {
-  "originHash" : "7d5c38efc58a092ea3c5fbace30be1c179a5a1ddc4cf3822916e6f1150785dcd",
+  "originHash" : "0bc78b9dab21ed60bb9f6ac201a907344c363dcf029145f8b50a30a2b60225c2",
   "pins" : [
     {
       "identity" : "swiftuifonticon",
@@ -8,6 +8,15 @@
       "state" : {
         "revision" : "4f170fbf443d985ae518a14a12ec8194ec6b08eb",
         "version" : "2.1.0"
+      }
+    },
+    {
+      "identity" : "swiftysegmentedpicker",
+      "kind" : "remoteSourceControl",
+      "location" : "https://github.com/KazaiMazai/SwiftySegmentedPicker.git",
+      "state" : {
+        "revision" : "2eba81888c722d5ab3be0fae455b3c8fa0c03869",
+        "version" : "0.1.0"
       }
     }
   ],
