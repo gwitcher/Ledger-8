@@ -12,22 +12,21 @@ import SwiftData
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     
-    //@Query var projects: [Project]
+    @Query var projects: [Project]
     
-    let projects = [Project(projectName: "Butthead", artist: "Beavis", startDate: Date(), endDate: Date(), status: .open, mediaType: .tv, notes: "", delivered: false, paid: false, dateOpened: Date(), dateDelivered: Date(), dateClosed: Date(), endDateSelected: false, items: [Item(name: "Song 1", fee: 200, itemType: .rental, notes: "", project: nil)])]
     
     @State private var projectSheetIsPresented = false
     @State private var clientListIsPresented = false
     @State private var userInfoSheetIsPresented = false
     @State private var settingsSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
-    @State var selectedIndex: Int?
+    
     
     init() {
         // Large Navigation Title
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.white]
+        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.black]
         // Inline Navigation Title
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.purple]
+        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.black]
     }
     
     var body: some View {
@@ -35,9 +34,9 @@ struct ProjectListView: View {
         NavigationStack {
             ZStack{
                 RadialGradient(
-                    gradient: Gradient(colors: [Color.stormyMorning4, Color.stormyMorning1]),
+                    gradient: Gradient(colors: [Color.quiteClear1, Color.quiteClear4.opacity(0.2)]),
                     center: .top,
-                    startRadius: 1,
+                    startRadius: 100,
                     endRadius: UIScreen.main.bounds.height)
                 .ignoresSafeArea()
                 
@@ -50,7 +49,14 @@ struct ProjectListView: View {
                             SortedProjectView(sortSelection: sortSelection)
                                 .padding(4)
                             
-                            CustomPickerView(sortSelection: $sortSelection)
+                            //CustomPickerView(sortSelection: $sortSelection)
+                            
+                            Picker("", selection: $sortSelection) {
+                                ForEach(Status.allCases) {status in
+                                    Text(status.rawValue)}
+                            }
+                            .pickerStyle(.palette)
+                            .padding()
                         }
                     } else {
                         ContentUnavailableView("Enter your first project", systemImage: "music.note.list" )
@@ -60,14 +66,14 @@ struct ProjectListView: View {
                 }
             }
             .navigationTitle("Project Ledger")
-            .foregroundStyle(.white)
+            .foregroundStyle(.black)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         clientListIsPresented.toggle()
                     } label: {
                         Image(systemName: "person.circle")
-                            .foregroundStyle(.white)
+                            //.foregroundStyle(.blue)
                     }
                 }
                 
@@ -76,7 +82,7 @@ struct ProjectListView: View {
                         projectSheetIsPresented.toggle()
                     } label: {
                         Image(systemName: "plus")
-                            .foregroundStyle(.white)
+                            //.foregroundStyle(.blue)
                     }
                 }
                 
@@ -85,7 +91,7 @@ struct ProjectListView: View {
                         settingsSheetIsPresented.toggle()
                     } label: {
                         Image(systemName: "gear")
-                            .foregroundStyle(.white)
+                            //.foregroundStyle(.gray)
                     }
                 }
             }
@@ -93,9 +99,6 @@ struct ProjectListView: View {
                 ProjectDetailView(project: Project())
             })
             
-//            .sheet(isPresented: $projectSheetIsPresented) {
-//                ProjectDetailView(project: Project())
-//            }
             .sheet(isPresented: $clientListIsPresented) {
                 ClientListView()
             }

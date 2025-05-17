@@ -12,6 +12,7 @@ struct Onboarding: View {
     
     @AppStorage("onboard_complete") var onboardComplete: Bool = false
     @AppStorage("userData") var userData = UserData()
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
     
     let appName = "Gig Tracker"
     let textFrameHeight: CGFloat = 50
@@ -19,7 +20,6 @@ struct Onboarding: View {
         insertion: .move(edge: .trailing),
         removal: .move(edge: .leading)
     )
-    
     
     @State private var onboardingState: Int = 0
     
@@ -34,20 +34,30 @@ struct Onboarding: View {
                     welcomeSection
                         .transition(transition)
                 case 1:
-                    companyName
+                    InvoiceSetup
                         .transition(transition)
                 case 2:
-                    companyContact
+                    companyName
                         .transition(transition)
                 case 3:
-                    companyAddress
+                    companyContact
                         .transition(transition)
                 case 4:
+                    companyAddress
+                        .transition(transition)
+                case 5:
                     bankingInfo
                         .transition(transition)
                     
+                case 6:
+                    appInfo
+                        .transition(transition)
+                    
+                case 7:
+                    invoiceNumberAddToCal
+                        .transition(transition)
                 default:
-                    Text("Default")
+                    Text("")
                 }
             }
             .padding()
@@ -57,7 +67,7 @@ struct Onboarding: View {
                 bottomButtons
             }
             .padding(30)
-          
+            
             
         }
         
@@ -76,25 +86,25 @@ struct Onboarding: View {
 extension Onboarding {
     private var bottomButtons: some View {
         HStack{
-//            if onboardingState > 1 {
-//                
-//                Button("Back") {
-//                    withAnimation(.spring()){
-//                        onboardingState -= 1
-//                    }
-//                    
-//                }
-//                .font(.headline)
-//                .foregroundStyle(.blue)
-//                .frame(minHeight: 55)
-//                .frame(maxWidth: .infinity)
-//                .background(Color.white)
-//                .cornerRadius(10)
-//                
-//            }
+            //            if onboardingState > 1 {
+            //
+            //                Button("Back") {
+            //                    withAnimation(.spring()){
+            //                        onboardingState -= 1
+            //                    }
+            //
+            //                }
+            //                .font(.headline)
+            //                .foregroundStyle(.blue)
+            //                .frame(minHeight: 55)
+            //                .frame(maxWidth: .infinity)
+            //                .background(Color.white)
+            //                .cornerRadius(10)
+            //
+            //            }
             
             Button(action: {
-                if onboardingState == 4 {
+                if onboardingState == 7 {
                     onboardComplete = true
                 } else {
                     withAnimation(.spring()){
@@ -103,7 +113,7 @@ extension Onboarding {
                     
                 }
             }, label: {
-                 onboardingState == 4 ? Text("Finish") : Text("Next")
+                onboardingState == 7 ? Text("Finish") : Text("Next")
             })
             .font(.headline)
             .foregroundStyle(.blue)
@@ -118,7 +128,7 @@ extension Onboarding {
     
     
     private var welcomeSection: some View {
-        VStack(spacing: 40) {
+        VStack(spacing: 30) {
             Spacer()
             Image(systemName: "music.note.list")
                 .resizable()
@@ -138,18 +148,73 @@ extension Onboarding {
                 .fontWeight(.medium)
                 .foregroundStyle(.white)
             
-            TextField("Your Name Here...", text: $userData.userName)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
+            Group {
+                TextField("First Name", text: $userData.userFirstName)
+                    .font(.headline)
+                    .frame(height: textFrameHeight)
+                    .padding(.horizontal)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    
+                
+                TextField("Last Name", text: $userData.userLastName)
+                    .font(.headline)
+                    .frame(height: textFrameHeight)
+                    .padding(.horizontal)
+                    .background(Color.white)
+                    .cornerRadius(10)
+            }
             
             Spacer()
             Spacer()
             
         }
         .padding(30)
+    }
+    
+    private var InvoiceSetup: some View {
+        
+        VStack {
+            HStack{
+                Spacer()
+                Text("Skip")
+                //Image(systemName: "arrow.right")
+                    .font(.headline)
+                    .foregroundStyle(.white)
+                    .frame(minHeight: 55)
+                    .frame(maxWidth: 55)
+                //.background(Color.white)
+                    .cornerRadius(10)
+            }
+            .onTapGesture {
+                onboardComplete = true
+            }
+            
+            
+            Spacer()
+            
+            Text("Hi \(userData.userFirstName)")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+                .padding()
+            
+            
+            Text("Press 'Next' to set up Invoicing. If you choose to skip, you can set up Invoicing later from the Settings menu.")
+                .font(.subheadline)
+                .fontWeight(.bold)
+                .foregroundStyle(.white)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal)
+            Spacer()
+            Spacer()
+        }
+        .foregroundStyle(.white)
+        .multilineTextAlignment(.center)
+        
+        
     }
     
     
@@ -214,12 +279,12 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            Text("Enter your company contact info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-                .font(.subheadline)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            //            Text("Enter your company contact info as you want it to appear on your Invoice.")
+            //                .font(.subheadline)
+            //                .fontWeight(.bold)
+            //                .foregroundStyle(.white)
+            //                .multilineTextAlignment(.center)
+            //                .padding(.horizontal)
             
             Spacer()
             
@@ -229,7 +294,7 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
-                //.padding(.bottom, 20)
+            //.padding(.bottom, 20)
             
             //Spacer()
             
@@ -274,7 +339,7 @@ extension Onboarding {
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-           
+            
             
             Text("Address")
                 .font(.title)
@@ -284,12 +349,12 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            Text("Enter your company address info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-                .font(.subheadline)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            //            Text("Enter your company address info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+            //                .font(.subheadline)
+            //                .fontWeight(.bold)
+            //                .foregroundStyle(.white)
+            //                .multilineTextAlignment(.center)
+            //                .padding(.horizontal)
             
             Spacer()
             TextField("Address", text: $userData.company.address)
@@ -348,9 +413,9 @@ extension Onboarding {
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-           
             
-            Text("Address")
+            
+            Text("Banking Info")
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
@@ -358,12 +423,12 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-                .font(.subheadline)
-                .fontWeight(.bold)
-                .foregroundStyle(.white)
-                .multilineTextAlignment(.center)
-                .padding(.horizontal)
+            //            Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+            //                .font(.subheadline)
+            //                .fontWeight(.bold)
+            //                .foregroundStyle(.white)
+            //                .multilineTextAlignment(.center)
+            //                .padding(.horizontal)
             
             Spacer()
             TextField("Bank Name", text: $userData.bankingInfo.bank)
@@ -396,6 +461,63 @@ extension Onboarding {
             
             Spacer()
             
+//            VStack {
+//                TextField("Zelle", text: $userData.bankingInfo.zelle)
+//                    .font(.headline)
+//                    .frame(height: textFrameHeight)
+//                    .padding(.horizontal)
+//                    .background(Color.white)
+//                    .cornerRadius(10)
+//                
+//                TextField("Venmo", text: $userData.bankingInfo.venmo)
+//                    .font(.headline)
+//                    .frame(height: textFrameHeight)
+//                    .padding(.horizontal)
+//                    .background(Color.white)
+//                    .cornerRadius(10)
+//            }
+            .padding(.bottom)
+            
+            Spacer()
+            Spacer()
+        }
+        .padding(20)
+    }
+    
+    private var appInfo: some View {
+        VStack {
+            Image(systemName: "building.columns.circle")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 150)
+                .foregroundStyle(.white)
+            Spacer()
+            
+            Text("\(userData.company.name)")
+                .font(.title)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+            
+            
+            Text("Financial Apps")
+                .font(.title)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+                .padding(.bottom)
+            
+            //            Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
+            //                .font(.subheadline)
+            //                .fontWeight(.bold)
+            //                .foregroundStyle(.white)
+            //                .multilineTextAlignment(.center)
+            //                .padding(.horizontal)
+            
+            Spacer()
+            
             VStack {
                 TextField("Zelle", text: $userData.bankingInfo.zelle)
                     .font(.headline)
@@ -418,4 +540,71 @@ extension Onboarding {
         }
         .padding(20)
     }
+    
+    private var invoiceNumberAddToCal: some View {
+        
+        VStack{
+            Spacer()
+            
+            Text("\(userData.company.name)")
+                .font(.largeTitle)
+                .fontWeight(.bold)
+                .multilineTextAlignment(.center)
+                .minimumScaleFactor(0.5)
+                .foregroundStyle(.white)
+            
+            Spacer()
+            
+            VStack(alignment: .leading){
+                Text("Enter the invoice number you would like to begin with:")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    //.padding(.horizontal)
+                
+                TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number)
+                    .font(.headline)
+                    .frame(height: textFrameHeight)
+                    .padding(.horizontal)
+                    .background(Color.white)
+                    .cornerRadius(10)
+                    .padding(.bottom)
+                
+                Text("Add projects to iCal:")
+                    .font(.subheadline)
+                    .fontWeight(.bold)
+                    .foregroundStyle(.white)
+                    .multilineTextAlignment(.leading)
+                    .padding(.top)
+                    
+                    
+                
+                Toggle(isOn: $userData.addToCalendar) {
+                    HStack{
+                        Image(systemName: "calendar.badge.plus")
+                            .tint(userData.addToCalendar ? Color.gray : Color.green)
+                        
+                        Spacer()
+                        
+                        //Text("\(userData.addToCalendar ? Text("On") : Text("Off"))")
+                    }
+                }
+                .font(.headline)
+                .frame(height: textFrameHeight)
+                .padding(.horizontal)
+                .background(Color.white)
+                .cornerRadius(10)
+            }
+            
+            Spacer()
+            Spacer()
+        }
+        
+        
+    }
+    
+    
 }
+
+

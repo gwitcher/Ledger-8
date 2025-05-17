@@ -17,7 +17,7 @@ struct ProjectView: View {
     var body: some View {
         HStack(spacing: 20){
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-                .fill(Color.sharpEdge5.opacity(0.3))
+                .fill(Color.mintyFresh3.opacity(0.6))
                 .frame(width: 44, height: 44)
                 .overlay {
                     FontIcon.text(.awesome5Solid(code: project.icon), fontsize: 24, color: Color.quiteClear2)
@@ -25,18 +25,22 @@ struct ProjectView: View {
             VStack(alignment: .leading, spacing: 6) {
                 
                 Text(project.client?.name ?? "Add Client")
+            
                     .font(.subheadline)
+                    .foregroundStyle(.black)
                     .bold()
                     .lineLimit(1)
                 
                 Text(project.projectName)
                     .font(.footnote)
+                    .foregroundStyle(.black)
                     .opacity(0.7)
                     .lineLimit(1)
                 
                 Text(project.startDate.formatted(date: .abbreviated, time: .omitted))
                     .font(.footnote)
-                    .foregroundColor(.secondary)
+                    .foregroundStyle(.secondary)
+                    //.opacity(0.7)
                 
             }
             
@@ -51,13 +55,16 @@ struct ProjectView: View {
                     .lineLimit(1)
                 
                 Text("\(project.mediaType.rawValue)")
+              
                     .font(.footnote)
+                    .foregroundStyle(.black)
                     .opacity(0.7)
                     .lineLimit(1)
                 
                 Text(" ^[\(project.items?.count ?? 0) Items](inflect: true)")
                     .font(.footnote)
                     .foregroundColor(.secondary)
+                    //.opacity(0.7)
                 
                 
             }

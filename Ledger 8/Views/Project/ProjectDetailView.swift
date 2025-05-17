@@ -59,6 +59,7 @@ struct ProjectDetailView: View {
                                 Image(systemName: "plus.circle.fill")
                                     .tint(.green)
                                 Text("Add Client")
+                                    .foregroundStyle(.black)
                             }
                         }
                     }
@@ -231,8 +232,11 @@ struct ProjectDetailView: View {
             }
             .onAppear {
                 //                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                
                 selectedClient = project.client
+                
                 //                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
+                
                 projectName = project.projectName
                 artist = project.artist
                 startDate = project.startDate

@@ -16,7 +16,9 @@ struct UserNameView: View {
         NavigationStack{
             Form {
                 Section("User Name"){
-                    TextField("User Name", text: $userData.userName)
+                    TextField("First Name", text: $userData.userFirstName)
+                        
+                    TextField("Last Name", text: $userData.userLastName)
                 }
             }
             .navigationTitle("User Info")

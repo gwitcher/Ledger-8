@@ -11,7 +11,7 @@ import SwiftData
 struct ContentView: View {
     @Environment(\.modelContext) var modelContext
     
-    @Query var projects: [Project]
+    //@Query var projects: [Project]
     
     var body: some View {
         NavigationStack{

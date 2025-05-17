@@ -27,7 +27,7 @@ struct SettingsView: View {
                     } label: {
                         HStack {
                             Image(systemName: "person")
-                            Text(userData.userName)
+                            Text("\(userData.userFirstName) \(userData.userLastName)")
                                 .fontWeight(.bold)
                         }
                     }

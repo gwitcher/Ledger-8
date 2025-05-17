@@ -34,7 +34,8 @@ struct BankingInfo: Codable {
 
 
 struct UserData: Codable {
-    var userName = ""
+    var userFirstName = ""
+    var userLastName = ""
     var company = Company()
     var bankingInfo = BankingInfo()
     var addToCalendar = false
@@ -42,7 +43,8 @@ struct UserData: Codable {
     init() {}
     
     enum CodingKeys: CodingKey {
-        case userName
+        case userFirstName
+        case userLastName
         case company
         case bankingInfo
         case addToCalendar
@@ -50,14 +52,16 @@ struct UserData: Codable {
     
     init(from decoder: any Decoder) throws {
         let container = try decoder.container(keyedBy: CodingKeys.self)
-        self.userName = try container.decode(String.self, forKey: .userName)
+        self.userFirstName = try container.decode(String.self, forKey: .userFirstName)
+        self.userLastName = try container.decode(String.self, forKey: .userLastName)
         self.company = try container.decode(Company.self, forKey: .company)
         self.bankingInfo = try container.decode(BankingInfo.self, forKey: .bankingInfo)
         self.addToCalendar = try container.decode(Bool.self, forKey: .addToCalendar)
     }
     func encode(to encoder: any Encoder) throws {
         var container = encoder.container(keyedBy: CodingKeys.self)
-        try container.encode(self.userName, forKey: .userName)
+        try container.encode(self.userFirstName, forKey: .userFirstName)
+        try container.encode(self.userLastName, forKey: .userLastName)
         try container.encode(self.company, forKey: .company)
         try container.encode(self.bankingInfo, forKey: .bankingInfo)
         try container.encode(self.addToCalendar, forKey: .addToCalendar)

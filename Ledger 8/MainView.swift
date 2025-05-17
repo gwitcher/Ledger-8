@@ -21,14 +21,14 @@ struct MainView: View {
                 startRadius: 5,
                 endRadius: UIScreen.main.bounds.height)
             .ignoresSafeArea()
-        
+            
             
             switch onboardComplete {
             case true:
                 ContentView()
-                //Onboarding()
+                
             case false:
-                    Onboarding()
+                Onboarding()
             }
         }
     }

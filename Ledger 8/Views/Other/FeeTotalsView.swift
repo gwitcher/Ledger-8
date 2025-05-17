@@ -110,7 +110,7 @@ struct FeeTotalsView: View {
             //.animation(.easeInOut(duration: 0.4), value: sortSelection)
             
         }
-        .animation(.easeInOut(duration: 0.2), value: sortSelection)
+        //.animation(.easeIn(duration: 0.025), value: sortSelection)
         
     }
     
