@@ -76,3 +76,11 @@ enum ItemField {
 enum clientField {
     case contact, email, phone, attn, address, address2, city, state, zip, notes
 }
+
+enum userField {
+    case firstName, lastName
+}
+
+enum bankField {
+    case bank, accountName, routing, account, zelle, venmo
+}

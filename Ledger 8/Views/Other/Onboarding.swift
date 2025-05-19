@@ -14,6 +14,7 @@ struct Onboarding: View {
     @AppStorage("userData") var userData = UserData()
     @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
     
+    
     let appName = "Gig Tracker"
     let textFrameHeight: CGFloat = 50
     let transition: AnyTransition = .asymmetric(
@@ -23,54 +24,60 @@ struct Onboarding: View {
     
     @State private var onboardingState: Int = 0
     
+    @FocusState private var clientField: clientField?
+    @FocusState private var userField: userField?
+    @FocusState private var bankField: bankField?
     
     
     var body: some View {
         ZStack {
-            //Content
-            ZStack {
-                switch onboardingState {
-                case 0:
-                    welcomeSection
-                        .transition(transition)
-                case 1:
-                    InvoiceSetup
-                        .transition(transition)
-                case 2:
-                    companyName
-                        .transition(transition)
-                case 3:
-                    companyContact
-                        .transition(transition)
-                case 4:
-                    companyAddress
-                        .transition(transition)
-                case 5:
-                    bankingInfo
-                        .transition(transition)
-                    
-                case 6:
-                    appInfo
-                        .transition(transition)
-                    
-                case 7:
-                    invoiceNumberAddToCal
-                        .transition(transition)
-                default:
-                    Text("")
-                }
-            }
-            .padding()
-            
             VStack{
+                
                 Spacer()
+                Spacer()
+                
+                ZStack {
+                    switch onboardingState {
+                    case 0:
+                        welcomeSection
+                            .transition(transition)
+                    case 1:
+                        InvoiceSetup
+                            .transition(transition)
+                    case 2:
+                        companyName
+                            .transition(transition)
+                    case 3:
+                        companyContact
+                            .transition(transition)
+                    case 4:
+                        companyAddress
+                            .transition(transition)
+                    case 5:
+                        bankingInfo
+                            .transition(transition)
+                        
+                    case 6:
+                        appInfo
+                            .transition(transition)
+                        
+                    case 7:
+                        invoiceNumberAddToCal
+                            .transition(transition)
+                    default:
+                        Text("")
+                    }
+                    
+                }
+                .padding()
+                
+                
+               Spacer()
                 bottomButtons
+                    .padding(.horizontal, 30)
             }
-            .padding(30)
-            
-            
+           // .padding(30)
         }
-        
     }
 }
 
@@ -84,45 +91,28 @@ struct Onboarding: View {
 //MARK: Components
 
 extension Onboarding {
+    
+    
     private var bottomButtons: some View {
+        
         HStack{
-            //            if onboardingState > 1 {
-            //
-            //                Button("Back") {
-            //                    withAnimation(.spring()){
-            //                        onboardingState -= 1
-            //                    }
-            //
-            //                }
-            //                .font(.headline)
-            //                .foregroundStyle(.blue)
-            //                .frame(minHeight: 55)
-            //                .frame(maxWidth: .infinity)
-            //                .background(Color.white)
-            //                .cornerRadius(10)
-            //
-            //            }
-            
-            Button(action: {
-                if onboardingState == 7 {
-                    onboardComplete = true
-                } else {
-                    withAnimation(.spring()){
-                        onboardingState += 1
+            Text(onboardingState == 7 ? "Finish" : "Next")
+                .font(.headline)
+                .foregroundStyle(.blue)
+                .frame(minHeight: 55)
+                .frame(maxWidth: .infinity)
+                .background(Color.white)
+                .cornerRadius(10)
+                .onTapGesture {
+                    if onboardingState == 7 {
+                        onboardComplete = true
+                    } else {
+                        withAnimation(.spring()){
+                            onboardingState += 1
+                        }
+                        
                     }
-                    
                 }
-            }, label: {
-                onboardingState == 7 ? Text("Finish") : Text("Next")
-            })
-            .font(.headline)
-            .foregroundStyle(.blue)
-            .frame(minHeight: 55)
-            .frame(maxWidth: .infinity)
-            .background(Color.white)
-            .cornerRadius(10)
-            
-            
         }
     }
     
@@ -155,7 +145,12 @@ extension Onboarding {
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
-                    
+                    .focused($userField, equals: .firstName)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        userField = .lastName
+                    }
+                
                 
                 TextField("Last Name", text: $userData.userLastName)
                     .font(.headline)
@@ -163,6 +158,7 @@ extension Onboarding {
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
+                    .focused($userField, equals: .lastName)
             }
             
             Spacer()
@@ -208,7 +204,7 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            Spacer()
+            //Spacer()
             Spacer()
         }
         .foregroundStyle(.white)
@@ -248,7 +244,7 @@ extension Onboarding {
                 .cornerRadius(10)
             
             Spacer()
-            Spacer()
+            //Spacer()
             
             
         }
@@ -279,12 +275,6 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            //            Text("Enter your company contact info as you want it to appear on your Invoice.")
-            //                .font(.subheadline)
-            //                .fontWeight(.bold)
-            //                .foregroundStyle(.white)
-            //                .multilineTextAlignment(.center)
-            //                .padding(.horizontal)
             
             Spacer()
             
@@ -294,9 +284,12 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
-            //.padding(.bottom, 20)
+                .focused($clientField, equals: .contact)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .email
+                }
             
-            //Spacer()
             
             TextField("Email", text: $userData.company.email)
                 .font(.headline)
@@ -304,6 +297,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .email)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .phone
+                }
             
             TextField("Phone", text: $userData.company.phone)
                 .font(.headline)
@@ -311,11 +309,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .phone)
             
             
-            
-            Spacer()
-            Spacer()
+           // Spacer()
+            //Spacer()
             Spacer()
         }
         .padding()
@@ -349,13 +347,6 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            //            Text("Enter your company address info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-            //                .font(.subheadline)
-            //                .fontWeight(.bold)
-            //                .foregroundStyle(.white)
-            //                .multilineTextAlignment(.center)
-            //                .padding(.horizontal)
-            
             Spacer()
             TextField("Address", text: $userData.company.address)
                 .font(.headline)
@@ -363,6 +354,13 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .address)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .address2
+                }
+            
+            
             
             TextField("Address 2", text: $userData.company.address2)
                 .font(.headline)
@@ -370,6 +368,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .address2)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .city
+                }
             
             TextField("City", text: $userData.company.city)
                 .font(.headline)
@@ -377,6 +380,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .city)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .state
+                }
             
             TextField("State", text: $userData.company.state)
                 .font(.headline)
@@ -384,6 +392,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .state)
+                .submitLabel(.next)
+                .onSubmit {
+                    clientField = .zip
+                }
             
             TextField("Zip Code", text: $userData.company.zip)
                 .font(.headline)
@@ -391,8 +404,9 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($clientField, equals: .zip)
             
-            Spacer()
+           // Spacer()
             Spacer()
         }
         .padding()
@@ -423,20 +437,19 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            //            Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-            //                .font(.subheadline)
-            //                .fontWeight(.bold)
-            //                .foregroundStyle(.white)
-            //                .multilineTextAlignment(.center)
-            //                .padding(.horizontal)
-            
             Spacer()
+            
             TextField("Bank Name", text: $userData.bankingInfo.bank)
                 .font(.headline)
                 .frame(height: textFrameHeight)
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($bankField, equals: .bank)
+                .submitLabel(.next)
+                .onSubmit {
+                    bankField = .accountName
+                }
             
             TextField("Name on Account", text: $userData.bankingInfo.accountName)
                 .font(.headline)
@@ -444,6 +457,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($bankField, equals: .accountName)
+                .submitLabel(.next)
+                .onSubmit {
+                    bankField = .routing
+                }
             
             TextField("routing Number", text: $userData.bankingInfo.routingNumber)
                 .font(.headline)
@@ -451,6 +469,11 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($bankField, equals: .routing)
+                .submitLabel(.next)
+                .onSubmit {
+                    bankField = .account
+                }
             
             TextField("Account Number", text: $userData.bankingInfo.accountNumber)
                 .font(.headline)
@@ -458,27 +481,13 @@ extension Onboarding {
                 .padding(.horizontal)
                 .background(Color.white)
                 .cornerRadius(10)
+                .focused($bankField, equals: .account)
             
             Spacer()
             
-//            VStack {
-//                TextField("Zelle", text: $userData.bankingInfo.zelle)
-//                    .font(.headline)
-//                    .frame(height: textFrameHeight)
-//                    .padding(.horizontal)
-//                    .background(Color.white)
-//                    .cornerRadius(10)
-//                
-//                TextField("Venmo", text: $userData.bankingInfo.venmo)
-//                    .font(.headline)
-//                    .frame(height: textFrameHeight)
-//                    .padding(.horizontal)
-//                    .background(Color.white)
-//                    .cornerRadius(10)
-//            }
-            .padding(.bottom)
+                .padding(.bottom)
             
-            Spacer()
+            //Spacer()
             Spacer()
         }
         .padding(20)
@@ -491,6 +500,7 @@ extension Onboarding {
                 .scaledToFit()
                 .frame(width: 200, height: 150)
                 .foregroundStyle(.white)
+            
             Spacer()
             
             Text("\(userData.company.name)")
@@ -509,12 +519,6 @@ extension Onboarding {
                 .foregroundStyle(.white)
                 .padding(.bottom)
             
-            //            Text("Enter your company banking info as you want it to appear on your Invoice. If you choose to skip, you can enter it later in the Settings menu.")
-            //                .font(.subheadline)
-            //                .fontWeight(.bold)
-            //                .foregroundStyle(.white)
-            //                .multilineTextAlignment(.center)
-            //                .padding(.horizontal)
             
             Spacer()
             
@@ -525,6 +529,11 @@ extension Onboarding {
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
+                    .focused($bankField, equals: .zelle)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        bankField = .venmo
+                    }
                 
                 TextField("Venmo", text: $userData.bankingInfo.venmo)
                     .font(.headline)
@@ -532,10 +541,11 @@ extension Onboarding {
                     .padding(.horizontal)
                     .background(Color.white)
                     .cornerRadius(10)
+                    .focused($bankField, equals: .venmo)
             }
             .padding(.bottom)
             
-            Spacer()
+            //Spacer()
             Spacer()
         }
         .padding(20)
@@ -544,6 +554,12 @@ extension Onboarding {
     private var invoiceNumberAddToCal: some View {
         
         VStack{
+            Image(systemName: "pencil.and.list.clipboard")
+                .resizable()
+                .scaledToFit()
+                .frame(width: 200, height: 150)
+                .foregroundStyle(.white)
+            
             Spacer()
             
             Text("\(userData.company.name)")
@@ -561,7 +577,6 @@ extension Onboarding {
                     .fontWeight(.bold)
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
-                    //.padding(.horizontal)
                 
                 TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number)
                     .font(.headline)
@@ -577,17 +592,16 @@ extension Onboarding {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                     .padding(.top)
-                    
-                    
+                
+                
                 
                 Toggle(isOn: $userData.addToCalendar) {
                     HStack{
                         Image(systemName: "calendar.badge.plus")
-                            .tint(userData.addToCalendar ? Color.gray : Color.green)
+                            .foregroundStyle(userData.addToCalendar ? Color.black : Color.gray)
                         
                         Spacer()
                         
-                        //Text("\(userData.addToCalendar ? Text("On") : Text("Off"))")
                     }
                 }
                 .font(.headline)
@@ -597,14 +611,11 @@ extension Onboarding {
                 .cornerRadius(10)
             }
             
-            Spacer()
+            //Spacer()
             Spacer()
         }
         
-        
     }
-    
-    
 }
 
 

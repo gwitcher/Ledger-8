@@ -12,64 +12,48 @@ struct BankingInvoiceView: View {
     
     var body: some View {
         
-        VStack(spacing: 3){
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.bank)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
+        VStack(alignment: .leading, spacing: 3){
+            HStack {
+                Text("Bank:")
                 
-            }   label: {
-                Text("Bank:").foregroundStyle(.secondary)
+                Spacer()
                 
+                Text(userData.bankingInfo.bank)
             }
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.accountName)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
+            HStack {
+                Text("Name on Acct:")
                 
-            }   label: {
-                Text("Name on Account:").foregroundStyle(.secondary)
+                Spacer()
                 
+                Text(userData.bankingInfo.accountName)
             }
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.routingNumber)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
-                
-            }   label: {
-                Text("Routing:").foregroundStyle(.secondary)
-                
+          
+            HStack {
+                Text("Routing:")
+                Spacer()
+                Text(userData.bankingInfo.routingNumber)
             }
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.accountNumber)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
-                
-            }   label: {
-                Text("Account:").foregroundStyle(.secondary)
-                
+            HStack {
+                Text("Account:")
+                Spacer()
+                Text(userData.bankingInfo.accountNumber)
             }
             
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.venmo)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
-                
-            }   label: {
-                Text("Venmo:").foregroundStyle(.secondary)
-                
+            HStack {
+                Text("Venmo:")
+                Spacer()
+                Text(userData.bankingInfo.venmo)
+                    
             }
-            LabeledContent {
-                TextField("", text: $userData.bankingInfo.zelle)
-                    .autocorrectionDisabled()
-                    .multilineTextAlignment(.trailing)
-                
-            }   label: {
-                Text("Zelle:").foregroundStyle(.secondary)
-                
+            HStack {
+                Text("Zelle:")
+                Spacer()
+                Text(userData.bankingInfo.zelle)
             }
         }
         .font(.caption)
+        .foregroundStyle(.secondary)
+       
     }
 }
 

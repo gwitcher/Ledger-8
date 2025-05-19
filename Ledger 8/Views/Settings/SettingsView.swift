@@ -13,10 +13,11 @@ struct SettingsView: View {
     @Environment(\.dismiss) var dismiss
     
     @AppStorage("userData") var userData = UserData()
-     
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
+    
     
     var body: some View {
-       
+        
         
         NavigationStack {
             List {
@@ -51,9 +52,19 @@ struct SettingsView: View {
                         }
                     }
                 }
-
-//                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
-//                    .foregroundStyle(.black)
+                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
+                    .foregroundStyle(.black)
+                
+                Section("Initial Invoice Number") {
+                    TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number)
+                        .font(.headline)
+                        .frame(height: 30)
+                        .padding(.horizontal)
+                        .background(Color.white)
+                        .cornerRadius(10)
+                    
+                }
+                
             }
             .navigationTitle("Settings")
             .toolbar {
@@ -63,9 +74,6 @@ struct SettingsView: View {
                     }
                 }
             }
-            
-           
-            
         }
     }
 }

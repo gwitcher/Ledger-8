@@ -12,13 +12,14 @@ struct InvoiceTemplateView: View {
     @Environment(\.modelContext) var modelContext
     
     @AppStorage("userData") var userData = UserData()
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = -1
     
     var project: Project
     
     
     var body: some View {
         
-        VStack {
+        VStack(alignment: .leading) {
             HStack  {
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
                     .foregroundStyle(Color.invoice1)
@@ -34,7 +35,7 @@ struct InvoiceTemplateView: View {
                             Spacer()
                             
                             VStack (alignment: .center) {
-                                Text("Invoice: \(project.invoice?.number ?? 0)")
+                                Text("Invoice: \(project.invoice?.number ?? initialInvoiceNumber)")
                                     .font(.subheadline)
                                     .padding(.horizontal)
                                 //.border(.blue)
@@ -70,7 +71,7 @@ struct InvoiceTemplateView: View {
             HStack {
                 PayerView(project: project)
                     .frame(width: 250, height: 150)
-                    //.border(.black)
+                //.border(.black)
                 
                 Spacer()
             }
@@ -81,17 +82,12 @@ struct InvoiceTemplateView: View {
                 .padding()
                 .minimumScaleFactor(0.5)
             
+            BankingInvoiceView()
+                .frame(width: 250, height: 150)
+                .padding()
             
             
-            HStack {
-                BankingInvoiceView()
-                    .frame(width: 300, height: 150)
-                    //.border(.black)
-                
-                Spacer()
-                
-            }
-            .padding()
+            Spacer()
         }
     }
 }

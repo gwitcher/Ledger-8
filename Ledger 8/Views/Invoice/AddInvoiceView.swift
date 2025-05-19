@@ -11,14 +11,15 @@ import SwiftData
 struct AddInvoiceView: View {
     @Environment(\.modelContext) var modelContext
     
+   
     @Query private var projects: [Project]
     var project: Project
     
-    let defaultInvoiceNumber = 1000
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber  = -1
     
     
     var body: some View {
-        let nextInvoiceNumber = project.nextInvoiceNumber(projects: projects, defaultInvoiceNumber: defaultInvoiceNumber)
+        let nextInvoiceNumber = project.nextInvoiceNumber(projects: projects, defaultInvoiceNumber: initialInvoiceNumber)
         
             Button {
                 

@@ -77,7 +77,7 @@ extension Project {
     func nextInvoiceNumber(projects: [Project], defaultInvoiceNumber: Int) -> Int{
         var invoiceNumbers: [Int] = []
         for project in projects {
-            invoiceNumbers.append(project.invoice?.number ?? 0)
+            invoiceNumbers.append(project.invoice?.number ?? defaultInvoiceNumber)
         }
         return invoiceNumbers.max() ?? defaultInvoiceNumber
         

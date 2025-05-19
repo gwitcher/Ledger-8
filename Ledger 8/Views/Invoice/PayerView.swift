@@ -15,7 +15,7 @@ struct PayerView: View {
     var body: some View {
         let cityState = "\(project.client?.city ?? ""), \(project.client?.state ?? "")"
         
-            VStack(spacing: 6) {
+            VStack(spacing: 3) {
                 LabeledContent("Client: ") {
                     Text("\(project.client?.name ?? "")")
                         .multilineTextAlignment(.trailing)
