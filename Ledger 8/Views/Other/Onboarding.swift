@@ -578,7 +578,7 @@ extension Onboarding {
                     .foregroundStyle(.white)
                     .multilineTextAlignment(.leading)
                 
-                TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number)
+                TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number.grouping(.never))
                     .font(.headline)
                     .frame(height: textFrameHeight)
                     .padding(.horizontal)

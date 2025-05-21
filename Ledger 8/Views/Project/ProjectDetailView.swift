@@ -44,10 +44,10 @@ struct ProjectDetailView: View {
             Form {
                 Section("Client") {
                     if selectedClient != nil {
-                        Text(selectedClient!.name)
+                        Text(selectedClient!.fullName)
                             .contentShape(Rectangle())
                             .onTapGesture {
-                                print("Shown Client: \(selectedClient?.name ?? "NIL")")
+                                print("Shown Client: \(selectedClient?.fullName ?? "NIL")")
                                 clientSelectSheetIsPresented.toggle()
                             }
                         
@@ -299,11 +299,11 @@ struct ProjectDetailView: View {
     }
     
     func saveProject() {
-        print("Save before: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
+        print("Save before: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
         
         project.client = selectedClient
         
-        print("Save after: Project Client: \(project.client?.name ?? "NIL"), SelectedClient: \(selectedClient?.name ?? "NIL")")
+        print("Save after: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
         
         project.projectName = projectName
         project.artist = artist

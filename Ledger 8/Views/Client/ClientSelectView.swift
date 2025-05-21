@@ -14,7 +14,7 @@ struct ClientSelectView: View {
     
     
     
-    @Query(sort: \Client.name) var allClients: [Client]
+    @Query(sort: \Client.firstName) var allClients: [Client]
     
     @Binding var selectedClient:  Client?
     @State private var searchText = ""
@@ -25,7 +25,7 @@ struct ClientSelectView: View {
             allClients
         } else {
             allClients.filter {
-                $0.name.localizedStandardContains(searchText)
+                $0.firstName.localizedStandardContains(searchText)
             }
         }
     }
@@ -37,11 +37,11 @@ struct ClientSelectView: View {
                 if !allClients.isEmpty {
                     List {
                         ForEach(filteredClient) {client in
-                            Text(client.name)
+                            Text(client.fullName)
                                 //.border(.red)
                                 .onTapGesture {
                                     selectedClient = client
-                                    print("Client Select View Selected Client on tap: \(selectedClient?.name ?? "NIL")")
+                                    print("Client Select View Selected Client on tap: \(selectedClient?.fullName ?? "NIL")")
                                     dismiss()
                                 }
                         }

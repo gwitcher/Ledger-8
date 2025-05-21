@@ -10,7 +10,7 @@ import SwiftData
 
 struct SortedProjectView: View {
     @Environment(\.modelContext) var modelContext
-    @Query var projects: [Project]
+    @Query(sort: \Project.startDate) var projects: [Project]
     
     let filterSelection: Status
     

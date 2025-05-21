@@ -24,7 +24,7 @@ struct ProjectView: View {
                 }
             VStack(alignment: .leading, spacing: 6) {
                 
-                Text(project.client?.name ?? "Add Client")
+                Text(project.client?.fullName ?? "Add Client")
             
                     .font(.subheadline)
                     .foregroundStyle(.black)

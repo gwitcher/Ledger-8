@@ -13,7 +13,7 @@ struct ClientListView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    @Query(sort: \Client.name) var allClients: [Client]
+    @Query(sort: \Client.firstName) var allClients: [Client]
     
 
     @State private var searchText = ""
@@ -24,7 +24,7 @@ struct ClientListView: View {
             allClients
         } else {
             allClients.filter {
-                $0.name.localizedStandardContains(searchText)
+                $0.firstName.localizedStandardContains(searchText)
             }
         }
     }
@@ -39,7 +39,7 @@ struct ClientListView: View {
                             NavigationLink(destination: {
                                 ClientEditView(client: contact)
                             }, label: {
-                                Text(contact.name)
+                                Text(contact.fullName)
                             })
                             .swipeActions {
                                 Button("Delete", role: .destructive) {

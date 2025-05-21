@@ -52,11 +52,9 @@ struct SettingsView: View {
                         }
                     }
                 }
-                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
-                    .foregroundStyle(.black)
                 
-                Section("Initial Invoice Number") {
-                    TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number)
+                Section("Starting Invoice Number") {
+                    TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number.grouping(.never))
                         .font(.headline)
                         .frame(height: 30)
                         .padding(.horizontal)
@@ -64,6 +62,11 @@ struct SettingsView: View {
                         .cornerRadius(10)
                     
                 }
+                
+                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
+                    .foregroundStyle(.black)
+                
+                
                 
             }
             .navigationTitle("Settings")

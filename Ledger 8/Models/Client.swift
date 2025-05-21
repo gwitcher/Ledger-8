@@ -11,7 +11,8 @@ import SwiftData
 @Model
 class Client: Identifiable {
     var id: UUID
-    var name: String
+    var firstName: String
+    var lastName: String
     var email: String
     var phone: String
     var attention: String
@@ -25,9 +26,15 @@ class Client: Identifiable {
     
     @Relationship(inverse: \Project.client) var project: [Project]?
     
+    
+    var fullName: String {
+        "\(firstName) \(lastName)"
+    }
+    
     init(
         id: UUID = UUID(),
-        name: String = "",
+        firstName: String = "",
+        lastName: String = "",
         email: String = "",
         phone: String = "",
         attention: String = "",
@@ -40,7 +47,8 @@ class Client: Identifiable {
         
     ) {
         self.id = id
-        self.name = name
+        self.firstName = firstName
+        self.lastName = lastName
         self.email = email
         self.phone = phone
         self.attention = attention

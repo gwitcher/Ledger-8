@@ -30,7 +30,7 @@ extension Project {
     func renderInvoice(project: Project, invoiceNumber: Int) -> Invoice {
         let invoiceDate = Date.now
         let nextInvoiceNumber = invoiceNumber + 1
-        let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.name ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
+        let invoiceName = "Invoice_\(nextInvoiceNumber)_\(project.client?.fullName ?? "")_\(invoiceDate.formatted(.iso8601.year().month().day().dateSeparator(.dash))).pdf"
         
         let newInvoice = Invoice(number: nextInvoiceNumber, name: invoiceName)
         

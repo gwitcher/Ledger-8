@@ -1,19 +1,21 @@
 //
-//  ContactEditView.swift
+//  ContactDetailView.swift
 //  Ledger 8
 //
 //  Created by Gabe Witcher on 4/22/25.
 //
 
 import SwiftUI
+import SwiftData
 
-struct ClientEditView: View {
+struct NewClientView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    var client: Client
+    @State private var client = Client()
     
-    @State private var name = ""
+    @State private var firstName = ""
+    @State private var lastName = ""
     @State private var email = ""
     @State private var phone = ""
     @State private var attention = ""
@@ -31,17 +33,32 @@ struct ClientEditView: View {
             Form {
                 Section("Client Info") {
                     LabeledContent {
-                        TextField("", text: $name)
+                        TextField("", text: $firstName)
                             .autocorrectionDisabled()
                             .textContentType(.name)
-                            .focused($focusField, equals: .contact)
+                            .focused($focusField, equals: .firstName)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .lastName
+                            }
+                        
+                    }   label: {
+                        Text("First").foregroundStyle(.secondary)
+                            
+                    }
+                    
+                    LabeledContent {
+                        TextField("", text: $lastName)
+                            .autocorrectionDisabled()
+                            .textContentType(.name)
+                            .focused($focusField, equals: .lastName)
                             .submitLabel(.next)
                             .onSubmit {
                                 focusField = .email
                             }
                         
                     }   label: {
-                        Text("Contact").foregroundStyle(.secondary)
+                        Text("Last").foregroundStyle(.secondary)
                             
                     }
                     
@@ -111,7 +128,7 @@ struct ClientEditView: View {
                             .focused($focusField, equals: .address2)
                             .submitLabel(.next)
                             .onSubmit {
-                                focusField = .address2
+                                focusField = .city
                             }
                         
                     }   label: {
@@ -165,40 +182,63 @@ struct ClientEditView: View {
                 }
                 
             }
-            .onAppear {
-                name = client.name
-                email = client.email
-                phone = client.phone
-                attention = client.attention
-                address = client.address
-                address2 = client.address2
-                city = client.city
-                state = client.state
-                zip = client.zip
-                notes = client.notes
-            }
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel", role: .cancel) {
+                        dismiss()
+                    }
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
-                        client.name = name
-                        client.email = email
-                        client.phone = phone
-                        client.attention = attention
-                        client.address = address
-                        client.address2 = address2
-                        client.city = city
-                        client.state = state
-                        client.zip = zip
-                        client.notes = notes
+                        saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes)
+                        
+                        firstName = ""
+                        lastName = ""
+                        email = ""
+                        phone = ""
+                        attention = ""
+                        address = ""
+                        address2 = ""
+                        city = ""
+                        state = ""
+                        zip = ""
+                        notes = ""
                         
                         dismiss()
+                        
                     }
                 }
             }
         }
+        
+    }
+    
+    func saveClient(firstName: String, lastName: String, email: String, phone: String, attention: String, address: String, address2: String, city: String, state: String, zip: String, notes: String ) {
+        client.firstName = firstName
+        client.lastName = lastName
+        client.email = email
+        client.phone = phone
+        client.attention = attention
+        client.address = address
+        client.address2 = address2
+        client.city = city
+        client.state = state
+        client.zip = zip
+        client.notes = notes
+        
+        
+        modelContext.insert(client)
+        guard let _ = try? modelContext.save() else{
+            print("😡 ERROR: Cannot save")
+            return
+        }
+
     }
 }
 
 #Preview {
-    ClientEditView(client: Client())
+    NavigationStack {
+        NewClientView()
+    }
 }

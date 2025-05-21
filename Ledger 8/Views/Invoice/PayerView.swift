@@ -17,7 +17,7 @@ struct PayerView: View {
         
             VStack(spacing: 3) {
                 LabeledContent("Client: ") {
-                    Text("\(project.client?.name ?? "")")
+                    Text("\(project.client?.fullName ?? "")")
                         .multilineTextAlignment(.trailing)
                 }
                 
@@ -26,10 +26,10 @@ struct PayerView: View {
                         .multilineTextAlignment(.trailing)
                 }
                 
-                LabeledContent("Attn: ") {
-                    Text("\(project.client?.name ?? "")")
-                        .multilineTextAlignment(.trailing)
-                }
+//                LabeledContent("Attn: ") {
+//                    Text("\(project.client?.fullName ?? "")")
+//                        .multilineTextAlignment(.trailing)
+//                }
                 
                 LabeledContent("Email: ") {
                     Text("\(project.client?.email ?? "")")

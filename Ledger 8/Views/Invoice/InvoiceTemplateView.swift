@@ -12,12 +12,16 @@ struct InvoiceTemplateView: View {
     @Environment(\.modelContext) var modelContext
     
     @AppStorage("userData") var userData = UserData()
-    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = -1
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
     
     var project: Project
     
     
+    
     var body: some View {
+        
+        let invoiceNumber = project.invoice?.number ?? initialInvoiceNumber
+        
         
         VStack(alignment: .leading) {
             HStack  {
@@ -35,7 +39,7 @@ struct InvoiceTemplateView: View {
                             Spacer()
                             
                             VStack (alignment: .center) {
-                                Text("Invoice: \(project.invoice?.number ?? initialInvoiceNumber)")
+                                Text("Invoice: \((String(invoiceNumber)))")
                                     .font(.subheadline)
                                     .padding(.horizontal)
                                 //.border(.blue)
