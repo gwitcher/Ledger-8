@@ -10,7 +10,7 @@ import SwiftData
 
 struct SortedProjectView: View {
     @Environment(\.modelContext) var modelContext
-    @Query(sort: \Project.startDate) var projects: [Project]
+    @Query var projects: [Project]
     
     let filterSelection: Status
     
@@ -18,11 +18,11 @@ struct SortedProjectView: View {
         self.filterSelection = sortSelection
         switch self.filterSelection {
         case .open:
-            _projects = Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false})
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == false && $0.paid == false}, sort: \Project.startDate)
         case .delivered:
-            _projects = Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false})
+            _projects = Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false}, sort: \Project.dateDelivered)
         case .closed:
-            _projects = Query(filter: #Predicate<Project> {$0.paid == true})
+            _projects = Query(filter: #Predicate<Project> {$0.paid == true}, sort: \Project.dateClosed)
         }
     }
     

@@ -12,7 +12,7 @@ import SwiftData
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     
-    @Query var projects: [Project]
+    @Query(sort: \Project.startDate) var projects: [Project]
     
     
     @State private var projectSheetIsPresented = false

@@ -25,6 +25,7 @@ struct NewClientView: View {
     @State private var state = ""
     @State private var zip = ""
     @State private var notes = ""
+    @State private var company = ""
     
     @FocusState private var focusField: clientField?
     
@@ -43,7 +44,7 @@ struct NewClientView: View {
                             }
                         
                     }   label: {
-                        Text("First").foregroundStyle(.secondary)
+                        Text("First Name").foregroundStyle(.secondary)
                             
                     }
                     
@@ -58,7 +59,7 @@ struct NewClientView: View {
                             }
                         
                     }   label: {
-                        Text("Last").foregroundStyle(.secondary)
+                        Text("Last Name").foregroundStyle(.secondary)
                             
                     }
                     
@@ -85,13 +86,31 @@ struct NewClientView: View {
                             .focused($focusField, equals: .phone)
                             .submitLabel(.next)
                             .onSubmit {
-                                focusField = .attn
+                                focusField = .company
                             }
                     }   label: {
                         Text("Phone").foregroundStyle(.secondary)
                             
                     }
                 }
+                
+                Section("Company"){
+                    LabeledContent {
+                        TextField("", text: $company)
+                            .autocorrectionDisabled()
+                            .textContentType(.telephoneNumber)
+                            .focused($focusField, equals: .company)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .attn
+                            }
+                    }   label: {
+                        Text("Company").foregroundStyle(.secondary)
+                            
+                    }
+                }
+                
+                
                 Section("Billing Info") {
                     LabeledContent {
                         TextField("", text: $attention)

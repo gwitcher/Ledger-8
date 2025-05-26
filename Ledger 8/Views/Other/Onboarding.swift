@@ -72,11 +72,11 @@ struct Onboarding: View {
                 .padding()
                 
                 
-               Spacer()
+                Spacer()
                 bottomButtons
                     .padding(.horizontal, 30)
             }
-           // .padding(30)
+            // .padding(30)
         }
     }
 }
@@ -160,6 +160,7 @@ extension Onboarding {
                     .cornerRadius(10)
                     .focused($userField, equals: .lastName)
             }
+            .foregroundStyle(.black)
             
             Spacer()
             Spacer()
@@ -174,12 +175,10 @@ extension Onboarding {
             HStack{
                 Spacer()
                 Text("Skip")
-                //Image(systemName: "arrow.right")
                     .font(.headline)
-                    .foregroundStyle(.white)
                     .frame(minHeight: 55)
                     .frame(maxWidth: 55)
-                //.background(Color.white)
+                
                     .cornerRadius(10)
             }
             .onTapGesture {
@@ -201,10 +200,9 @@ extension Onboarding {
             Text("Press 'Next' to set up Invoicing. If you choose to skip, you can set up Invoicing later from the Settings menu.")
                 .font(.subheadline)
                 .fontWeight(.bold)
-                .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
                 .padding(.horizontal)
-            //Spacer()
+            
             Spacer()
         }
         .foregroundStyle(.white)
@@ -240,13 +238,12 @@ extension Onboarding {
                 .font(.headline)
                 .frame(height: 55)
                 .padding(.horizontal)
+                .foregroundStyle(.black)
                 .background(Color.white)
                 .cornerRadius(10)
             
             Spacer()
-            //Spacer()
-            
-            
+        
         }
         .padding(30)
     }
@@ -278,41 +275,34 @@ extension Onboarding {
             
             Spacer()
             
-            TextField("Company contact", text: $userData.company.contact)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .contact)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .email
-                }
+            Group {
+                TextField("Company contact", text: $userData.company.contact)
+                    .focused($clientField, equals: .contact)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .email
+                    }
+                
+                
+                TextField("Email", text: $userData.company.email)
+                    .focused($clientField, equals: .email)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .phone
+                    }
+                
+                TextField("Phone", text: $userData.company.phone)
+                    .focused($clientField, equals: .phone)
+            }
+            .frame(height: textFrameHeight)
+            .font(.headline)
+            .padding(.horizontal)
+            .background(Color.white)
+            .foregroundStyle(.black)
+            .cornerRadius(10)
             
             
-            TextField("Email", text: $userData.company.email)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .email)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .phone
-                }
-            
-            TextField("Phone", text: $userData.company.phone)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .phone)
-            
-            
-           // Spacer()
+            // Spacer()
             //Spacer()
             Spacer()
         }
@@ -348,65 +338,48 @@ extension Onboarding {
                 .padding(.bottom)
             
             Spacer()
-            TextField("Address", text: $userData.company.address)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .address)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .address2
-                }
             
-            
-            
-            TextField("Address 2", text: $userData.company.address2)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .address2)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .city
-                }
-            
-            TextField("City", text: $userData.company.city)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .city)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .state
-                }
-            
-            TextField("State", text: $userData.company.state)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .state)
-                .submitLabel(.next)
-                .onSubmit {
-                    clientField = .zip
-                }
-            
-            TextField("Zip Code", text: $userData.company.zip)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($clientField, equals: .zip)
-            
-           // Spacer()
+            Group {
+                TextField("Address", text: $userData.company.address)
+                    .focused($clientField, equals: .address)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .address2
+                    }
+                
+                
+                
+                TextField("Address 2", text: $userData.company.address2)
+                    .focused($clientField, equals: .address2)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .city
+                    }
+                
+                TextField("City", text: $userData.company.city)
+                    .focused($clientField, equals: .city)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .state
+                    }
+                
+                TextField("State", text: $userData.company.state)
+                    .focused($clientField, equals: .state)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        clientField = .zip
+                    }
+                
+                TextField("Zip Code", text: $userData.company.zip)
+                    .focused($clientField, equals: .zip)
+            }
+            .frame(height: textFrameHeight)
+            .font(.headline)
+            .padding(.horizontal)
+            .background(Color.white)
+            .foregroundStyle(.black)
+            .cornerRadius(10)
+         
             Spacer()
         }
         .padding()
@@ -429,7 +402,7 @@ extension Onboarding {
                 .foregroundStyle(.white)
             
             
-            Text("Banking Info")
+            Text("Direct Deposit Info")
                 .font(.title)
                 .fontWeight(.bold)
                 .multilineTextAlignment(.center)
@@ -439,49 +412,37 @@ extension Onboarding {
             
             Spacer()
             
-            TextField("Bank Name", text: $userData.bankingInfo.bank)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($bankField, equals: .bank)
-                .submitLabel(.next)
-                .onSubmit {
-                    bankField = .accountName
-                }
-            
-            TextField("Name on Account", text: $userData.bankingInfo.accountName)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($bankField, equals: .accountName)
-                .submitLabel(.next)
-                .onSubmit {
-                    bankField = .routing
-                }
-            
-            TextField("routing Number", text: $userData.bankingInfo.routingNumber)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($bankField, equals: .routing)
-                .submitLabel(.next)
-                .onSubmit {
-                    bankField = .account
-                }
-            
-            TextField("Account Number", text: $userData.bankingInfo.accountNumber)
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
-                .focused($bankField, equals: .account)
+            Group {
+                TextField("Bank Name", text: $userData.bankingInfo.bank)
+                    .focused($bankField, equals: .bank)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        bankField = .accountName
+                    }
+                
+                TextField("Name on Account", text: $userData.bankingInfo.accountName)
+                    .focused($bankField, equals: .accountName)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        bankField = .routing
+                    }
+                
+                TextField("routing Number", text: $userData.bankingInfo.routingNumber)
+                    .focused($bankField, equals: .routing)
+                    .submitLabel(.next)
+                    .onSubmit {
+                        bankField = .account
+                    }
+                
+                TextField("Account Number", text: $userData.bankingInfo.accountNumber)
+                    .focused($bankField, equals: .account)
+            }
+            .frame(height: textFrameHeight)
+            .font(.headline)
+            .padding(.horizontal)
+            .background(Color.white)
+            .foregroundStyle(.black)
+            .cornerRadius(10)
             
             Spacer()
             
@@ -524,11 +485,6 @@ extension Onboarding {
             
             VStack {
                 TextField("Zelle", text: $userData.bankingInfo.zelle)
-                    .font(.headline)
-                    .frame(height: textFrameHeight)
-                    .padding(.horizontal)
-                    .background(Color.white)
-                    .cornerRadius(10)
                     .focused($bankField, equals: .zelle)
                     .submitLabel(.next)
                     .onSubmit {
@@ -536,13 +492,14 @@ extension Onboarding {
                     }
                 
                 TextField("Venmo", text: $userData.bankingInfo.venmo)
-                    .font(.headline)
-                    .frame(height: textFrameHeight)
-                    .padding(.horizontal)
-                    .background(Color.white)
-                    .cornerRadius(10)
                     .focused($bankField, equals: .venmo)
             }
+            .frame(height: textFrameHeight)
+            .font(.headline)
+            .padding(.horizontal)
+            .background(Color.white)
+            .foregroundStyle(.black)
+            .cornerRadius(10)
             .padding(.bottom)
             
             //Spacer()
@@ -582,33 +539,34 @@ extension Onboarding {
                     .font(.headline)
                     .frame(height: textFrameHeight)
                     .padding(.horizontal)
+                    .foregroundStyle(.black)
                     .background(Color.white)
                     .cornerRadius(10)
                     .padding(.bottom)
                 
-                Text("Add projects to iCal:")
-                    .font(.subheadline)
-                    .fontWeight(.bold)
-                    .foregroundStyle(.white)
-                    .multilineTextAlignment(.leading)
-                    .padding(.top)
-                
-                
-                
-                Toggle(isOn: $userData.addToCalendar) {
-                    HStack{
-                        Image(systemName: "calendar.badge.plus")
-                            .foregroundStyle(userData.addToCalendar ? Color.black : Color.gray)
-                        
-                        Spacer()
-                        
-                    }
-                }
-                .font(.headline)
-                .frame(height: textFrameHeight)
-                .padding(.horizontal)
-                .background(Color.white)
-                .cornerRadius(10)
+                //                Text("Add projects to iCal:")
+                //                    .font(.subheadline)
+                //                    .fontWeight(.bold)
+                //                    .foregroundStyle(.white)
+                //                    .multilineTextAlignment(.leading)
+                //                    .padding(.top)
+                //
+                //
+                //
+                //                Toggle(isOn: $userData.addToCalendar) {
+                //                    HStack{
+                //                        Image(systemName: "calendar.badge.plus")
+                //                            .foregroundStyle(userData.addToCalendar ? Color.black : Color.gray)
+                //
+                //                        Spacer()
+                //
+                //                    }
+                //                }
+                //                .font(.headline)
+                //                .frame(height: textFrameHeight)
+                //                .padding(.horizontal)
+                //                .background(Color.white)
+                //                .cornerRadius(10)
             }
             
             //Spacer()

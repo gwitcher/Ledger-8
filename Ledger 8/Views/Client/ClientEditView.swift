@@ -24,6 +24,7 @@ struct ClientEditView: View {
     @State private var state = ""
     @State private var zip = ""
     @State private var notes = ""
+    @State private var company = ""
     
     @FocusState private var focusField: clientField?
     
@@ -90,6 +91,24 @@ struct ClientEditView: View {
                             
                     }
                 }
+                
+                Section("Company"){
+                    LabeledContent {
+                        TextField("", text: $company)
+                            .autocorrectionDisabled()
+                            .textContentType(.telephoneNumber)
+                            .focused($focusField, equals: .company)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusField = .attn
+                            }
+                    }   label: {
+                        Text("Company").foregroundStyle(.secondary)
+                            
+                    }
+                }
+                
+                
                 Section("Billing Info") {
                     LabeledContent {
                         TextField("", text: $attention)

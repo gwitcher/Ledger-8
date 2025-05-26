@@ -74,7 +74,7 @@ enum ItemField {
 }
 
 enum clientField {
-    case firstName, lastName, email, phone, attn, address, address2, city, state, zip, notes, contact
+    case firstName, lastName, email, phone, attn, address, address2, city, state, zip, notes, contact, company
 }
 
 enum userField {

@@ -63,8 +63,8 @@ struct SettingsView: View {
                     
                 }
                 
-                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
-                    .foregroundStyle(.black)
+//                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
+//                    .foregroundStyle(.black)
                 
                 
                 
