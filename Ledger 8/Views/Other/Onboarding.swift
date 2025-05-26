@@ -483,7 +483,7 @@ extension Onboarding {
             
             Spacer()
             
-            VStack {
+            Group {
                 TextField("Zelle", text: $userData.bankingInfo.zelle)
                     .focused($bankField, equals: .zelle)
                     .submitLabel(.next)
