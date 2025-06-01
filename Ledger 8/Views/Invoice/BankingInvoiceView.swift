@@ -52,7 +52,7 @@ struct BankingInvoiceView: View {
             }
         }
         .font(.caption)
-        .foregroundStyle(.secondary)
+        //.foregroundStyle(.secondary)
        
     }
 }

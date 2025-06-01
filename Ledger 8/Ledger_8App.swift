@@ -26,6 +26,7 @@ struct Ledger_8App: App {
         let config  = ModelConfiguration(dbName, schema: schema)
         do{
             container = try ModelContainer(for: schema, configurations: config)
+           // container.mainContext.undoManager = UndoManager()
         } catch {
             fatalError("Could not configure the container")
         }

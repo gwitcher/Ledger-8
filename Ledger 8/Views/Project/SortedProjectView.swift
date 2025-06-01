@@ -10,7 +10,9 @@ import SwiftData
 
 struct SortedProjectView: View {
     @Environment(\.modelContext) var modelContext
+    
     @Query var projects: [Project]
+    
     
     let filterSelection: Status
     
@@ -58,12 +60,8 @@ struct SortedProjectView: View {
                     .tint(.orange)
                 }
             }
-            
         }
-        //.background(Color.clear)
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
-        //.shadow(radius: 10)
-        
     }
 }
 

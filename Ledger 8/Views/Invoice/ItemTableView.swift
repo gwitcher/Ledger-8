@@ -68,7 +68,7 @@ struct ItemTableView: View {
                                 .gridCellAnchor(UnitPoint(x: 1, y: 0.5))
                         }
                         .font(.headline)
-                        .foregroundStyle(.secondary)
+                        .foregroundStyle(.opacity(0.8))
                         .gridCellUnsizedAxes(.vertical)
                         Divider()
                     }

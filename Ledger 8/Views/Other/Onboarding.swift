@@ -140,11 +140,7 @@ extension Onboarding {
             
             Group {
                 TextField("First Name", text: $userData.userFirstName)
-                    .font(.headline)
-                    .frame(height: textFrameHeight)
-                    .padding(.horizontal)
-                    .background(Color.white)
-                    .cornerRadius(10)
+                    
                     .focused($userField, equals: .firstName)
                     .submitLabel(.next)
                     .onSubmit {
@@ -153,14 +149,15 @@ extension Onboarding {
                 
                 
                 TextField("Last Name", text: $userData.userLastName)
-                    .font(.headline)
-                    .frame(height: textFrameHeight)
-                    .padding(.horizontal)
-                    .background(Color.white)
-                    .cornerRadius(10)
                     .focused($userField, equals: .lastName)
             }
+            .font(.headline)
+            .frame(height: textFrameHeight)
+            .padding(.horizontal)
             .foregroundStyle(.black)
+            .background(Color.white)
+            .cornerRadius(10)
+            
             
             Spacer()
             Spacer()
@@ -229,7 +226,6 @@ extension Onboarding {
                 .lineLimit(1)
             
             Text("Enter your company name as you would like it to appear on your Invoices:")
-            //.font(.caption)
                 .fontWeight(.medium)
                 .foregroundStyle(.white)
                 .multilineTextAlignment(.center)
@@ -297,13 +293,10 @@ extension Onboarding {
             .frame(height: textFrameHeight)
             .font(.headline)
             .padding(.horizontal)
-            .background(Color.white)
             .foregroundStyle(.black)
+            .background(Color.white)
             .cornerRadius(10)
             
-            
-            // Spacer()
-            //Spacer()
             Spacer()
         }
         .padding()
@@ -376,8 +369,8 @@ extension Onboarding {
             .frame(height: textFrameHeight)
             .font(.headline)
             .padding(.horizontal)
-            .background(Color.white)
             .foregroundStyle(.black)
+            .background(Color.white)
             .cornerRadius(10)
          
             Spacer()
@@ -392,6 +385,7 @@ extension Onboarding {
                 .scaledToFit()
                 .frame(width: 200, height: 150)
                 .foregroundStyle(.white)
+            
             Spacer()
             
             Text("\(userData.company.name)")
@@ -400,7 +394,6 @@ extension Onboarding {
                 .multilineTextAlignment(.center)
                 .minimumScaleFactor(0.5)
                 .foregroundStyle(.white)
-            
             
             Text("Direct Deposit Info")
                 .font(.title)
@@ -440,15 +433,14 @@ extension Onboarding {
             .frame(height: textFrameHeight)
             .font(.headline)
             .padding(.horizontal)
-            .background(Color.white)
             .foregroundStyle(.black)
+            .background(Color.white)
             .cornerRadius(10)
             
             Spacer()
             
                 .padding(.bottom)
             
-            //Spacer()
             Spacer()
         }
         .padding(20)
@@ -497,8 +489,8 @@ extension Onboarding {
             .frame(height: textFrameHeight)
             .font(.headline)
             .padding(.horizontal)
-            .background(Color.white)
             .foregroundStyle(.black)
+            .background(Color.white)
             .cornerRadius(10)
             .padding(.bottom)
             

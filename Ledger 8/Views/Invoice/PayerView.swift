@@ -53,6 +53,7 @@ struct PayerView: View {
                 }
             }
             .font(.caption)
+            .foregroundStyle(.primary)
             //Spacer()
         
        

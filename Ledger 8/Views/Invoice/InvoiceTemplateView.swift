@@ -31,7 +31,7 @@ struct InvoiceTemplateView: View {
                     .overlay {
                         HStack (alignment: .top) {
                             CompanyLogoView()
-                                .frame(width: 170, height: 100)
+                                .frame(height: 100)
                                 .padding(.top)
                                 .minimumScaleFactor(0.5)
                             
@@ -46,8 +46,8 @@ struct InvoiceTemplateView: View {
                                 
                                 RoundedRectangle(cornerRadius: 30)
                                     .scaleEffect(1)
-                                    .opacity(0.6)
                                     .foregroundStyle(.red)
+                                    .opacity(0.5)
                                     .overlay {
                                         if let items = project.items {
                                             Text("Due: \(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))")
@@ -70,7 +70,7 @@ struct InvoiceTemplateView: View {
                         .padding(.horizontal)
                     }
             }
-            .frame(width: 400, height: 150)
+            .frame(height: 150)
             
             HStack {
                 PayerView(project: project)
