@@ -42,21 +42,16 @@ struct PayerView: View {
                         Text(cityState)
                         Text(project.client?.zip ?? "")
                     }
-                    //Spacer()
-                    
+             
                 } label: {
                     Text("Address: ")
                     Text("")
                     Text("")
                     Text("")
-                       
                 }
             }
             .font(.caption)
             .foregroundStyle(.primary)
-            //Spacer()
-        
-       
     }
 }
 

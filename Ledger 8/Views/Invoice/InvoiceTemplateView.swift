@@ -12,75 +12,36 @@ struct InvoiceTemplateView: View {
     @Environment(\.modelContext) var modelContext
     
     @AppStorage("userData") var userData = UserData()
-    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
-    
+    // var userData = UserData()
     var project: Project
     
     
     
     var body: some View {
         
-        let invoiceNumber = project.invoice?.number ?? initialInvoiceNumber
-        
-        
         VStack(alignment: .leading) {
-            HStack  {
+            ZStack  {
                 RoundedRectangle(cornerRadius: 5, style: .continuous)
                     .foregroundStyle(Color.invoice1)
                     .opacity(0.2)
-                    .overlay {
-                        HStack (alignment: .top) {
-                            CompanyLogoView()
-                                .frame(height: 100)
-                                .padding(.top)
-                                .minimumScaleFactor(0.5)
-                            
-                            
-                            Spacer()
-                            
-                            VStack (alignment: .center) {
-                                Text("Invoice: \((String(invoiceNumber)))")
-                                    .font(.subheadline)
-                                    .padding(.horizontal)
-                                //.border(.blue)
-                                
-                                RoundedRectangle(cornerRadius: 30)
-                                    .scaleEffect(1)
-                                    .foregroundStyle(.red)
-                                    .opacity(0.5)
-                                    .overlay {
-                                        if let items = project.items {
-                                            Text("Due: \(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))")
-                                        } else {
-                                            Text("Due: $0.00")
-                                        }
-                                    }
-                                    .font(.subheadline)
-                                    .fontWeight(.bold)
-                                    .minimumScaleFactor(0.2)
-                                    .lineLimit(1)
-                                    .padding()
-                                
-                                
-                                
-                            }
-                            .padding()
-                            
-                        }
-                        .padding(.horizontal)
+                
+                HStack(alignment: .top) {
+                        CompanyLogoView()
+                        Spacer()
+                        InvoiceAndFee(project: project)
                     }
+                    .minimumScaleFactor(0.5)
+                    .padding()
             }
             .frame(height: 150)
             
             HStack {
                 PayerView(project: project)
                     .frame(width: 250, height: 150)
-                //.border(.black)
                 
                 Spacer()
             }
             .padding()
-            //.background(.quinary)
             
             ItemTableView(project: project)
                 .padding()
@@ -100,3 +61,44 @@ struct InvoiceTemplateView: View {
     InvoiceTemplateView( project: Project(projectName: "Dummy", artist: "Dummy", startDate: Date()))
 }
 
+
+struct InvoiceAndFee: View {
+    
+    @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
+    
+    var project: Project
+    
+    var body: some View {
+        let invoiceNumber = project.invoice?.number ?? initialInvoiceNumber
+        
+        VStack (alignment: .center) {
+            Text("Invoice: \((String(invoiceNumber)))")
+                .font(.subheadline)
+                .padding(.horizontal)
+                .lineLimit(1)
+                .minimumScaleFactor(0.2)
+            
+            Spacer()
+            
+            Button {
+                //No Action
+            } label: {
+                if let items = project.items {
+                    Text("Due: \(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))")
+                    
+                } else {
+                    Text("Due: $0.00")
+                }
+            }
+            .buttonBorderShape(.capsule)
+            .buttonStyle(.borderedProminent)
+            .tint(.feeButton)
+            .font(.subheadline)
+            .fontWeight(.bold)
+            .foregroundStyle(.black)
+            .lineLimit(1)
+            .minimumScaleFactor(0.2)
+        }
+        .padding()
+    }
+}
