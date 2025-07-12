@@ -15,34 +15,44 @@ struct PayerView: View {
     var body: some View {
         let cityState = "\(project.client?.city ?? ""), \(project.client?.state ?? "")"
         
-            VStack(spacing: 3) {
-                LabeledContent("Client: ") {
+        VStack(spacing: 3) {
+            if project.client?.attention != "" {
+                LabeledContent("Attn: ") {
                     Text("\(project.client?.fullName ?? "")")
                         .multilineTextAlignment(.trailing)
                 }
-                
+            }
+            
+            LabeledContent("Client: ") {
+                Text("\(project.client?.fullName ?? "")")
+                    .multilineTextAlignment(.trailing)
+            }
+            
+            if project.artist != "" {
                 LabeledContent("Artist: ") {
                     Text("\(project.artist)")
                         .multilineTextAlignment(.trailing)
                 }
-                
-//                LabeledContent("Attn: ") {
-//                    Text("\(project.client?.fullName ?? "")")
-//                        .multilineTextAlignment(.trailing)
-//                }
-                
+            }
+            
+            if project.client?.email != "" {
                 LabeledContent("Email: ") {
                     Text("\(project.client?.email ?? "")")
-                    .multilineTextAlignment(.trailing)                }
-                
+                    .multilineTextAlignment(.trailing) 
+            }
+                           }
+            
+            if project.client?.address != "" && cityState != "" && project.client?.zip != "" {
                 LabeledContent {
                     VStack(alignment: .trailing){
                         Text(project.client?.address ?? "")
-                        Text(project.client?.address2 ?? "")
+                        if project.client?.address2 != "" {
+                            Text(project.client?.address2 ?? "")
+                        }
                         Text(cityState)
                         Text(project.client?.zip ?? "")
                     }
-             
+                    
                 } label: {
                     Text("Address: ")
                     Text("")
@@ -50,8 +60,10 @@ struct PayerView: View {
                     Text("")
                 }
             }
-            .font(.caption)
-            .foregroundStyle(.primary)
+            
+        }
+        .font(.caption)
+        .foregroundStyle(.primary)
     }
 }
 

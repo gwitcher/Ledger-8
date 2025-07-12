@@ -41,6 +41,10 @@ class Item: Identifiable {
                 .compact_disc
         case .concert:
                 .broadcast_tower
+        case .tour:
+                .bus
+        case .perDiem:
+                .dollar_sign
         case .arrangement:
                 .book_open
         case .score:
@@ -51,6 +55,8 @@ class Item: Identifiable {
                 .music
         case .rental:
                 .receipt
+        case .reimbursement:
+                .dollar_sign
         case .hourLesson:
                 .school
         case .halfLesson:

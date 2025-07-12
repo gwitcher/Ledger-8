@@ -74,6 +74,8 @@ class Project: Identifiable {
                 .microphone
         case .concert:
                 .users
+        case .tour:
+                .bus
         case .lesson:
                 .school
         case .other:
