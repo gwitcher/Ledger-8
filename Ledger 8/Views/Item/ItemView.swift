@@ -17,10 +17,10 @@ struct ItemView: View {
     var body: some View {
         HStack(spacing: 20){
             RoundedRectangle(cornerRadius: 20, style: .continuous)
-            .fill(Color.icon.opacity(0.3))
-                .frame(width: 44, height: 44)
+            .fill(Color.clear)
+                .frame(width: 44, height: 35)
                 .overlay {
-                    FontIcon.text(.awesome5Solid(code: item.icon), fontsize: 24, color: Color.green)
+                    FontIcon.text(.awesome5Solid(code: item.icon), fontsize: 25, color: Color.blue)
                 }
             VStack(alignment: .leading, spacing: 6) {
                 

@@ -24,7 +24,7 @@ struct ItemListView2: View {
                     NavigationLink {
                         ItemEditView(item: item)
                     } label: {
-                        ItemView2(item: item)
+                        ItemView(item: item)
                     }
                     .swipeActions {
                         Button("Delete", role: .destructive) {
@@ -40,14 +40,14 @@ struct ItemListView2: View {
             }
             .listStyle(.sidebar)
         }
-//        .navigationTitle(project.projectName)
-//        .toolbar {
-//            ToolbarItem(placement: .topBarTrailing) {
-//                Button("Done") {
-//                    dismiss()
-//                }
-//            }
-//        }
+        .navigationTitle(project.projectName)
+        .toolbar {
+            ToolbarItem(placement: .topBarTrailing) {
+                Button("Done") {
+                    dismiss()
+                }
+            }
+        }
     }
 }
 
