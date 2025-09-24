@@ -42,6 +42,9 @@ struct ProjectDetailView: View {
         
         NavigationStack {
             Form {
+                
+                //MARK: CLIENT
+                
                 Section("Client") {
                     if selectedClient != nil {
                         Text(selectedClient!.fullName)
@@ -65,6 +68,8 @@ struct ProjectDetailView: View {
                     }
                     
                 }
+                
+                //MARK: PROJECT INFO
                 
                 Section("Project Info") {
                     
@@ -107,6 +112,8 @@ struct ProjectDetailView: View {
                 }
                 .textFieldStyle(.plain)
                 
+                //MARK: MEDIA
+                
                 Section {
                     Picker("Media", selection: $mediaType) {
                         ForEach(MediaType.allCases) {type in
@@ -115,10 +122,12 @@ struct ProjectDetailView: View {
                     }
                 }
                 
+                //MARK: ITEMS SECTION
+                
                 Section {
                     if project.items?.count != 0 {
                         NavigationLink {
-                            ItemListView(project: project)
+                            ItemListView2(project: project)
                         } label: {
                             HStack{
                                 Text("Items: \(project.items?.count ?? 0)")
@@ -141,7 +150,9 @@ struct ProjectDetailView: View {
                     }
                 }
                 
-                //TODO: invoice stuff
+                
+                
+                //MARK: invoice stuff
                 
                 if (statusChange) {
                     Section("Invoice"){

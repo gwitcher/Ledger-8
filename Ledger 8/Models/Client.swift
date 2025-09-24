@@ -25,6 +25,7 @@ class Client: Identifiable {
     var company: String
     
     
+    
     @Relationship(inverse: \Project.client) var project: [Project]?
     
     

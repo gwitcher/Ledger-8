@@ -36,11 +36,11 @@ class Item: Identifiable {
     var icon: FontAwesomeCode {
         switch itemType {
         case .session:
-                .compact_disc
+                .music
         case .overdub:
-                .compact_disc
+                .music
         case .concert:
-                .broadcast_tower
+                .ticket_alt
         case .tour:
                 .bus
         case .perDiem:
