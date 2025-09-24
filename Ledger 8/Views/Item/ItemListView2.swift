@@ -14,6 +14,8 @@ struct ItemListView2: View {
     
     var project: Project
     
+    @State private var sheetIsPresented = false
+    
     //@State private var itemEditIsPresented = false
     
     var body: some View {
@@ -47,6 +49,21 @@ struct ItemListView2: View {
                     dismiss()
                 }
             }
+            ToolbarItem(placement: .status) {
+                Button {
+                    sheetIsPresented.toggle()
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundStyle(.green)
+                        Text("Add Item")
+                            .tint(.primary)
+                    }
+                }
+            }
+        }
+        .sheet(isPresented: $sheetIsPresented) {
+            ItemDetailView(project: project)
         }
     }
 }
