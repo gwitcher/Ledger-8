@@ -52,7 +52,7 @@ class Item: Identifiable {
         case .production:
                 .wave_square
         case .rehearsal:
-                .music
+                .clock
         case .rental:
                 .receipt
         case .reimbursement:

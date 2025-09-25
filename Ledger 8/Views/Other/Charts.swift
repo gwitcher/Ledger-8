@@ -18,17 +18,18 @@ struct Charts: View {
     
     var body: some View {
         NavigationStack {
-            Chart {
-                ForEach(projects) { project in
-                    BarMark(
-                        x: .value("Media", project.mediaType.rawValue),
-                        y: .value("Count", project.calculateFeeTotal(items: project.items ?? []))
-                        
-                    )
-                    
+            VStack {
+                Chart {
+                    ForEach(projects) { project in
+                        BarMark(
+                            x: .value("Client", project.client?.fullName ?? ""),
+                            y: .value("Total Income", project.calculateFeeTotal(items: project.items ?? []))
+                            
+                        )
+                    }
                 }
+                .frame(width: 300, height: 300)
             }
-            .frame(height: 300)
             .navigationTitle("Charts")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
