@@ -17,6 +17,7 @@ struct ItemEditView: View {
     @State private var name = ""
     @State private var itemType = ItemType.overdub
     @State private var fee = Double("")
+    @State private var notes = ""
     
     
     @FocusState private var isFocused: Bool
@@ -70,10 +71,14 @@ struct ItemEditView: View {
                     }
                     .keyboardType(.decimalPad)
                 }
+                Section("Notes") {
+                    TextField("", text: $notes, axis: .vertical)
+                }
                 .onAppear {
                     name = item.name
                     itemType = item.itemType
                     fee = item.fee
+                    notes = item.notes
                 }
                 
             }

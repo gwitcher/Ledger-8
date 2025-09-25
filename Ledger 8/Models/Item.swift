@@ -58,9 +58,11 @@ class Item: Identifiable {
         case .reimbursement:
                 .dollar_sign
         case .hourLesson:
-                .school
+                .graduation_cap
         case .halfLesson:
-                .school
+                .graduation_cap
+        case .other:
+                .question
         }
     }
 }

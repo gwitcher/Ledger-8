@@ -21,6 +21,17 @@ struct ItemListView2: View {
     var body: some View {
         
         VStack {
+            HStack{
+               
+                Text("Total: \(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
+            
+            }
+            .padding(20)
+            .font(.title2)
+            .fontWeight(.bold)
+            //.opacity(0.7)
+            
+            
             List {
                 ForEach(project.items ?? []) {item in
                     NavigationLink {
@@ -43,6 +54,8 @@ struct ItemListView2: View {
             .listStyle(.sidebar)
         }
         .navigationTitle(project.projectName)
+        .navigationBarTitleDisplayMode(.automatic)
+        
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {

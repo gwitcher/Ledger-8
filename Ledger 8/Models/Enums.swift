@@ -64,6 +64,7 @@ enum ItemType: String, CaseIterable, Identifiable, Codable {
     case rental = "Chart Rental"
     case hourLesson = "Lesson (1 hr)"
     case halfLesson = "Lesson (30 mins)"
+    case other = "Other"
     
     var id: Self {self}
     

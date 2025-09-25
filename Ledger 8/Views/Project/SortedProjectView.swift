@@ -35,33 +35,54 @@ struct SortedProjectView: View {
                 NavigationLink(destination: ProjectDetailView(project: project)) {
                     ProjectView(project: project)
                 }
+            
                 .swipeActions {
                     Button("Delete", role: .destructive) {
                         modelContext.delete(project)
                     }
                 }
                 .swipeActions(edge: .leading) {
-                    Button("Paid") {
-                        if !project.delivered {
-                            project.dateDelivered = Date.now
+                    if project.status != .open {
+                        Button("Open") {
+                            project.dateDelivered = project.dateOpened
+                            project.dateClosed = project.dateOpened
+                            project.delivered = false
+                            project.paid = false
+                            project.status = .open
                         }
-                        project.dateClosed = Date.now
-                        project.paid.toggle()
-                        project.status = .closed
+                        .tint(.yellow)
                     }
-                    .tint(.green)
                 }
                 .swipeActions(edge: .leading) {
-                    Button("Delivered") {
-                        project.dateDelivered = Date.now
-                        project.delivered.toggle()
-                        project.status = .delivered
+                    if project.status != .closed {
+                        Button("Paid") {
+                            if !project.delivered {
+                                project.dateDelivered = Date.now
+                            }
+                            project.dateClosed = Date.now
+                            project.paid = true
+                            project.status = .closed
+                        }
+                        .tint(.green)
                     }
-                    .tint(.orange)
+                    
                 }
+                .swipeActions(edge: .leading) {
+                    if project.status != .delivered {
+                        Button("Delivered") {
+                            project.dateDelivered = Date.now
+                            project.delivered = true
+                            project.paid = false
+                            project.status = .delivered
+                        }
+                        .tint(.orange)
+                    }
+                }
+              
             }
         }
         .clipShape(RoundedRectangle(cornerRadius: 20, style: .continuous))
+        
     }
 }
 

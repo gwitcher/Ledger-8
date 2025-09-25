@@ -19,6 +19,7 @@ struct ProjectListView: View {
     @State private var clientListIsPresented = false
     @State private var userInfoSheetIsPresented = false
     @State private var settingsSheetIsPresented = false
+    @State private var chartSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
     
     
@@ -94,6 +95,14 @@ struct ProjectListView: View {
                             //.foregroundStyle(.gray)
                     }
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        chartSheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "chart.bar.xaxis")
+                            //.foregroundStyle(.gray)
+                    }
+                }
             }
             .fullScreenCover(isPresented: $projectSheetIsPresented, content: {
                 ProjectDetailView(project: Project())
@@ -104,6 +113,9 @@ struct ProjectListView: View {
             }
             .fullScreenCover(isPresented: $settingsSheetIsPresented, content: {
                 SettingsView()
+            })
+            .fullScreenCover(isPresented: $chartSheetIsPresented, content: {
+                Charts()
             })
             
         }

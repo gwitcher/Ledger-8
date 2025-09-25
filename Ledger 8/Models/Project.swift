@@ -77,7 +77,7 @@ class Project: Identifiable {
         case .tour:
                 .bus
         case .lesson:
-                .school
+                .graduation_cap
         case .other:
                 .question
         }
