@@ -13,22 +13,22 @@ struct Charts: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    @Query var projects: [Project]
+    @Query var items: [Item]
     
     
     var body: some View {
         NavigationStack {
             VStack {
                 Chart {
-                    ForEach(projects) { project in
+                    ForEach(items) { item in
                         BarMark(
-                            x: .value("Client", project.client?.fullName ?? ""),
-                            y: .value("Total Income", project.calculateFeeTotal(items: project.items ?? []))
+                            x: .value("Type", item.itemType.rawValue),
+                            y: .value("Total Income", item.fee)
                             
                         )
                     }
                 }
-                .frame(width: 300, height: 300)
+                .frame(height: 180)
             }
             .navigationTitle("Charts")
             .toolbar {

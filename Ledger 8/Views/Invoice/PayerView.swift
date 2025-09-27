@@ -68,5 +68,5 @@ struct PayerView: View {
 }
 
 #Preview {
-    PayerView(project: Project(projectName: "Dummy", artist: "Dummy", startDate: Date()))
+    PayerView(project: Project(artist: "Dummy"))
 }

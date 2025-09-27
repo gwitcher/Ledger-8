@@ -38,10 +38,11 @@ struct InvoiceTemplateView: View {
             HStack {
                 PayerView(project: project)
                     .frame(width: 250, height: 150)
-                
+                    .border(.red)
                 Spacer()
             }
             .padding()
+            .border(.red)
             
             ItemTableView(project: project)
                 .padding()
