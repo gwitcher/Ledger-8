@@ -5,6 +5,8 @@
 //  Created by Gabe Witcher on 4/15/25.
 //
 
+//THIS IS A COMMIT TEST
+
 import SwiftUI
 import SwiftData
 import ContactsUI
