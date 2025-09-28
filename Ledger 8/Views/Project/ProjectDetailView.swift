@@ -248,11 +248,13 @@ struct ProjectDetailView: View {
                     
                     LabeledContent {
                         DatePicker("", selection: $startDate)
+                            .datePickerStyle(.compact)
                     }   label: {
                         Text("Start").foregroundStyle(.secondary)
                     }
                     LabeledContent {
                         DatePicker("", selection: $endDate)
+                            .datePickerStyle(.compact)
                     }
                     label: {
                         Text("End").foregroundStyle(.secondary)
