@@ -52,6 +52,7 @@ struct ItemListView2: View {
                 }
             }
             .listStyle(.sidebar)
+            .padding(10)
         }
         .navigationTitle(project.projectName)
         .navigationBarTitleDisplayMode(.automatic)

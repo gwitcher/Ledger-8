@@ -36,8 +36,62 @@ struct ProjectDetailView: View {
     @State private var statusChange = false
     @State private var showAlert = false
     @State private var endDateSelected = false
+    @State private var selectedTemplateProject: Project?
+    @State private var showProjectSuggestions = false
     
     @FocusState private var focusField: ProjectField?
+    
+    // Helper function to sort projects by frequency and then alphabetically
+    private func sortedProjectsByFrequency(_ projects: [Project]) -> [Project] {
+        // Filter out projects with empty names first
+        let projectsWithNames = projects.filter { !$0.projectName.isEmpty }
+        
+        // Group projects by name and count occurrences
+        let projectCounts = Dictionary(grouping: projectsWithNames, by: { $0.projectName })
+            .mapValues { $0.count }
+        
+        // Get unique projects (one per project name) using the most recent one for each name
+        let uniqueProjects = Dictionary(grouping: projectsWithNames, by: { $0.projectName })
+            .compactMapValues { projectsWithSameName in
+                // Return the most recent project for each name
+                projectsWithSameName.max(by: { $0.startDate < $1.startDate })
+            }
+            .values
+        
+        // Sort first by frequency (descending), then alphabetically (ascending)
+        return Array(uniqueProjects).sorted { project1, project2 in
+            let count1 = projectCounts[project1.projectName] ?? 0
+            let count2 = projectCounts[project2.projectName] ?? 0
+            
+            // If counts are different, sort by count (higher first)
+            if count1 != count2 {
+                return count1 > count2
+            }
+            
+            // If counts are the same, sort alphabetically
+            return project1.projectName.localizedStandardCompare(project2.projectName) == .orderedAscending
+        }
+    }
+    
+    // Helper function to get system icons for media types
+    private func getMediaIcon(for mediaType: MediaType) -> String {
+        switch mediaType {
+        case .film:
+            return "film"
+        case .tv:
+            return "tv"
+        case .recording:
+            return "mic"
+        case .concert:
+            return "person.3"
+        case .tour:
+            return "bus"
+        case .lesson:
+            return "graduationcap"
+        case .other:
+            return "questionmark.circle"
+        }
+    }
     
     
     var body: some View {
@@ -76,16 +130,108 @@ struct ProjectDetailView: View {
                 Section("Project Info") {
                     
                     LabeledContent {
-                        TextField("", text: $projectName)
-                            .autocorrectionDisabled()
-                            .submitLabel(.next)
-                            .focused($focusField, equals: .project)
-                            .onSubmit {
-                                focusField = .artist
+                        HStack {
+                            TextField("", text: $projectName)
+                                .autocorrectionDisabled()
+                                .submitLabel(.next)
+                                .focused($focusField, equals: .project)
+                                .onSubmit {
+                                    focusField = .artist
+                                }
+                                .onChange(of: focusField) {
+                                    // Auto-expand suggestions when project field is focused
+                                    if focusField == .project, 
+                                       let client = selectedClient, 
+                                       let clientProjects = client.project, 
+                                       !clientProjects.isEmpty {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            showProjectSuggestions = true
+                                        }
+                                    } else if focusField != .project {
+                                        // Auto-collapse when focus moves away from project field
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            showProjectSuggestions = false
+                                        }
+                                    }
+                                }
+                            
+                            // MARK: PROJECT SUGGESTIONS TOGGLE BUTTON
+                            if let client = selectedClient, let clientProjects = client.project, !clientProjects.isEmpty {
+                                Button {
+                                    // Toggle suggestions or focus the text field if collapsed
+                                    if showProjectSuggestions {
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            showProjectSuggestions = false
+                                        }
+                                        focusField = nil
+                                    } else {
+                                        focusField = .project
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            showProjectSuggestions = true
+                                        }
+                                    }
+                                } label: {
+                                    Image(systemName: showProjectSuggestions ? "chevron.up.circle.fill" : "chevron.down.circle")
+                                        .foregroundStyle(.blue)
+                                        .font(.system(size: 16))
+                                }
+                                .buttonStyle(.plain)
                             }
-                    }   label: {
+                        }
+                    } label: {
                         Text("Project").foregroundStyle(.secondary)
                         
+                    }
+                    
+                    // MARK: PROJECT SUGGESTIONS LIST
+                    if showProjectSuggestions, let client = selectedClient, let clientProjects = client.project, !clientProjects.isEmpty {
+                        let suggestions = sortedProjectsByFrequency(clientProjects)
+                        
+                        ScrollView {
+                            LazyVStack(spacing: 8) {
+                                ForEach(suggestions) { project in
+                                    Button {
+                                        selectedTemplateProject = project
+                                        focusField = nil // Remove focus when selecting a template
+                                        withAnimation(.easeInOut(duration: 0.2)) {
+                                            showProjectSuggestions = false
+                                        }
+                                    } label: {
+                                        HStack {
+                                            // MARK: MEDIA TYPE ICON
+                                            Image(systemName: getMediaIcon(for: project.mediaType))
+                                                .font(.subheadline)
+                                                .foregroundStyle(.blue)
+                                                .frame(width: 20)
+                                            
+                                            VStack(alignment: .leading, spacing: 2) {
+                                                Text(project.projectName)
+                                                    .font(.subheadline)
+                                                    .foregroundStyle(.primary)
+                                                    .multilineTextAlignment(.leading)
+                                                
+                                                Text(project.mediaType.rawValue)
+                                                    .font(.caption)
+                                                    .foregroundStyle(.secondary)
+                                            }
+                                            
+                                            Spacer()
+                                            
+                                            Image(systemName: "arrow.up.left")
+                                                .font(.caption)
+                                                .foregroundStyle(.blue)
+                                        }
+                                        .padding(.vertical, 4)
+                                        .padding(.horizontal, 8)
+                                        .background(.quaternary.opacity(0.3))
+                                        .clipShape(RoundedRectangle(cornerRadius: 8))
+                                    }
+                                    .buttonStyle(.plain)
+                                }
+                            }
+                            .padding(.vertical, 4)
+                        }
+                        .frame(maxHeight: 200) // Limit height to make it scrollable
                     }
                     
                     LabeledContent {
@@ -95,7 +241,7 @@ struct ProjectDetailView: View {
                             .onSubmit {
                                 focusField = nil
                             }
-                    }   label: {
+                    } label: {
                         Text("Artist").foregroundStyle(.secondary)
                         
                     }
@@ -306,6 +452,24 @@ struct ProjectDetailView: View {
                     print("End Date selected: \(endDateSelected)")
                 }
                 
+            }
+            .onChange(of: selectedTemplateProject) {
+                if let templateProject = selectedTemplateProject {
+                    // Pre-fill form fields with template project data
+                    projectName = templateProject.projectName
+                    artist = templateProject.artist
+                    mediaType = templateProject.mediaType
+                    notes = templateProject.notes
+                    
+                    // Reset the picker selection after use
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                        selectedTemplateProject = nil
+                    }
+                }
+            }
+            .onChange(of: selectedClient) {
+                // Collapse suggestions when client changes
+                showProjectSuggestions = false
             }
         }
         
