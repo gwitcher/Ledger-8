@@ -41,11 +41,21 @@ struct FeeTotalsView: View {
             
             VStack (alignment: .leading, spacing: 8) {
                 Group {
-                    if sortSelection == .delivered {
-                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true) DUE")
-                    } else {
+                    switch sortSelection {
+                    case .open:
                         Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true)")
+                    case .delivered:
+                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true) DUE")
+                    case .closed:
+                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true) PAID")
                     }
+                    
+                    
+//                    if sortSelection == .delivered {
+//                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true) DUE")
+//                    } else {
+//                        Text("^[\(projects.count) \(sortSelection.feeTotalLabel)](inflect: true)")
+//                    }
                 }
                 .font(.headline)
                 .fontWeight(.medium)

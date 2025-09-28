@@ -138,7 +138,7 @@
 					};
 				};
 			};
-			buildConfigurationList = 66C6160A2DAF2B2E00161D7E /* Build configuration list for PBXProject "Ledger 8" */;
+			buildConfigurationList = 66C6160A2DAF2B2E00161D7E /* Build configuration list for PBXProject "Ledger 8 Restore" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -384,7 +384,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		66C6160A2DAF2B2E00161D7E /* Build configuration list for PBXProject "Ledger 8" */ = {
+		66C6160A2DAF2B2E00161D7E /* Build configuration list for PBXProject "Ledger 8 Restore" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				66C6161B2DAF2B2F00161D7E /* Debug */,

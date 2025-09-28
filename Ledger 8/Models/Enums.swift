@@ -31,9 +31,9 @@ enum Status: String, CaseIterable, Identifiable, Codable {
         case .open:
             "UPCOMING PROJECTS"
         case .delivered:
-            "PAYMENTS"
+            "PAYMENT"
         case .closed:
-            "PROJECTS PAID"
+            "PROJECT"
         }
     }
 }
