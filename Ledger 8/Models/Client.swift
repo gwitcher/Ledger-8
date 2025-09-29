@@ -30,7 +30,21 @@ class Client: Identifiable {
     
     
     var fullName: String {
-        "\(firstName) \(lastName)"
+        let first = firstName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let last = lastName.trimmingCharacters(in: .whitespacesAndNewlines)
+        let comp = company.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        if !last.isEmpty && !first.isEmpty {
+            return "\(first) \(last)"
+        } else if !last.isEmpty {
+            return last
+        } else if !first.isEmpty {
+            return first
+        } else if !comp.isEmpty {
+            return comp
+        } else {
+            return "Unnamed Contact"
+        }
     }
     
     init(
