@@ -24,7 +24,7 @@ struct SortedProjectView: View {
         case .delivered:
             _projects = Query(filter: #Predicate<Project> {$0.delivered == true && $0.paid == false}, sort: \Project.dateDelivered)
         case .closed:
-            _projects = Query(filter: #Predicate<Project> {$0.paid == true}, sort: \Project.dateClosed)
+            _projects = Query(filter: #Predicate<Project> {$0.paid == true}, sort: \Project.startDate, order: .reverse)
         }
     }
     

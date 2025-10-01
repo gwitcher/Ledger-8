@@ -95,14 +95,14 @@ struct ProjectListView: View {
                             //.foregroundStyle(.gray)
                     }
                 }
-//                ToolbarItem(placement: .topBarLeading) {
-//                    Button {
-//                        chartSheetIsPresented.toggle()
-//                    } label: {
-//                        Image(systemName: "chart.bar.xaxis")
-//                            //.foregroundStyle(.gray)
-//                    }
-//                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        chartSheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "chart.bar.xaxis")
+                            //.foregroundStyle(.gray)
+                    }
+                }
             }
             .fullScreenCover(isPresented: $projectSheetIsPresented, content: {
                 ProjectDetailView(project: Project())

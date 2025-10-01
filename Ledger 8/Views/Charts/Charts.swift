@@ -13,22 +13,17 @@ struct Charts: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    @Query var projects: [Project]
+    @Query(filter: #Predicate<Project> {$0.paid == true}) var projects: [Project]
     
     
     var body: some View {
         NavigationStack {
             VStack {
-                Chart {
-                    ForEach(projects) { project in
-                        BarMark(
-                            x: .value("Client", project.client?.fullName ?? ""),
-                            y: .value("Total Income", project.calculateFeeTotal(items: project.items ?? []))
-                            
-                        )
-                    }
-                }
-                .frame(width: 300, height: 300)
+                IncomeToTypeView()
+                
+                Spacer()
+                
+                TotalByMonthView()
             }
             .navigationTitle("Charts")
             .toolbar {
@@ -42,7 +37,7 @@ struct Charts: View {
         }
     }
 }
-        
-        #Preview {
-            Charts()
-        }
+
+#Preview {
+    Charts()
+}
