@@ -15,16 +15,22 @@ struct Charts: View {
     
     @Query(filter: #Predicate<Project> {$0.paid == true}) var projects: [Project]
     
-    
+    //@Binding var selectedAngle: Double?
+     
     var body: some View {
         NavigationStack {
             VStack {
                 IncomeToTypeView()
+                    .padding()
+                    //.border(.red)
                 
                 Spacer()
                 
                 TotalByMonthView()
+                    .padding()
+                    //.border(.red)
             }
+            .frame(width: 250)
             .navigationTitle("Charts")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -38,6 +44,6 @@ struct Charts: View {
     }
 }
 
-#Preview {
-    Charts()
-}
+//#Preview {
+//    Charts()
+//}

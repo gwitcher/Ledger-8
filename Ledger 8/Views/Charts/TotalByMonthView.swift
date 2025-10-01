@@ -38,7 +38,7 @@ struct TotalByMonthView: View {
                     
                 }
             }
-            .frame(width: 300, height: 180)
+            .frame(width: 350, height: 180)
             
             
             
