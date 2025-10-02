@@ -13,7 +13,7 @@ struct TotalByMonthView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    @Query(filter: #Predicate<Project> {$0.paid == true}, sort: \Project.dateClosed) var projects: [Project]
+    var projects: [Project]
         
     
     var body: some View {
@@ -54,7 +54,7 @@ struct TotalByMonthView: View {
     
     
 }
-
-#Preview {
-    TotalByMonthView()
-}
+//
+//#Preview {
+//    TotalByMonthView()
+//}

@@ -20,13 +20,13 @@ struct Charts: View {
     var body: some View {
         NavigationStack {
             VStack {
-                IncomeToTypeView()
+                IncomeToTypeView(projects: projects)
                     .padding()
                     //.border(.red)
                 
                 Spacer()
                 
-                TotalByMonthView()
+                TotalByMonthView(projects: projects)
                     .padding()
                     //.border(.red)
             }

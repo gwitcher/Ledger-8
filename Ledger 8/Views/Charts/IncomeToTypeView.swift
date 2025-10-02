@@ -13,15 +13,11 @@ struct IncomeToTypeView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    @Query(filter: #Predicate<Project> {$0.paid == true}) var projects: [Project]
-    
-    //@Binding var selectedAngle: Double?
+    var projects: [Project]
     
     var body: some View {
         
         let data = createData(project: projects)
-        
-        
         
         NavigationStack {
             

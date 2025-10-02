@@ -30,20 +30,38 @@ struct ClientSelectView: View {
         }
     }
     
+    var groupedClients: [(key: String, value: [Client])] {
+        let grouped = Dictionary(grouping: filteredClient) { client in
+            if !client.lastName.isEmpty {
+                return String(client.lastName.prefix(1)).uppercased()
+            } else if !client.firstName.isEmpty {
+                return String(client.firstName.prefix(1)).uppercased()
+            } else if !client.company.isEmpty {
+                return String(client.company.prefix(1)).uppercased()
+            } else {
+                return "#"
+            }
+        }
+        return grouped.sorted { $0.key < $1.key }
+    }
+    
     var body: some View {
         NavigationStack {
             
             Group {
                 if !allClients.isEmpty {
                     List {
-                        ForEach(filteredClient) {client in
-                            Text(client.fullName)
-                                //.border(.red)
-                                .onTapGesture {
-                                    selectedClient = client
-                                    print("Client Select View Selected Client on tap: \(selectedClient?.fullName ?? "NIL")")
-                                    dismiss()
+                        ForEach(groupedClients, id: \.key) { group in
+                            Section(header: Text(group.key).font(.headline)) {
+                                ForEach(group.value) { client in
+                                    Text(client.fullName)
+                                        .onTapGesture {
+                                            selectedClient = client
+                                            print("Client Select View Selected Client on tap: \(selectedClient?.fullName ?? "NIL")")
+                                            dismiss()
+                                        }
                                 }
+                            }
                         }
                     }
                     .listStyle(.plain)
@@ -75,3 +93,4 @@ struct ClientSelectView: View {
 //#Preview {
 //    ClientSelectView(project: Project())
 //}
+
