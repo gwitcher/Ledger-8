@@ -9,6 +9,7 @@ import Charts
 
 struct MediaTypeDonutChartView: View {
     var projects: [Project]
+    @Environment(\.colorScheme) var colorScheme
     
     struct MediaTypeTotal: Identifiable, Hashable {
         let id: MediaType
@@ -17,19 +18,19 @@ struct MediaTypeDonutChartView: View {
         var sliceColor: Color {
             switch mediaType {
             case .concert:
-                    .blue
+                Color(.systemBlue)
             case .film:
-                    .green
+                Color(.systemGreen) 
             case .lesson:
-                    .orange
+                Color(.systemOrange)
             case .other:
-                    .purple
+                Color(.systemPurple)
             case .recording:
-                    .red
+                Color(.systemRed)
             case .tour:
-                    .cyan
+                Color(.systemCyan)
             case .tv:
-                    .pink
+                Color(.systemPink)
             }
         }
     }
@@ -71,12 +72,51 @@ struct MediaTypeDonutChartView: View {
     
     var body: some View {
         let chartData = mediaTypeTotals
-        VStack(alignment: .center) {
-            Text("Revenue By Media Type")
-                .font(.title3.bold())
-                .lineLimit(1)
-                .minimumScaleFactor(0.5)
-                .padding(.bottom, 20)
+        let displayPie = selectedPie ?? lastSelectedMediaType
+        
+        VStack(alignment: .leading) {
+            
+            VStack(alignment: .leading){
+                Text("Revenue By Media Type")
+                    .font(.title3.bold())
+                    .lineLimit(1)
+                    .minimumScaleFactor(0.5)
+                    //.padding(.bottom, 5)
+                
+                    Group {
+                        if let displayPie {
+                            VStack(alignment: .leading) {
+                                Text(displayPie.mediaType.rawValue)
+                                    .fontWeight(.semibold)
+                                Text("\(displayPie.totalFee.formatted(.currency(code: "USD")))")
+                                    .fontWeight(.light)
+                            }
+                            
+                        }
+                        else {
+                            VStack(alignment: .leading) {
+                                Text("Total")
+                                    .fontWeight(.semibold)
+                                Text("\(totalFee(project: projects).formatted(.currency(code: "USD")))")
+                                    .fontWeight(.light)
+                            }
+                        }
+                    }
+                    .padding(8)
+                    
+                
+                
+            }
+            //.border(.red)
+            
+            
+            
+            
+            
+            
+            
+            
+            
             
             Chart(chartData) { item in
                 SectorMark(
@@ -98,24 +138,15 @@ struct MediaTypeDonutChartView: View {
                 GeometryReader { geometry in
                     if let plotFrame = chartProxy.plotFrame {
                         let frame = geometry[plotFrame]
-                        let displayPie = selectedPie ?? lastSelectedMediaType
                         
-                        if let displayPie {
-                            VStack {
-                                Text(displayPie.mediaType.rawValue)
-                                    .fontWeight(.bold)
-                                Text("\(displayPie.totalFee.formatted(.currency(code: "USD")))")
-                            }
-                            .position(x: frame.midX, y: frame.midY)
+                        VStack {
+                            Text("Total")
+                                .fontWeight(.semibold)
+                            Text("\(totalFee(project: projects).formatted(.currency(code: "USD")))")
+                                .fontWeight(.light)
                         }
-                        else {
-                            VStack {
-                                Text("Total")
-                                    .fontWeight(.bold)
-                                Text("\(totalFee(project: projects).formatted(.currency(code: "USD")))")
-                            }
-                            .position(x: frame.midX, y: frame.midY)
-                        }
+                        .position(x: frame.midX, y: frame.midY)
+                        
                     }
                 }
             })
@@ -130,21 +161,68 @@ struct MediaTypeDonutChartView: View {
     }
 }
 
-#if DEBUG
-// Dummy preview data
-struct MediaTypeDonutChartView_Previews: PreviewProvider {
-    static var previews: some View {
-        let mt: [MediaType] = [.film, .tv, .recording, .concert, .tour, .lesson, .other]
-        let projects: [Project] = mt.map { type in
-            let proj = Project()
-            proj.status = .closed
-            proj.mediaType = type
-            let item = Item(fee: Double.random(in: 500...4000))
-            proj.items = [item]
-            return proj
+#Preview("Media Type Donut Chart") {
+    // Create comprehensive mock data for preview
+    let mockProjects: [Project] = {
+        var projects: [Project] = []
+        let mediaTypes: [MediaType] = [.film, .tv, .recording, .concert, .tour, .lesson, .other]
+        
+        // Create projects for each media type with varying amounts
+        for (index, mediaType) in mediaTypes.enumerated() {
+            // Create 1-3 projects per media type
+            let projectCount = Int.random(in: 1...3)
+            
+            for i in 0..<projectCount {
+                let project = Project(
+                    projectName: "\(mediaType.rawValue) Project \(i + 1)",
+                    artist: "Artist \(index + 1)-\(i + 1)",
+                    status: .closed, // Make sure they're closed to show in chart
+                    mediaType: mediaType
+                )
+                
+                // Add items with realistic fees based on media type
+                let baseFee = baseFeeForMediaType(mediaType)
+                let mockItems = [
+                    Item(
+                        name: "Primary Service",
+                        fee: baseFee + Double.random(in: -200...500)
+                    ),
+                    Item(
+                        name: "Additional Work",
+                        fee: Double.random(in: 100...800)
+                    )
+                ]
+                
+                project.items = mockItems
+                projects.append(project)
+            }
         }
-        MediaTypeDonutChartView(projects: projects)
+        
+        return projects
+    }()
+    
+    // Helper function to set realistic base fees
+    func baseFeeForMediaType(_ mediaType: MediaType) -> Double {
+        switch mediaType {
+        case .film:
+            return Double.random(in: 2000...5000)
+        case .tv:
+            return Double.random(in: 1500...4000)
+        case .recording:
+            return Double.random(in: 800...2500)
+        case .concert:
+            return Double.random(in: 500...2000)
+        case .tour:
+            return Double.random(in: 1000...3000)
+        case .lesson:
+            return Double.random(in: 50...150)
+        case .other:
+            return Double.random(in: 200...1000)
+        }
     }
+    
+    return MediaTypeDonutChartView(projects: mockProjects)
+        .padding()
+        .previewLayout(.sizeThatFits)
 }
-#endif
 

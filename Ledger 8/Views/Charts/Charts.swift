@@ -12,6 +12,7 @@ import Charts
 struct Charts: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     @Query(filter: #Predicate<Project> {$0.paid == true}) var projects: [Project]
     
@@ -20,13 +21,15 @@ struct Charts: View {
     var body: some View {
         NavigationStack {
             VStack {
-                MediaTypeDonutChartView(projects: projects)
-                    .padding()
+               // MediaTypeDonutChartView(projects: projects)
+                    //.padding()
                     //.border(.red)
                 Spacer()
                 
+                
+                IncomeByMonthView()
             }
-            .frame(width: 250)
+            //.frame(width: 250)
             .navigationTitle("Charts")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -34,7 +37,6 @@ struct Charts: View {
                         dismiss()
                     }
                 }
-                
             }
         }
     }
