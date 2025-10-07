@@ -21,13 +21,14 @@ struct Charts: View {
     var body: some View {
         NavigationStack {
             VStack {
-               // MediaTypeDonutChartView(projects: projects)
+                MediaTypeDonutChartView(projects: projects)
                     //.padding()
                     //.border(.red)
                 Spacer()
                 
                 
-                IncomeByMonthView()
+                //IncomeByMonthView(projects: projects)
+                    
             }
             //.frame(width: 250)
             .navigationTitle("Charts")

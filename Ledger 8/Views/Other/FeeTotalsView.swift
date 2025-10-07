@@ -82,7 +82,7 @@ struct FeeTotalsView: View {
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(invoicedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
-                            .foregroundStyle(Status.delivered.statusColor)
+                            .foregroundStyle(Status.delivered.statusColorDark)
                         Text("\(closedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
                             .foregroundStyle(Status.closed.statusColor)
@@ -94,7 +94,7 @@ struct FeeTotalsView: View {
                     VStack (alignment: .trailing, spacing: 8) {
                         Text("\(openTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
-                            .foregroundStyle(Status.open.statusColor)
+                            .foregroundStyle(Status.open.statusColorDark)
                         Text("\(closedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
                             .foregroundStyle(Status.closed.statusColor)
@@ -109,7 +109,7 @@ struct FeeTotalsView: View {
                             .foregroundStyle(Status.open.statusColor)
                         Text("\(invoicedTotal.formatted(.currency(code: "USD")))")
                             .font(.subheadline)
-                            .foregroundStyle(Status.delivered.statusColor)
+                            .foregroundStyle(Status.delivered.statusColorDark)
                     }
                     .fontWeight(.bold)
                     .padding([.horizontal, .bottom])

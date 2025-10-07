@@ -27,13 +27,13 @@ struct ProjectView: View {
                 Text(project.client?.fullName ?? "Add Client")
             
                     .font(.subheadline)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.primary)
                     .bold()
                     .lineLimit(1)
                 
                 Text(project.projectName)
                     .font(.footnote)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.primary)
                     .opacity(0.7)
                     .lineLimit(1)
                 
@@ -57,7 +57,7 @@ struct ProjectView: View {
                 Text("\(project.mediaType.rawValue)")
               
                     .font(.footnote)
-                    .foregroundStyle(.black)
+                    .foregroundStyle(.primary)
                     .opacity(0.7)
                     .lineLimit(1)
                 

@@ -118,7 +118,7 @@ struct ProjectDetailView: View {
                                 Image(systemName: "plus.circle.fill")
                                     .tint(.green)
                                 Text("Add Client")
-                                    .foregroundStyle(.black)
+                                    .foregroundStyle(.primary)
                             }
                         }
                     }

@@ -11,6 +11,7 @@ import SwiftData
 
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
+    @Environment(\.colorScheme) var colorScheme
     
     @Query(sort: \Project.startDate) var projects: [Project]
     
@@ -67,14 +68,15 @@ struct ProjectListView: View {
                 }
             }
             .navigationTitle("Project Ledger")
-            .foregroundStyle(.black)
+            .navigationBarTitleDisplayMode( .large )
+            .toolbarColorScheme( colorScheme == .dark ? .dark : .light)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
                         clientListIsPresented.toggle()
                     } label: {
                         Image(systemName: "person.circle")
-                            //.foregroundStyle(.blue)
+                            .foregroundStyle(.primary)
                     }
                 }
                 
@@ -83,7 +85,7 @@ struct ProjectListView: View {
                         projectSheetIsPresented.toggle()
                     } label: {
                         Image(systemName: "plus")
-                            //.foregroundStyle(.blue)
+                            .foregroundStyle(.primary)
                     }
                 }
                 
@@ -92,7 +94,7 @@ struct ProjectListView: View {
                         settingsSheetIsPresented.toggle()
                     } label: {
                         Image(systemName: "gear")
-                            //.foregroundStyle(.gray)
+                            .foregroundStyle(.primary)
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {

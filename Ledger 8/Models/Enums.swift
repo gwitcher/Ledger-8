@@ -26,6 +26,17 @@ enum Status: String, CaseIterable, Identifiable, Codable {
         }
     }
     
+    var statusColorDark: Color {
+        switch self {
+        case .open:
+                .feeTotalOpen
+        case .delivered:
+                .feeTotalDelivered
+        case .closed:
+                .feeTotalClosed
+        }
+    }
+    
     var feeTotalLabel: String {
         switch self {
         case .open:
