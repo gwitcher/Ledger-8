@@ -14,6 +14,7 @@ import ContactsUI
 struct ProjectDetailView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     var project: Project
     
@@ -95,294 +96,15 @@ struct ProjectDetailView: View {
     
     
     var body: some View {
-        
         NavigationStack {
             Form {
-                
-                //MARK: CLIENT
-                
-                Section("Client") {
-                    if selectedClient != nil {
-                        Text(selectedClient!.fullName)
-                            .contentShape(Rectangle())
-                            .onTapGesture {
-                                print("Shown Client: \(selectedClient?.fullName ?? "NIL")")
-                                clientSelectSheetIsPresented.toggle()
-                            }
-                        
-                    } else {
-                        Button {
-                            clientSelectSheetIsPresented.toggle()
-                        } label: {
-                            HStack {
-                                Image(systemName: "plus.circle.fill")
-                                    .tint(.green)
-                                Text("Add Client")
-                                    .foregroundStyle(.primary)
-                            }
-                        }
-                    }
-                    
-                }
-                
-                //MARK: PROJECT INFO
-                
-                Section("Project Info") {
-                    
-                    LabeledContent {
-                        HStack {
-                            TextField("", text: $projectName)
-                                .autocorrectionDisabled()
-                                .submitLabel(.next)
-                                .focused($focusField, equals: .project)
-                                .onSubmit {
-                                    focusField = .artist
-                                }
-                                .onChange(of: focusField) {
-                                    // Auto-expand suggestions when project field is focused
-                                    if focusField == .project, 
-                                       let client = selectedClient, 
-                                       let clientProjects = client.project, 
-                                       !clientProjects.isEmpty {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            showProjectSuggestions = true
-                                        }
-                                    } else if focusField != .project {
-                                        // Auto-collapse when focus moves away from project field
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            showProjectSuggestions = false
-                                        }
-                                    }
-                                }
-                            
-                            // MARK: PROJECT SUGGESTIONS TOGGLE BUTTON
-                            if let client = selectedClient, let clientProjects = client.project, !clientProjects.isEmpty {
-                                Button {
-                                    // Toggle suggestions or focus the text field if collapsed
-                                    if showProjectSuggestions {
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            showProjectSuggestions = false
-                                        }
-                                        focusField = nil
-                                    } else {
-                                        focusField = .project
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            showProjectSuggestions = true
-                                        }
-                                    }
-                                } label: {
-                                    Image(systemName: showProjectSuggestions ? "chevron.up.circle.fill" : "chevron.down.circle")
-                                        .foregroundStyle(.blue)
-                                        .font(.system(size: 16))
-                                }
-                                .buttonStyle(.plain)
-                            }
-                        }
-                    } label: {
-                        Text("Project").foregroundStyle(.secondary)
-                        
-                    }
-                    
-                    // MARK: PROJECT SUGGESTIONS LIST
-                    if showProjectSuggestions, let client = selectedClient, let clientProjects = client.project, !clientProjects.isEmpty {
-                        let suggestions = sortedProjectsByFrequency(clientProjects)
-                        
-                        ScrollView {
-                            LazyVStack(spacing: 8) {
-                                ForEach(suggestions) { project in
-                                    Button {
-                                        selectedTemplateProject = project
-                                        focusField = nil // Remove focus when selecting a template
-                                        withAnimation(.easeInOut(duration: 0.2)) {
-                                            showProjectSuggestions = false
-                                        }
-                                    } label: {
-                                        HStack {
-                                            // MARK: MEDIA TYPE ICON
-                                            Image(systemName: getMediaIcon(for: project.mediaType))
-                                                .font(.subheadline)
-                                                .foregroundStyle(.blue)
-                                                .frame(width: 20)
-                                            
-                                            VStack(alignment: .leading, spacing: 2) {
-                                                Text(project.projectName)
-                                                    .font(.subheadline)
-                                                    .foregroundStyle(.primary)
-                                                    .multilineTextAlignment(.leading)
-                                                
-                                                Text(project.mediaType.rawValue)
-                                                    .font(.caption)
-                                                    .foregroundStyle(.secondary)
-                                            }
-                                            
-                                            Spacer()
-                                            
-                                            Image(systemName: "arrow.up.left")
-                                                .font(.caption)
-                                                .foregroundStyle(.blue)
-                                        }
-                                        .padding(.vertical, 4)
-                                        .padding(.horizontal, 8)
-                                        .background(.quaternary.opacity(0.3))
-                                        .clipShape(RoundedRectangle(cornerRadius: 8))
-                                    }
-                                    .buttonStyle(.plain)
-                                }
-                            }
-                            .padding(.vertical, 4)
-                        }
-                        .frame(maxHeight: 200) // Limit height to make it scrollable
-                    }
-                    
-                    LabeledContent {
-                        TextField("", text: $artist)
-                            .autocorrectionDisabled()
-                            .focused($focusField, equals: .artist)
-                            .onSubmit {
-                                focusField = nil
-                            }
-                    } label: {
-                        Text("Artist").foregroundStyle(.secondary)
-                        
-                    }
-                    
-                    LabeledContent {
-                        DatePicker("", selection: $startDate)
-                            .datePickerStyle(.compact)
-                    }   label: {
-                        Text("Start").foregroundStyle(.secondary)
-                    }
-                    LabeledContent {
-                        DatePicker("", selection: $endDate)
-                            .datePickerStyle(.compact)
-                    }
-                    label: {
-                        Text("End").foregroundStyle(.secondary)
-                    }
-                }
-                .textFieldStyle(.plain)
-                
-                //MARK: MEDIA
-                
-                Section {
-                    Picker("Media", selection: $mediaType) {
-                        ForEach(MediaType.allCases) {type in
-                            Text(type.rawValue)
-                        }
-                    }
-                }
-                
-                //MARK: ITEMS SECTION
-                
-                Section {
-                    if project.items?.count != 0 {
-                        NavigationLink {
-                            ItemListView2(project: project)
-                        } label: {
-                            HStack{
-                                Text("Items: \(project.items?.count ?? 0)")
-                                
-                                Spacer()
-                                
-                                Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
-                            }
-                        }
-                    }
-                    Button {
-                        sheetIsPresented.toggle()
-                    } label: {
-                        HStack {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundStyle(.green)
-                            Text("Add Item")
-                                .tint(.primary)
-                        }
-                    }
-                }
-                
-                
-                
-                //MARK: invoice stuff
-                
-                if (statusChange) {
-                    Section("Invoice"){
-                        if (project.invoice) != nil {
-                            InvoiceLinkView(project: project)
-                        } else {
-                            AddInvoiceView(project: project)
-                        }
-                    }
-                }
-                
-                Section("Notes") {
-                    TextField("", text: $notes, axis: .vertical)
-                }
-                
-                Section {
-                    Toggle(isOn: $delivered) {
-                        if !delivered {
-                            Text("Delivered")
-                        } else {
-                            HStack{
-                                Text("Delivered")
-                                DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
-                                    .datePickerStyle(.automatic)
-                                    .padding(.horizontal)
-                            }
-                        }
-                    }
-                    .tint(paid ? .green : .red)
-                    
-                    Toggle(isOn: $paid) {
-                        if !paid {
-                            Text("Paid")
-                        } else {
-                            HStack{
-                                Text("Paid")
-                                DatePicker("", selection: $dateClosed, displayedComponents: [.date])
-                                    .datePickerStyle(.automatic)
-                                    .padding(.horizontal)
-                            }
-                        }
-                    }
-                }
-                .onChange(of: delivered) {
-                    dateDelivered = Date.now
-                    if delivered && paid {
-                        status = .closed
-                    } else if delivered && !paid {
-                        status = .delivered
-                    } else if !delivered && paid {
-                        status = .closed
-                    } else {
-                        status = .open
-                    }
-                    saveProject()
-                }
-                .onChange(of: paid) {
-                    dateClosed = Date.now
-                    if delivered && paid {
-                        status = .closed
-                    } else if delivered && !paid {
-                        status = .delivered
-                    } else if !delivered && paid {
-                        status = .closed
-                    } else {
-                        status = .open
-                    }
-                    saveProject()
-                }
-                .onChange(of: status) {
-                    
-                    switch status {
-                    case .open:
-                        statusChange = false
-                    case .delivered:
-                        statusChange = true
-                    case .closed:
-                        statusChange = true
-                    }
-                }
+                clientSection
+                projectInfoSection
+                mediaSection
+                itemsSection
+                invoiceSection
+                notesSection
+                statusSection
             }
             .alert(isPresented: $showAlert) {
                 Alert(
@@ -392,45 +114,10 @@ struct ProjectDetailView: View {
                 )
             }
             .onAppear {
-                //                print("ON APPEAR Before: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
-                
-                selectedClient = project.client
-                
-                //                print("ON APPEAR After: \nProject Client: \(project.client?.name ?? "NIL"), selectedClient: \(selectedClient?.name ?? "NIL")")
-                
-                projectName = project.projectName
-                artist = project.artist
-                startDate = project.startDate
-                endDate = project.endDate
-                mediaType = project.mediaType
-                notes = project.notes
-                delivered = project.delivered
-                paid = project.paid
-                dateDelivered = project.dateDelivered
-                dateClosed = project.dateClosed
-                status = project.status
-                endDateSelected = project.endDateSelected
-                
+                loadProjectData()
             }
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel", role: .cancel) {
-                        dismiss()
-                    }
-                }
-                
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
-                        if endDate < startDate {
-                            showAlert.toggle()
-                        }else {
-                            saveProject()
-                            clearTextFields()
-                            dismiss()
-                        }
-                        
-                    }
-                }
+                toolbarContent
             }
             .navigationTitle("Project Details")
             .navigationBarTitleDisplayMode(.automatic)
@@ -442,39 +129,443 @@ struct ProjectDetailView: View {
                 ItemDetailView(project: project)
             }
             .onChange(of: startDate) {
-                if !endDateSelected {
-                    print("🟢 On Change initialized")
-                    print("End Date selected: \(endDateSelected)")
-                    endDate = startDate.adding(hours: 1)
-                }
+                handleStartDateChange()
             }
             .onChange(of: endDate) {
-                if endDate != startDate.adding(hours: 1) {
-                    endDateSelected = true
-                    print("End Date selected: \(endDateSelected)")
-                }
-                
+                handleEndDateChange()
             }
             .onChange(of: selectedTemplateProject) {
-                if let templateProject = selectedTemplateProject {
-                    // Pre-fill form fields with template project data
-                    projectName = templateProject.projectName
-                    artist = templateProject.artist
-                    mediaType = templateProject.mediaType
-                    notes = templateProject.notes
-                    
-                    // Reset the picker selection after use
-                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                        selectedTemplateProject = nil
-                    }
-                }
+                handleTemplateProjectChange()
             }
             .onChange(of: selectedClient) {
-                // Collapse suggestions when client changes
                 showProjectSuggestions = false
             }
         }
+    }
+    
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private var clientSection: some View {
+        Section("Client") {
+            if let client = selectedClient {
+                Text(client.fullName)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        print("Shown Client: \(client.fullName)")
+                        clientSelectSheetIsPresented.toggle()
+                    }
+            } else {
+                Button {
+                    clientSelectSheetIsPresented.toggle()
+                } label: {
+                    HStack {
+                        Image(systemName: "plus.circle.fill")
+                            .foregroundColor(.green)
+                        Text("Add Client")
+                            .foregroundColor(.addClient)
+                    }
+                }
+            }
+        }
+    }
+    @ViewBuilder
+    private var projectInfoSection: some View {
+        Section("Project Info") {
+            projectNameField
+            projectSuggestionsList
+            artistField
+            dateFields
+        }
+        .textFieldStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private var projectNameField: some View {
+        LabeledContent {
+            HStack {
+                TextField("", text: $projectName)
+                    .autocorrectionDisabled()
+                    .submitLabel(.next)
+                    .focused($focusField, equals: .project)
+                    .onSubmit {
+                        focusField = .artist
+                    }
+                    .onChange(of: focusField) {
+                        handleProjectFieldFocusChange()
+                    }
+                
+                projectSuggestionsToggleButton
+            }
+        } label: {
+            Text("Project").foregroundStyle(.secondary)
+        }
+    }
+    
+    @ViewBuilder
+    private var projectSuggestionsToggleButton: some View {
+        if let client = selectedClient, 
+           let clientProjects = client.project, 
+           !clientProjects.isEmpty {
+            Button {
+                toggleProjectSuggestions()
+            } label: {
+                Image(systemName: showProjectSuggestions ? "chevron.up.circle.fill" : "chevron.down.circle")
+                    .foregroundStyle(.blue)
+                    .font(.system(size: 16))
+            }
+            .buttonStyle(.plain)
+        }
+    }
+    
+    @ViewBuilder
+    private var projectSuggestionsList: some View {
+        if showProjectSuggestions,
+           let client = selectedClient,
+           let clientProjects = client.project,
+           !clientProjects.isEmpty {
+            let suggestions = sortedProjectsByFrequency(clientProjects)
+            
+            ScrollView {
+                LazyVStack(spacing: 8) {
+                    ForEach(suggestions) { project in
+                        ProjectSuggestionRow(project: project) {
+                            selectedTemplateProject = project
+                            focusField = nil
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                showProjectSuggestions = false
+                            }
+                        }
+                    }
+                }
+                .padding(.vertical, 4)
+            }
+            .frame(maxHeight: 200)
+        }
+    }
+    
+    @ViewBuilder
+    private var artistField: some View {
+        LabeledContent {
+            TextField("", text: $artist)
+                .autocorrectionDisabled()
+                .focused($focusField, equals: .artist)
+                .onSubmit {
+                    focusField = nil
+                }
+        } label: {
+            Text("Artist").foregroundStyle(.secondary)
+        }
+    }
+    
+    @ViewBuilder
+    private var dateFields: some View {
+        LabeledContent {
+            DatePicker("", selection: $startDate)
+                .datePickerStyle(.compact)
+        } label: {
+            Text("Start").foregroundStyle(.secondary)
+        }
         
+        LabeledContent {
+            DatePicker("", selection: $endDate)
+                .datePickerStyle(.compact)
+        } label: {
+            Text("End").foregroundStyle(.secondary)
+        }
+    }
+    
+    @ViewBuilder
+    private var mediaSection: some View {
+        Section {
+            Picker("Media", selection: $mediaType) {
+                ForEach(MediaType.allCases) { type in
+                    Text(type.rawValue)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var itemsSection: some View {
+        Section {
+            if project.items?.count != 0 {
+                NavigationLink {
+                    ItemListView2(project: project)
+                } label: {
+                    HStack {
+                        Text("Items: \(project.items?.count ?? 0)")
+                        Spacer()
+                        Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
+                    }
+                }
+            }
+            
+            Button {
+                sheetIsPresented.toggle()
+            } label: {
+                HStack {
+                    Image(systemName: "plus.circle.fill")
+                        .foregroundStyle(.green)
+                    Text("Add Item")
+                        .foregroundColor(.addClient)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var invoiceSection: some View {
+        if statusChange {
+            Section("Invoice") {
+                if project.invoice != nil {
+                    InvoiceLinkView(project: project)
+                } else {
+                    AddInvoiceView(project: project)
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var notesSection: some View {
+        Section("Notes") {
+            TextField("", text: $notes, axis: .vertical)
+        }
+    }
+    
+    @ViewBuilder
+    private var statusSection: some View {
+        Section {
+            deliveredToggle
+            paidToggle
+        }
+        .onChange(of: delivered) {
+            handleDeliveredChange()
+        }
+        .onChange(of: paid) {
+            handlePaidChange()
+        }
+        .onChange(of: status) {
+            handleStatusChange()
+        }
+    }
+    
+    @ViewBuilder
+    private var deliveredToggle: some View {
+        Toggle(isOn: $delivered) {
+            if !delivered {
+                Text("Delivered")
+            } else {
+                HStack {
+                    Text("Delivered")
+                    DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
+                        .datePickerStyle(.automatic)
+                        .padding(.horizontal)
+                }
+            }
+        }
+        .tint(delivered ? .green : .red)
+    }
+    
+    @ViewBuilder
+    private var paidToggle: some View {
+        Toggle(isOn: $paid) {
+            if !paid {
+                Text("Paid")
+            } else {
+                HStack {
+                    Text("Paid")
+                    DatePicker("", selection: $dateClosed, displayedComponents: [.date])
+                        .datePickerStyle(.automatic)
+                        .padding(.horizontal)
+                }
+            }
+        }
+        .tint(paid ? .green : .red)
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Cancel", role: .cancel) {
+                dismiss()
+            }
+        }
+        
+        ToolbarItem(placement: .topBarTrailing) {
+            Button("Done") {
+                if endDate < startDate {
+                    showAlert.toggle()
+                } else {
+                    saveProject()
+                    clearTextFields()
+                    dismiss()
+                }
+            }
+        }
+    }
+    
+    // MARK: - Helper Views
+    
+    private struct ProjectSuggestionRow: View {
+        let project: Project
+        let action: () -> Void
+        
+        var body: some View {
+            Button(action: action) {
+                HStack {
+                    Image(systemName: getMediaIcon(for: project.mediaType))
+                        .font(.subheadline)
+                        .foregroundStyle(.blue)
+                        .frame(width: 20)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text(project.projectName)
+                            .font(.subheadline)
+                            .foregroundStyle(.primary)
+                            .multilineTextAlignment(.leading)
+                        
+                        Text(project.mediaType.rawValue)
+                            .font(.caption)
+                            .foregroundStyle(.secondary)
+                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "arrow.up.left")
+                        .font(.caption)
+                        .foregroundStyle(.blue)
+                }
+                .padding(.vertical, 4)
+                .padding(.horizontal, 8)
+                .background(.quaternary.opacity(0.3))
+                .clipShape(RoundedRectangle(cornerRadius: 8))
+            }
+            .buttonStyle(.plain)
+        }
+        
+        private func getMediaIcon(for mediaType: MediaType) -> String {
+            switch mediaType {
+            case .film: return "film"
+            case .tv: return "tv"
+            case .recording: return "mic"
+            case .concert: return "person.3"
+            case .tour: return "bus"
+            case .lesson: return "graduationcap"
+            case .other: return "questionmark.circle"
+            }
+        }
+    }
+    
+    // MARK: - Helper Methods
+    
+    private func loadProjectData() {
+        selectedClient = project.client
+        projectName = project.projectName
+        artist = project.artist
+        startDate = project.startDate
+        endDate = project.endDate
+        mediaType = project.mediaType
+        notes = project.notes
+        delivered = project.delivered
+        paid = project.paid
+        dateDelivered = project.dateDelivered
+        dateClosed = project.dateClosed
+        status = project.status
+        endDateSelected = project.endDateSelected
+    }
+    
+    private func handleProjectFieldFocusChange() {
+        if focusField == .project,
+           let client = selectedClient,
+           let clientProjects = client.project,
+           !clientProjects.isEmpty {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showProjectSuggestions = true
+            }
+        } else if focusField != .project {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showProjectSuggestions = false
+            }
+        }
+    }
+    
+    private func toggleProjectSuggestions() {
+        if showProjectSuggestions {
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showProjectSuggestions = false
+            }
+            focusField = nil
+        } else {
+            focusField = .project
+            withAnimation(.easeInOut(duration: 0.2)) {
+                showProjectSuggestions = true
+            }
+        }
+    }
+    
+    private func handleStartDateChange() {
+        if !endDateSelected {
+            print("🟢 On Change initialized")
+            print("End Date selected: \(endDateSelected)")
+            endDate = startDate.adding(hours: 1)
+        }
+    }
+    
+    private func handleEndDateChange() {
+        if endDate != startDate.adding(hours: 1) {
+            endDateSelected = true
+            print("End Date selected: \(endDateSelected)")
+        }
+    }
+    
+    private func handleTemplateProjectChange() {
+        if let templateProject = selectedTemplateProject {
+            projectName = templateProject.projectName
+            artist = templateProject.artist
+            mediaType = templateProject.mediaType
+            notes = templateProject.notes
+            
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                selectedTemplateProject = nil
+            }
+        }
+    }
+    
+    private func handleDeliveredChange() {
+        dateDelivered = Date.now
+        updateProjectStatus()
+        saveProject()
+    }
+    
+    private func handlePaidChange() {
+        dateClosed = Date.now
+        updateProjectStatus()
+        saveProject()
+    }
+    
+    private func updateProjectStatus() {
+        if delivered && paid {
+            status = .closed
+        } else if delivered && !paid {
+            status = .delivered
+        } else if !delivered && paid {
+            status = .closed
+        } else {
+            status = .open
+        }
+    }
+    
+    private func handleStatusChange() {
+        switch status {
+        case .open:
+            statusChange = false
+        case .delivered:
+            statusChange = true
+        case .closed:
+            statusChange = true
+        }
     }
     
     func saveProject() {

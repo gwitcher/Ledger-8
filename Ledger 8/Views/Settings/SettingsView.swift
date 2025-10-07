@@ -56,9 +56,10 @@ struct SettingsView: View {
                 Section("Starting Invoice Number") {
                     TextField("Beginning Invoice Number", value: $initialInvoiceNumber, format: .number.grouping(.never))
                         .font(.headline)
+                        //.foregroundStyle(.primary)
                         .frame(height: 30)
                         .padding(.horizontal)
-                        .background(Color.white)
+                        //.background(Color.white)
                         .cornerRadius(10)
                     
                 }

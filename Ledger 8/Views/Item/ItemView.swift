@@ -21,7 +21,7 @@ struct ItemView: View {
                 .fill(Color.clear)
                     .frame(width: 44, height: 35)
                     .overlay {
-                        FontIcon.text(.awesome5Solid(code: item.icon), fontsize: 25, color: Color.blue)
+                        FontIcon.text(.awesome5Solid(code: item.icon), fontsize: 25, color: Color.itemIcon)
                     }
                 VStack(alignment: .leading, spacing: 6) {
                     

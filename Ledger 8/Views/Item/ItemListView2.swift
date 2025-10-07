@@ -11,6 +11,7 @@ import SwiftData
 struct ItemListView2: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
+    @Environment(\.colorScheme) var colorScheme
     
     var project: Project
     
@@ -65,7 +66,7 @@ struct ItemListView2: View {
         }
         .navigationTitle(project.projectName)
         .navigationBarTitleDisplayMode(.automatic)
-        
+        .toolbarColorScheme( colorScheme == .light ? .light : .dark)
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button("Done") {

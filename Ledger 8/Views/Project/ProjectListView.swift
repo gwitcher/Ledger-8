@@ -24,12 +24,12 @@ struct ProjectListView: View {
     @State private var sortSelection: Status = Status.open
     
     
-    init() {
-        // Large Navigation Title
-        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: UIColor.black]
-        // Inline Navigation Title
-        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: UIColor.black]
-    }
+//    init() {
+//        // Large Navigation Title
+//        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: Color.primary]
+//        // Inline Navigation Title
+//        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: Color.primary]
+//    }
     
     var body: some View {
         
@@ -69,7 +69,7 @@ struct ProjectListView: View {
             }
             .navigationTitle("Project Ledger")
             .navigationBarTitleDisplayMode( .large )
-            .toolbarColorScheme( colorScheme == .dark ? .dark : .light)
+           // .toolbarColorScheme( colorScheme == .light ? .light : .dark)
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
                     Button {
