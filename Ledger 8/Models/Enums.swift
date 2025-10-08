@@ -82,7 +82,7 @@ enum ItemType: String, CaseIterable, Identifiable, Codable {
 }
 
 enum ProjectField {
-    case project, artist, startDate, endDate
+    case project, artist, startDate, endDate, notes
 }
 
 enum ItemField {

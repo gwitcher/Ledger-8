@@ -43,6 +43,7 @@ struct ProjectDetailView: View {
     @State private var showStartTimePicker = false
     @State private var showEndDatePicker = false
     @State private var showEndTimePicker = false
+    @State private var scrollProxy: ScrollViewProxy?
     
     @FocusState private var focusField: ProjectField?
     
@@ -101,14 +102,21 @@ struct ProjectDetailView: View {
     
     var body: some View {
         NavigationStack {
-            Form {
-                clientSection
-                projectInfoSection
-                mediaSection
-                itemsSection
-                invoiceSection
-                notesSection
-                statusSection
+            ScrollViewReader { proxy in
+                List {
+                    clientSection
+                    projectInfoSection
+                    mediaSection
+                    itemsSection
+                    invoiceSection
+                    notesSection
+                    statusSection
+                }
+                .listStyle(.insetGrouped)
+                .onAppear {
+                    scrollProxy = proxy
+                    loadProjectData()
+                }
             }
             .alert(isPresented: $showAlert) {
                 Alert(
@@ -116,9 +124,6 @@ struct ProjectDetailView: View {
                     message: Text(dateAlertMessage),
                     dismissButton: .default(Text("OK"))
                 )
-            }
-            .onAppear {
-                loadProjectData()
             }
             .toolbar {
                 toolbarContent
@@ -172,6 +177,7 @@ struct ProjectDetailView: View {
                 }
             }
         }
+        .id("clientSection")
     }
     
     @ViewBuilder
@@ -184,6 +190,7 @@ struct ProjectDetailView: View {
             expandingDateFields
         }
         .textFieldStyle(.plain)
+        .id("projectInfoSection")
     }
     
     @ViewBuilder
@@ -263,52 +270,36 @@ struct ProjectDetailView: View {
             Text("Artist").foregroundStyle(.secondary)
         }
     }
-    
-//    @ViewBuilder
-//    private var dateFields: some View {
-//        LabeledContent {
-//            DatePicker("", selection: $startDate)
-//                .datePickerStyle(.compact)
-//        } label: {
-//            Text("Start").foregroundStyle(.secondary)
-//        }
-//        
-//        LabeledContent {
-//            DatePicker("", selection: $endDate)
-//                .datePickerStyle(.compact)
-//        } label: {
-//            Text("End").foregroundStyle(.secondary)
-//        }
-//    }
+
     
     @ViewBuilder
     private var expandingDateFields: some View {
-        
+        let datePickerExpandDuration = 0.2
         Group {
-            
-            //Toggle("All Day", isOn: $isAllDay)
               
             HStack {
-                //Spacer()
+              
                 Text("Start")
                     .foregroundStyle(.secondary)
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.2)){
-                                showEndTimePicker = false
-                                showEndDatePicker = false
-                             if showStartTimePicker && !showStartDatePicker {
-                                showStartTimePicker = false
-                                showStartDatePicker = false
-                            } else {
-                                showStartDatePicker.toggle()
-                            }
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                           // focusField = nil // Dismiss keyboard
+                            showEndTimePicker = false
+                            showEndDatePicker = false
+                         if showStartTimePicker && !showStartDatePicker {
+                            showStartTimePicker = false
+                            showStartDatePicker = false
+                        } else {
+                            showStartDatePicker.toggle()
+                        }
                         }
                     }
                 
                 Spacer()
                 
                 Button("\(startDate.formatted(date: .abbreviated, time: .omitted))") {
-                    withAnimation(.easeInOut(duration: 0.2)){
+                    //focusField = nil // Dismiss keyboard
+                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                         showEndTimePicker = false
                         showEndDatePicker = false
                         if showStartTimePicker {
@@ -321,7 +312,8 @@ struct ProjectDetailView: View {
                 .foregroundStyle(.primary)
                 
                 Button("\(startDate.formatted(date: .omitted, time: .shortened))") {
-                    withAnimation(.easeInOut(duration: 0.2)){
+                    //focusField = nil // Dismiss keyboard
+                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                         showEndTimePicker = false
                         showEndDatePicker = false
                         if showStartDatePicker {
@@ -335,16 +327,23 @@ struct ProjectDetailView: View {
             }
             
             if showStartDatePicker {
+                VStack {
                     DatePicker("", selection: $startDate, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                         .focused($focusField, equals: .startDate)
+                }
+                .padding(.vertical, 12)
+                .id("startDatePicker")
             }
             
             if showStartTimePicker {
-                DatePicker("", selection: $startDate, displayedComponents: .hourAndMinute)
-                    .datePickerStyle(.wheel)
-                    .focused($focusField, equals: .startDate)
-                       
+                VStack {
+                    DatePicker("", selection: $startDate, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
+                        .focused($focusField, equals: .startDate)
+                }
+                .padding(.vertical, 12)
+                .id("startTimePicker")
             }
             
             HStack {
@@ -352,7 +351,8 @@ struct ProjectDetailView: View {
                 Text("End")
                     .foregroundStyle(.secondary)
                     .onTapGesture {
-                        withAnimation(.easeInOut(duration: 0.2)){
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                            //focusField = nil // Dismiss keyboard
                             showStartTimePicker = false
                             showStartDatePicker = false
                              if showEndTimePicker && !showEndDatePicker {
@@ -367,7 +367,8 @@ struct ProjectDetailView: View {
                 Spacer()
                 
                 Button("\(endDate.formatted(date: .abbreviated, time: .omitted))") {
-                    withAnimation(.easeInOut(duration: 0.2)){
+                    //focusField = nil // Dismiss keyboard
+                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                         showStartTimePicker = false
                         showStartDatePicker = false
                         if showEndTimePicker {
@@ -380,7 +381,8 @@ struct ProjectDetailView: View {
                 .foregroundStyle(.primary)
                 
                 Button("\(endDate.formatted(date: .omitted, time: .shortened))") {
-                    withAnimation(.easeInOut(duration: 0.2)){
+                   // focusField = nil // Dismiss keyboard
+                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                         showStartTimePicker = false
                         showStartDatePicker = false
                         if showEndDatePicker {
@@ -394,28 +396,81 @@ struct ProjectDetailView: View {
             }
             
             if showEndDatePicker {
+                VStack {
                     DatePicker("", selection: $endDate, displayedComponents: .date)
                         .datePickerStyle(.graphical)
-                        .focused($focusField, equals: .startDate)
+                        .focused($focusField, equals: .endDate)
+                }
+                .padding(.vertical, 12)
+                .id("endDatePicker")
             }
             
             if showEndTimePicker {
-                DatePicker("", selection: $endDate, displayedComponents: .hourAndMinute)
-                    .datePickerStyle(.wheel)
-                    .focused($focusField, equals: .startDate)
-                       
+                VStack {
+                    DatePicker("", selection: $endDate, displayedComponents: .hourAndMinute)
+                        .datePickerStyle(.wheel)
+                        .focused($focusField, equals: .endDate)
+                }
+                .padding(.vertical, 12)
+                .id("endTimePicker")
             }
-            
-//            TextField("Name", text: $name)
-//                .focused($focusField, equals: .artist)
+
             
         }
         .onChange(of: focusField) { oldValue, newValue in
-            if newValue != .endDate{
-               
-                    showStartDatePicker = false
-                    showStartTimePicker = false
+            if newValue != .endDate && newValue != .startDate {
+                showStartDatePicker = false
+                showStartTimePicker = false
+                showEndDatePicker = false
+                showEndTimePicker = false
                 
+                // Scroll to top when all date pickers are closed, unless focusing notes
+                if newValue != .notes {
+                    scrollToTop()
+                }
+            }
+            
+            // Handle notes field focus for keyboard avoidance
+            if newValue == .notes {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    scrollToNotes()
+                }
+            }
+        }
+        .onChange(of: showStartDatePicker) { _, isShowing in
+            if isShowing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    scrollToProjectInfo()
+                }
+            } else {
+                checkAndScrollToTopIfAllPickersClosed()
+            }
+        }
+        .onChange(of: showStartTimePicker) { _, isShowing in
+            if isShowing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    scrollToProjectInfo()
+                }
+            } else {
+                checkAndScrollToTopIfAllPickersClosed()
+            }
+        }
+        .onChange(of: showEndDatePicker) { _, isShowing in
+            if isShowing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    scrollToProjectInfo()
+                }
+            } else {
+                checkAndScrollToTopIfAllPickersClosed()
+            }
+        }
+        .onChange(of: showEndTimePicker) { _, isShowing in
+            if isShowing {
+                DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                    scrollToProjectInfo()
+                }
+            } else {
+                checkAndScrollToTopIfAllPickersClosed()
             }
         }
         
@@ -483,7 +538,9 @@ struct ProjectDetailView: View {
     private var notesSection: some View {
         Section("Notes") {
             TextField("", text: $notes, axis: .vertical)
+                .focused($focusField, equals: .notes)
         }
+        .id("notesSection")
     }
     
     @ViewBuilder
@@ -717,6 +774,39 @@ struct ProjectDetailView: View {
             statusChange = true
         case .closed:
             statusChange = true
+        }
+    }
+    
+    private func scrollToTop() {
+        guard let scrollProxy = scrollProxy else { return }
+        
+        withAnimation(.easeInOut(duration: 0.3)) {
+            scrollProxy.scrollTo("clientSection", anchor: .top)
+        }
+    }
+    
+    private func scrollToProjectInfo() {
+        guard let scrollProxy = scrollProxy else { return }
+        
+        withAnimation(.easeInOut(duration: 0.3)) {
+            scrollProxy.scrollTo("projectInfoSection", anchor: .top)
+        }
+    }
+    
+    private func scrollToNotes() {
+        guard let scrollProxy = scrollProxy else { return }
+        
+        withAnimation(.easeInOut(duration: 0.3)) {
+            scrollProxy.scrollTo("notesSection", anchor: .bottom)
+        }
+    }
+    
+    private func checkAndScrollToTopIfAllPickersClosed() {
+        // Check if all date pickers are closed
+        if !showStartDatePicker && !showStartTimePicker && !showEndDatePicker && !showEndTimePicker {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+                scrollToTop()
+            }
         }
     }
     
