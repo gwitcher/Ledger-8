@@ -39,6 +39,10 @@ struct ProjectDetailView: View {
     @State private var endDateSelected = false
     @State private var selectedTemplateProject: Project?
     @State private var showProjectSuggestions = false
+    @State private var showStartDatePicker = false
+    @State private var showStartTimePicker = false
+    @State private var showEndDatePicker = false
+    @State private var showEndTimePicker = false
     
     @FocusState private var focusField: ProjectField?
     
@@ -169,13 +173,15 @@ struct ProjectDetailView: View {
             }
         }
     }
+    
     @ViewBuilder
     private var projectInfoSection: some View {
         Section("Project Info") {
             projectNameField
             projectSuggestionsList
             artistField
-            dateFields
+            //dateFields
+            expandingDateFields
         }
         .textFieldStyle(.plain)
     }
@@ -258,22 +264,163 @@ struct ProjectDetailView: View {
         }
     }
     
+//    @ViewBuilder
+//    private var dateFields: some View {
+//        LabeledContent {
+//            DatePicker("", selection: $startDate)
+//                .datePickerStyle(.compact)
+//        } label: {
+//            Text("Start").foregroundStyle(.secondary)
+//        }
+//        
+//        LabeledContent {
+//            DatePicker("", selection: $endDate)
+//                .datePickerStyle(.compact)
+//        } label: {
+//            Text("End").foregroundStyle(.secondary)
+//        }
+//    }
+    
     @ViewBuilder
-    private var dateFields: some View {
-        LabeledContent {
-            DatePicker("", selection: $startDate)
-                .datePickerStyle(.compact)
-        } label: {
-            Text("Start").foregroundStyle(.secondary)
+    private var expandingDateFields: some View {
+        
+        Group {
+            
+            //Toggle("All Day", isOn: $isAllDay)
+              
+            HStack {
+                //Spacer()
+                Text("Start")
+                    .foregroundStyle(.secondary)
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)){
+                                showEndTimePicker = false
+                                showEndDatePicker = false
+                             if showStartTimePicker && !showStartDatePicker {
+                                showStartTimePicker = false
+                                showStartDatePicker = false
+                            } else {
+                                showStartDatePicker.toggle()
+                            }
+                        }
+                    }
+                
+                Spacer()
+                
+                Button("\(startDate.formatted(date: .abbreviated, time: .omitted))") {
+                    withAnimation(.easeInOut(duration: 0.2)){
+                        showEndTimePicker = false
+                        showEndDatePicker = false
+                        if showStartTimePicker {
+                            showStartTimePicker = false
+                        }
+                        showStartDatePicker.toggle()
+                    }
+                }
+                .buttonStyle(.bordered)
+                .foregroundStyle(.primary)
+                
+                Button("\(startDate.formatted(date: .omitted, time: .shortened))") {
+                    withAnimation(.easeInOut(duration: 0.2)){
+                        showEndTimePicker = false
+                        showEndDatePicker = false
+                        if showStartDatePicker {
+                            showStartDatePicker = false
+                        }
+                        showStartTimePicker.toggle()
+                    }
+                }
+                .buttonStyle(.bordered)
+                .foregroundStyle(.primary)
+            }
+            
+            if showStartDatePicker {
+                    DatePicker("", selection: $startDate, displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .focused($focusField, equals: .startDate)
+            }
+            
+            if showStartTimePicker {
+                DatePicker("", selection: $startDate, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .focused($focusField, equals: .startDate)
+                       
+            }
+            
+            HStack {
+                //Spacer()
+                Text("End")
+                    .foregroundStyle(.secondary)
+                    .onTapGesture {
+                        withAnimation(.easeInOut(duration: 0.2)){
+                            showStartTimePicker = false
+                            showStartDatePicker = false
+                             if showEndTimePicker && !showEndDatePicker {
+                                showEndTimePicker = false
+                                showEndDatePicker = false
+                            } else {
+                                showEndDatePicker.toggle()
+                            }
+                        }
+                    }
+                
+                Spacer()
+                
+                Button("\(endDate.formatted(date: .abbreviated, time: .omitted))") {
+                    withAnimation(.easeInOut(duration: 0.2)){
+                        showStartTimePicker = false
+                        showStartDatePicker = false
+                        if showEndTimePicker {
+                            showEndTimePicker = false
+                        }
+                        showEndDatePicker.toggle()
+                    }
+                }
+                .buttonStyle(.bordered)
+                .foregroundStyle(.primary)
+                
+                Button("\(endDate.formatted(date: .omitted, time: .shortened))") {
+                    withAnimation(.easeInOut(duration: 0.2)){
+                        showStartTimePicker = false
+                        showStartDatePicker = false
+                        if showEndDatePicker {
+                            showEndDatePicker = false
+                        }
+                        showEndTimePicker.toggle()
+                    }
+                }
+                .buttonStyle(.bordered)
+                .foregroundStyle(.primary)
+            }
+            
+            if showEndDatePicker {
+                    DatePicker("", selection: $endDate, displayedComponents: .date)
+                        .datePickerStyle(.graphical)
+                        .focused($focusField, equals: .startDate)
+            }
+            
+            if showEndTimePicker {
+                DatePicker("", selection: $endDate, displayedComponents: .hourAndMinute)
+                    .datePickerStyle(.wheel)
+                    .focused($focusField, equals: .startDate)
+                       
+            }
+            
+//            TextField("Name", text: $name)
+//                .focused($focusField, equals: .artist)
+            
+        }
+        .onChange(of: focusField) { oldValue, newValue in
+            if newValue != .endDate{
+               
+                    showStartDatePicker = false
+                    showStartTimePicker = false
+                
+            }
         }
         
-        LabeledContent {
-            DatePicker("", selection: $endDate)
-                .datePickerStyle(.compact)
-        } label: {
-            Text("End").foregroundStyle(.secondary)
-        }
     }
+    
     
     @ViewBuilder
     private var mediaSection: some View {
@@ -298,10 +445,15 @@ struct ProjectDetailView: View {
                         Spacer()
                         Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     }
+                    .contentShape(Rectangle())
                 }
+                .simultaneousGesture(TapGesture().onEnded {
+                    saveProject()
+                })
             }
             
             Button {
+                saveProject()
                 sheetIsPresented.toggle()
             } label: {
                 HStack {
