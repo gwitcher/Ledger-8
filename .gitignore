@@ -1,0 +1,42 @@
+//
+//  .gitignore
+//  Ledger 8
+//
+//  Created by Gabe Witcher on 10/8/25.
+//
+
+# Xcode build and derived data
+build/
+DerivedData/
+
+# User-specific Xcode settings and workspace data
+xcuserdata/
+*.xcuserstate
+
+# macOS Finder files
+.DS_Store
+
+# Swift package manager build data and checkouts
+.swiftpm/
+.build/
+
+# Xcode automatically generated schemes
+xcshareddata/WorkspaceSettings.xcsettings
+
+# User data (if generated)
+*.swp
+*.swo
+
+# App Support or output files (if they are generated during runtime and not meant for source control)
+*.sqlite
+*.sqlite-shm
+*.sqlite-wal
+
+# Common output and logs
+*.log
+*.tmp
+*.pdf
+
+# Playgrounds
+timeline.xctimeline
+playground.xcworkspace
