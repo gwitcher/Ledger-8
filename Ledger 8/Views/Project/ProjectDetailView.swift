@@ -117,6 +117,10 @@ struct ProjectDetailView: View {
                     scrollProxy = proxy
                     loadProjectData()
                 }
+                
+            }
+            .onTapGesture {
+                hideKeyboard()
             }
             .alert(isPresented: $showAlert) {
                 Alert(
@@ -275,6 +279,7 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var expandingDateFields: some View {
         let datePickerExpandDuration = 0.2
+        let datePickerExpandDelay = 0.001
         Group {
               
             HStack {
@@ -283,43 +288,49 @@ struct ProjectDetailView: View {
                     .foregroundStyle(.secondary)
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                           // focusField = nil // Dismiss keyboard
+                            focusField = nil // Dismiss keyboard
                             showEndTimePicker = false
                             showEndDatePicker = false
-                         if showStartTimePicker && !showStartDatePicker {
-                            showStartTimePicker = false
-                            showStartDatePicker = false
-                        } else {
-                            showStartDatePicker.toggle()
-                        }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                             if showStartTimePicker && !showStartDatePicker {
+                                showStartTimePicker = false
+                                showStartDatePicker = false
+                            } else {
+                                showStartDatePicker.toggle()
+                            }
+                         }
                         }
                     }
                 
                 Spacer()
                 
                 Button("\(startDate.formatted(date: .abbreviated, time: .omitted))") {
-                    //focusField = nil // Dismiss keyboard
-                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                        showEndTimePicker = false
-                        showEndDatePicker = false
-                        if showStartTimePicker {
-                            showStartTimePicker = false
+                    focusField = nil // Dismiss keyboard
+                    DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                            showEndTimePicker = false
+                            showEndDatePicker = false
+                            if showStartTimePicker {
+                                showStartTimePicker = false
+                            }
+                            showStartDatePicker.toggle()
                         }
-                        showStartDatePicker.toggle()
                     }
                 }
                 .buttonStyle(.bordered)
                 .foregroundStyle(.primary)
                 
                 Button("\(startDate.formatted(date: .omitted, time: .shortened))") {
-                    //focusField = nil // Dismiss keyboard
-                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                        showEndTimePicker = false
-                        showEndDatePicker = false
-                        if showStartDatePicker {
-                            showStartDatePicker = false
+                    focusField = nil // Dismiss keyboard
+                    DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                            showEndTimePicker = false
+                            showEndDatePicker = false
+                            if showStartDatePicker {
+                                showStartDatePicker = false
+                            }
+                            showStartTimePicker.toggle()
                         }
-                        showStartTimePicker.toggle()
                     }
                 }
                 .buttonStyle(.bordered)
@@ -352,43 +363,49 @@ struct ProjectDetailView: View {
                     .foregroundStyle(.secondary)
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                            //focusField = nil // Dismiss keyboard
+                            focusField = nil // Dismiss keyboard
                             showStartTimePicker = false
                             showStartDatePicker = false
-                             if showEndTimePicker && !showEndDatePicker {
-                                showEndTimePicker = false
-                                showEndDatePicker = false
-                            } else {
-                                showEndDatePicker.toggle()
-                            }
+                            DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                                 if showEndTimePicker && !showEndDatePicker {
+                                    showEndTimePicker = false
+                                    showEndDatePicker = false
+                                } else {
+                                    showEndDatePicker.toggle()
+                                }
+                             }
                         }
                     }
                 
                 Spacer()
                 
                 Button("\(endDate.formatted(date: .abbreviated, time: .omitted))") {
-                    //focusField = nil // Dismiss keyboard
-                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                        showStartTimePicker = false
-                        showStartDatePicker = false
-                        if showEndTimePicker {
-                            showEndTimePicker = false
+                    focusField = nil // Dismiss keyboard
+                    DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                            showStartTimePicker = false
+                            showStartDatePicker = false
+                            if showEndTimePicker {
+                                showEndTimePicker = false
+                            }
+                            showEndDatePicker.toggle()
                         }
-                        showEndDatePicker.toggle()
                     }
                 }
                 .buttonStyle(.bordered)
                 .foregroundStyle(.primary)
                 
                 Button("\(endDate.formatted(date: .omitted, time: .shortened))") {
-                   // focusField = nil // Dismiss keyboard
-                    withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                        showStartTimePicker = false
-                        showStartDatePicker = false
-                        if showEndDatePicker {
-                            showEndDatePicker = false
+                    focusField = nil // Dismiss keyboard
+                    DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
+                        withAnimation(.easeInOut(duration: datePickerExpandDuration)){
+                            showStartTimePicker = false
+                            showStartDatePicker = false
+                            if showEndDatePicker {
+                                showEndDatePicker = false
+                            }
+                            showEndTimePicker.toggle()
                         }
-                        showEndTimePicker.toggle()
                     }
                 }
                 .buttonStyle(.bordered)
@@ -500,11 +517,11 @@ struct ProjectDetailView: View {
                         Spacer()
                         Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     }
-                    .contentShape(Rectangle())
+                    //.contentShape(Rectangle())
                 }
-                .simultaneousGesture(TapGesture().onEnded {
-                    saveProject()
-                })
+//                .simultaneousGesture(TapGesture(). {
+//                    saveProject()
+//                })
             }
             
             Button {
@@ -844,6 +861,7 @@ struct ProjectDetailView: View {
         notes = ""
         startDate = Date()
     }
+    
 }
 
 #Preview {
