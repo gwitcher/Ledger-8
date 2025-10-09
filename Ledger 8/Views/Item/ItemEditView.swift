@@ -85,13 +85,13 @@ struct ItemEditView: View {
             .navigationBarBackButtonHidden()
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel", role: .cancel) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("Done", systemImage: "checkmar.circle.fill") {
                         item.name = name
                         item.itemType = itemType
                         item.fee = fee ?? .zero

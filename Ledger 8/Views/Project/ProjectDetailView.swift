@@ -31,7 +31,7 @@ struct ProjectDetailView: View {
     @State private var dateDelivered = Date()
     @State private var dateClosed = Date()
     @State private var status = Status.open
-    @State private var sheetIsPresented = false
+    @State private var itemSheetIsPresented = false
     @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
     @State private var statusChange = false
@@ -96,6 +96,8 @@ struct ProjectDetailView: View {
             return "graduationcap"
         case .other:
             return "questionmark.circle"
+        case .game:
+            return "gamecontroller"
         }
     }
     
@@ -117,11 +119,10 @@ struct ProjectDetailView: View {
                     scrollProxy = proxy
                     loadProjectData()
                 }
-                
             }
-            .onTapGesture {
-                hideKeyboard()
-            }
+//            .onTapGesture {
+//                hideKeyboard()
+//            }
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("Cannot Save Project"),
@@ -138,7 +139,7 @@ struct ProjectDetailView: View {
             .sheet(isPresented: $clientSelectSheetIsPresented) {
                 ClientSelectView(selectedClient: $selectedClient)
             }
-            .sheet(isPresented: $sheetIsPresented) {
+            .sheet(isPresented: $itemSheetIsPresented) {
                 ItemDetailView(project: project)
             }
             .onChange(of: startDate) {
@@ -190,7 +191,6 @@ struct ProjectDetailView: View {
             projectNameField
             projectSuggestionsList
             artistField
-            //dateFields
             expandingDateFields
         }
         .textFieldStyle(.plain)
@@ -211,7 +211,6 @@ struct ProjectDetailView: View {
                     .onChange(of: focusField) {
                         handleProjectFieldFocusChange()
                     }
-                
                 projectSuggestionsToggleButton
             }
         } label: {
@@ -517,16 +516,13 @@ struct ProjectDetailView: View {
                         Spacer()
                         Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     }
-                    //.contentShape(Rectangle())
                 }
-//                .simultaneousGesture(TapGesture(). {
-//                    saveProject()
-//                })
             }
             
             Button {
-                saveProject()
-                sheetIsPresented.toggle()
+                //saveProject()
+                itemSheetIsPresented.toggle()
+                print("🫑 sheet is presented: \(itemSheetIsPresented)")
             } label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
@@ -591,7 +587,7 @@ struct ProjectDetailView: View {
                 }
             }
         }
-        .tint(delivered ? .green : .red)
+        .tint(paid ? .green : .red)
     }
     
     @ViewBuilder
@@ -608,19 +604,19 @@ struct ProjectDetailView: View {
                 }
             }
         }
-        .tint(paid ? .green : .red)
+        .tint(.green)
     }
     
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            Button("Cancel", role: .cancel) {
+            Button("Cancel", systemImage: "xmark", role: .cancel) {
                 dismiss()
             }
         }
         
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Done") {
+            Button("Done", systemImage: "checkmark.circle.fill") {
                 if endDate < startDate {
                     showAlert.toggle()
                 } else {
@@ -680,6 +676,8 @@ struct ProjectDetailView: View {
             case .tour: return "bus"
             case .lesson: return "graduationcap"
             case .other: return "questionmark.circle"
+            case .game: return "gamecontroller"
+                
             }
         }
     }
@@ -767,6 +765,9 @@ struct ProjectDetailView: View {
     
     private func handlePaidChange() {
         dateClosed = Date.now
+        if !delivered {
+            delivered = true
+        }
         updateProjectStatus()
         saveProject()
     }

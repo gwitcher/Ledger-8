@@ -214,7 +214,7 @@ struct ClientEditView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("Done", systemImage: "checkmark.circle.fill") {
                         client.firstName = firstName
                         client.lastName = lastName
                         client.email = email

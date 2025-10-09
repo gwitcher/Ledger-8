@@ -80,6 +80,8 @@ class Project: Identifiable {
                 .graduation_cap
         case .other:
                 .question
+        case .game:
+                .gamepad
         }
     }
 }

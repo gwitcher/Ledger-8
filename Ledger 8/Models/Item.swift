@@ -57,12 +57,14 @@ class Item: Identifiable {
                 .receipt
         case .reimbursement:
                 .dollar_sign
-        case .hourLesson:
+        case .lesson:
                 .graduation_cap
-        case .halfLesson:
-                .graduation_cap
+//        case .halfLesson:
+//                .graduation_cap
         case .other:
                 .question
+        case .demo:
+                .music
         }
     }
 }

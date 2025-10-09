@@ -203,13 +203,13 @@ struct NewClientView: View {
             }
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel", role: .cancel) {
+                    Button("Cancel", systemImage: "xmark", role: .cancel) {
                         dismiss()
                     }
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done") {
+                    Button("Done", systemImage: "checkmark.circle.fill") {
                         saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes)
                         
                         firstName = ""

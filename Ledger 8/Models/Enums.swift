@@ -53,6 +53,7 @@ enum MediaType: String, CaseIterable, Identifiable, Codable {
     case film = "Film"
     case tv = "TV"
     case recording = "Recording"
+    case game = "Video Game"
     case concert = "Concert"
     case tour = "Tour"
     case lesson = "Lesson"
@@ -62,19 +63,20 @@ enum MediaType: String, CaseIterable, Identifiable, Codable {
 }
 
 enum ItemType: String, CaseIterable, Identifiable, Codable {
-    case session = "Recording Session"
+    case session = "Tracking Session"
     case overdub = "Overdub"
+    case demo = "Demo"
+    case rehearsal = "Rehearsal"
     case concert = "Concert"
     case tour = "Tour"
     case perDiem = "Per Diem"
+    case reimbursement = "Reimbursement"
     case arrangement = "Arrangement"
     case score = "Score"
     case production = "Production Services"
-    case rehearsal = "Rehearsal"
-    case reimbursement = "Reimbursement"
     case rental = "Chart Rental"
-    case hourLesson = "Lesson (1 hr)"
-    case halfLesson = "Lesson (30 mins)"
+    case lesson = "Lesson"
+    //case halfLesson = "Lesson (30 mins)"
     case other = "Other"
     
     var id: Self {self}

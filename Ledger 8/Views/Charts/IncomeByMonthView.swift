@@ -93,6 +93,8 @@ struct IncomeByMonthView: View {
                 Color(.systemCyan)
             case .tv:
                 Color(.systemPink)
+            case .game:
+                Color(.systemYellow)
             }
         }
     }
@@ -381,6 +383,8 @@ struct IncomeByMonthView: View {
             Color(.systemCyan)
         case .tv:
             Color(.systemPink)
+        case .game:
+            Color(.systemYellow)
         }
     }
 }

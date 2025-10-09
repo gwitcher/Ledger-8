@@ -31,6 +31,8 @@ struct MediaTypeDonutChartView: View {
                 Color(.systemCyan)
             case .tv:
                 Color(.systemPink)
+            case .game:
+                Color(.systemYellow)
             }
         }
     }
@@ -217,6 +219,8 @@ struct MediaTypeDonutChartView: View {
         case .lesson:
             return Double.random(in: 50...150)
         case .other:
+            return Double.random(in: 200...1000)
+        case .game:
             return Double.random(in: 200...1000)
         }
     }
