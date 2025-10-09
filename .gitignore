@@ -12,6 +12,7 @@ DerivedData/
 # User-specific Xcode settings and workspace data
 xcuserdata/
 *.xcuserstate
+UserInterfaceState.xcuserstate
 
 # macOS Finder files
 .DS_Store
