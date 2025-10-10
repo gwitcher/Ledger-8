@@ -211,6 +211,7 @@ struct ClientEditView: View {
                 state = client.state
                 zip = client.zip
                 notes = client.notes
+                company = client.company
             }
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {
@@ -226,6 +227,7 @@ struct ClientEditView: View {
                         client.state = state
                         client.zip = zip
                         client.notes = notes
+                        client.company = company
                         
                         dismiss()
                     }
