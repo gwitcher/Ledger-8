@@ -210,7 +210,7 @@ struct NewClientView: View {
                 
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done", systemImage: "checkmark.circle.fill") {
-                        saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes)
+                        saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone,attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes, company: company)
                         
                         firstName = ""
                         lastName = ""
@@ -223,6 +223,7 @@ struct NewClientView: View {
                         state = ""
                         zip = ""
                         notes = ""
+                        company = ""
                         
                         dismiss()
                         
@@ -233,7 +234,7 @@ struct NewClientView: View {
         
     }
     
-    func saveClient(firstName: String, lastName: String, email: String, phone: String, attention: String, address: String, address2: String, city: String, state: String, zip: String, notes: String ) {
+    func saveClient(firstName: String, lastName: String, email: String, phone: String, attention: String, address: String, address2: String, city: String, state: String, zip: String, notes: String, company: String ) {
         client.firstName = firstName
         client.lastName = lastName
         client.email = email
@@ -245,6 +246,7 @@ struct NewClientView: View {
         client.state = state
         client.zip = zip
         client.notes = notes
+        client.company = company
         
         
         modelContext.insert(client)
