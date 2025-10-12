@@ -97,6 +97,7 @@ struct ProjectListView: View {
                             .foregroundStyle(.primary)
                     }
                 }
+                // MARK: - chart icon 
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
                         chartSheetIsPresented.toggle()

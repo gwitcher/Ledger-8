@@ -20,17 +20,16 @@ struct Charts: View {
      
     var body: some View {
         NavigationStack {
-            VStack {
-                MediaTypeDonutChartView(projects: projects)
-                    //.padding()
-                    //.border(.red)
-                Spacer()
-                
-                
-                //IncomeByMonthView(projects: projects)
+            ScrollView (.vertical){
+                VStack {
+                    MediaTypeDonutChartView(projects: projects)
+                        .padding()
+                     
+                    Spacer()
                     
+                    TotalsByMonth(projects: projects)
+                }
             }
-            //.frame(width: 250)
             .navigationTitle("Charts")
             .toolbar {
                 ToolbarItem(placement: .topBarTrailing) {

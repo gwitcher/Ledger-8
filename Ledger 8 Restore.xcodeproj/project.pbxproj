@@ -7,6 +7,8 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
+		6660F3942E9B26B9007AA17D /* DevelopmentSuggestions.md in Resources */ = {isa = PBXBuildFile; fileRef = 6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */; };
+		6660F3962E9B2880007AA17D /* OnboardingView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 6660F3952E9B2880007AA17D /* OnboardingView.swift */; };
 		66BD1F1B2DB9F68200ACC1B6 /* MainView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BD1F1A2DB9F68200ACC1B6 /* MainView.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
 		66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616262DAF2BA100161D7E /* Assets.xcassets */; };
@@ -18,6 +20,8 @@
 /* Begin PBXFileReference section */
 		66175B1D2DB0E3AB008F6D80 /* Ledger-8-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Ledger-8-Info.plist"; sourceTree = SOURCE_ROOT; };
 		662222EE2E9792CE00AC1315 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
+		6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DevelopmentSuggestions.md; sourceTree = "<group>"; };
+		6660F3952E9B2880007AA17D /* OnboardingView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = OnboardingView.swift; sourceTree = "<group>"; };
 		66BD1F1A2DB9F68200ACC1B6 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		66C6160F2DAF2B2E00161D7E /* Ledger 8.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ledger 8.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C616242DAF2BA100161D7E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -93,6 +97,8 @@
 				66C6165B2DB0080400161D7E /* Views */,
 				6653CF482E84F2310079DA75 /* DNU */,
 				66C616252DAF2BA100161D7E /* Preview Content */,
+				6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */,
+				6660F3952E9B2880007AA17D /* OnboardingView.swift */,
 			);
 			path = "Ledger 8";
 			sourceTree = "<group>";
@@ -167,6 +173,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				6660F3942E9B26B9007AA17D /* DevelopmentSuggestions.md in Resources */,
 				66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */,
 				66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */,
 			);
@@ -182,6 +189,7 @@
 				66BD1F1B2DB9F68200ACC1B6 /* MainView.swift in Sources */,
 				66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */,
 				66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */,
+				6660F3962E9B2880007AA17D /* OnboardingView.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
