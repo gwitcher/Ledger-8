@@ -70,7 +70,7 @@ class Client: Identifiable {
         self.phone = phone
         self.attention = attention
         self.address = address
-        self.address2 = address
+        self.address2 = address2
         self.city = city
         self.state = state
         self.zip = zip
