@@ -18,6 +18,8 @@
 /* Begin PBXFileReference section */
 		66175B1D2DB0E3AB008F6D80 /* Ledger-8-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Ledger-8-Info.plist"; sourceTree = SOURCE_ROOT; };
 		662222EE2E9792CE00AC1315 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
+		6660F3F82E9CC8B3007AA17D /* .gitignore 2 */ = {isa = PBXFileReference; lastKnownFileType = text; path = ".gitignore 2"; sourceTree = "<group>"; };
+		6660F3F92E9CC911007AA17D /* git-cleanup-script.sh */ = {isa = PBXFileReference; lastKnownFileType = text.script.sh; path = "git-cleanup-script.sh"; sourceTree = "<group>"; };
 		66BD1F1A2DB9F68200ACC1B6 /* MainView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MainView.swift; sourceTree = "<group>"; };
 		66C6160F2DAF2B2E00161D7E /* Ledger 8.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = "Ledger 8.app"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66C616242DAF2BA100161D7E /* Preview Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = "Preview Assets.xcassets"; sourceTree = "<group>"; };
@@ -25,6 +27,16 @@
 		66C616272DAF2BA100161D7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		66C616292DAF2BA100161D7E /* Ledger_8App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger_8App.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
+
+/* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
+		6660F3F32E9C580C007AA17D /* Exceptions for "Views" folder in "Ledger 8" target */ = {
+			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
+			membershipExceptions = (
+				Client/ContactPicker.swift,
+			);
+			target = 66C6160E2DAF2B2E00161D7E /* Ledger 8 */;
+		};
+/* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
 		6653CF482E84F2310079DA75 /* DNU */ = {
@@ -39,6 +51,9 @@
 		};
 		66C6165B2DB0080400161D7E /* Views */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
+			exceptions = (
+				6660F3F32E9C580C007AA17D /* Exceptions for "Views" folder in "Ledger 8" target */,
+			);
 			path = Views;
 			sourceTree = "<group>";
 		};
@@ -62,6 +77,8 @@
 				662222EE2E9792CE00AC1315 /* .gitignore */,
 				66C6162B2DAF2BA100161D7E /* Ledger 8 */,
 				66C616102DAF2B2E00161D7E /* Products */,
+				6660F3F82E9CC8B3007AA17D /* .gitignore 2 */,
+				6660F3F92E9CC911007AA17D /* git-cleanup-script.sh */,
 			);
 			sourceTree = "<group>";
 		};

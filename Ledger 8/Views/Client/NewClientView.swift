@@ -13,6 +13,7 @@ struct NewClientView: View {
     @Environment(\.dismiss) var dismiss
     
     @State private var client = Client()
+    @State private var isContactPickerShowing = false  // fixed typo
     
     @State private var firstName = ""
     @State private var lastName = ""
@@ -193,7 +194,6 @@ struct NewClientView: View {
                         
                     }   label: {
                         Text("Zip").foregroundStyle(.secondary)
-                            
                     }
                 }
                 Section("Notes") {
@@ -207,10 +207,9 @@ struct NewClientView: View {
                         dismiss()
                     }
                 }
-                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done", systemImage: "checkmark.circle.fill") {
-                        saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone,attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes, company: company)
+                        saveClient(firstName: firstName, lastName: lastName, email: email, phone: phone, attention: attention, address: address, address2: address2, city: city, state: state, zip: zip, notes: notes, company: company)
                         
                         firstName = ""
                         lastName = ""
@@ -226,10 +225,12 @@ struct NewClientView: View {
                         company = ""
                         
                         dismiss()
-                        
                     }
                 }
+                
+                
             }
+            
         }
         
     }
@@ -248,13 +249,14 @@ struct NewClientView: View {
         client.notes = notes
         client.company = company
         
+        // If you add a contactIdentifier property:
+        // client.contactIdentifier = contactIdentifier
         
         modelContext.insert(client)
         guard let _ = try? modelContext.save() else{
             print("😡 ERROR: Cannot save")
             return
         }
-
     }
 }
 
@@ -263,3 +265,4 @@ struct NewClientView: View {
         NewClientView()
     }
 }
+
