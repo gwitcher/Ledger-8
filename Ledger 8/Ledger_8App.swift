@@ -10,13 +10,17 @@ import SwiftData
 
 @main
 struct Ledger_8App: App {
+    @AppStorage("onboard_complete") var onboardComplete: Bool = false
+
     let container: ModelContainer
     let dbName = "GigTracker"
     
     var body: some Scene {
         WindowGroup {
-           //MainView()
             ContentView()
+                .fullScreenCover(isPresented: .constant(!onboardComplete)) {
+                    OnboardingGradientView()
+                }
            
         }
         .modelContainer(container)
