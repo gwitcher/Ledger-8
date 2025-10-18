@@ -44,7 +44,8 @@ struct OnboardingView: View {
             ProgressView(value: Double(step.rawValue), total: Double(Step.allCases.count - 1))
                 .accentColor(.accentColor)
                 .scaleEffect(x: 1, y: 1.6, anchor: .center)
-                .padding(.bottom, 12)
+                .padding(.bottom, 40)
+            
 
             Group {
                 switch step {
