@@ -10,6 +10,7 @@
 import SwiftUI
 import SwiftData
 import ContactsUI
+import MapKit
 
 struct ProjectDetailView: View {
     @Environment(\.modelContext) var modelContext
@@ -44,6 +45,7 @@ struct ProjectDetailView: View {
     @State private var showEndDatePicker = false
     @State private var showEndTimePicker = false
     @State private var scrollProxy: ScrollViewProxy?
+    @State var selectedLocation = Place(mapItem: MKMapItem())
     
     @FocusState private var focusField: ProjectField?
     

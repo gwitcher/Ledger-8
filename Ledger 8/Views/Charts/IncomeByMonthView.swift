@@ -35,11 +35,11 @@ struct IncomeByMonthView: View {
                 return (start, end, .day)
             case .month:
                 let start = calendar.date(byAdding: .month, value: -24, to: calendar.startOfMonth(for: now)) ?? now // Show 24 months
-                let end = calendar.endOfMonth(for: now) ?? now
+                let end = calendar.endOfMonth(for: now)
                 return (start, end, .month)
             case .sixMonths:
                 let start = calendar.date(byAdding: .month, value: -12, to: calendar.startOfMonth(for: now)) ?? now // Show 12 months
-                let end = calendar.endOfMonth(for: now) ?? now
+                let end = calendar.endOfMonth(for: now)
                 return (start, end, .month)
             case .year:
                 let currentYear = calendar.component(.year, from: now)

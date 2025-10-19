@@ -23,13 +23,7 @@ struct ProjectListView: View {
     @State private var chartSheetIsPresented = false
     @State private var sortSelection: Status = Status.open
     
-    
-//    init() {
-//        // Large Navigation Title
-//        UINavigationBar.appearance().largeTitleTextAttributes = [.foregroundColor: Color.primary]
-//        // Inline Navigation Title
-//        UINavigationBar.appearance().titleTextAttributes = [.foregroundColor: Color.primary]
-//    }
+
     
     var body: some View {
         

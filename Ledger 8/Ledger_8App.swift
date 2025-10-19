@@ -11,6 +11,7 @@ import SwiftData
 @main
 struct Ledger_8App: App {
     @AppStorage("onboard_complete") var onboardComplete: Bool = false
+    @StateObject var locationManager = LocationManager()
 
     let container: ModelContainer
     let dbName = "GigTracker"
@@ -18,9 +19,11 @@ struct Ledger_8App: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
+                .environmentObject(locationManager)
                 .fullScreenCover(isPresented: .constant(!onboardComplete)) {
                     OnboardingGradientView()
                 }
+                
            
         }
         .modelContainer(container)

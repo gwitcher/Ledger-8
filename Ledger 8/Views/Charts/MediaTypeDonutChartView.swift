@@ -227,6 +227,6 @@ struct MediaTypeDonutChartView: View {
     
     return MediaTypeDonutChartView(projects: mockProjects)
         .padding()
-        .previewLayout(.sizeThatFits)
+        //.previewLayout(.sizeThatFits)
 }
 
