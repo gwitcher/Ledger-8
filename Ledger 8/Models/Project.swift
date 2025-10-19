@@ -10,7 +10,6 @@ import SwiftData
 import SwiftUIFontIcon
 import Contacts
 
-
 @Model
 class Project: Identifiable {
     var projectName: String
@@ -26,12 +25,14 @@ class Project: Identifiable {
     var dateDelivered: Date
     var dateClosed: Date
     var endDateSelected: Bool
-    
+
     @Relationship(deleteRule: .cascade)var invoice: Invoice?
     @Relationship(deleteRule: .cascade) var items: [Item]?
     @Relationship var client: Client?
-    
-    
+
+    // ADD THIS LINE
+    var location: Spot?
+
     init(
         projectName: String = "",
         artist: String = "",
@@ -46,7 +47,8 @@ class Project: Identifiable {
         dateDelivered: Date = Date.distantPast,
         dateClosed: Date = Date.distantFuture,
         endDateSelected: Bool = false,
-        items: [Item] = []
+        items: [Item] = [],
+        location: Spot? = nil // <--- Add this default parameter
     ) {
         self.projectName = projectName
         self.artist = artist
@@ -62,8 +64,9 @@ class Project: Identifiable {
         self.dateClosed = dateClosed
         self.endDateSelected = endDateSelected
         self.items = [Item]()
+        self.location = location
     }
-    
+
     var icon: FontAwesomeCode {
         switch mediaType {
         case .film:
@@ -85,6 +88,3 @@ class Project: Identifiable {
         }
     }
 }
-
-
-

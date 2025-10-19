@@ -183,7 +183,7 @@ struct ProjectDetailView: View {
                     }
                 }
             }
-            LocationView()
+            LocationView(project: project)
             
         }
         .id("clientSection")
