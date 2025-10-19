@@ -181,6 +181,8 @@ struct ProjectDetailView: View {
                     }
                 }
             }
+            LocationView()
+            
         }
         .id("clientSection")
     }
