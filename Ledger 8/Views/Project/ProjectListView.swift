@@ -92,14 +92,14 @@ struct ProjectListView: View {
                     }
                 }
                 // MARK: - chart icon 
-//                ToolbarItem(placement: .topBarLeading) {
-//                    Button {
-//                        chartSheetIsPresented.toggle()
-//                    } label: {
-//                        Image(systemName: "chart.bar.xaxis")
-//                            //.foregroundStyle(.gray)
-//                    }
-//                }
+                ToolbarItem(placement: .topBarLeading) {
+                    Button {
+                        chartSheetIsPresented.toggle()
+                    } label: {
+                        Image(systemName: "chart.bar.xaxis")
+                            //.foregroundStyle(.gray)
+                    }
+                }
             }
             .fullScreenCover(isPresented: $projectSheetIsPresented, content: {
                 ProjectDetailView(project: Project())
@@ -112,7 +112,7 @@ struct ProjectListView: View {
                 SettingsView()
             })
             .fullScreenCover(isPresented: $chartSheetIsPresented, content: {
-                Charts()
+                AnalyticsDashboardView()
             })
             
         }
