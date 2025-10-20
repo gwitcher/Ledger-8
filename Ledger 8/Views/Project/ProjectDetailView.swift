@@ -122,9 +122,6 @@ struct ProjectDetailView: View {
                     loadProjectData()
                 }
             }
-//            .onTapGesture {
-//                hideKeyboard()
-//            }
             .alert(isPresented: $showAlert) {
                 Alert(
                     title: Text("Cannot Save Project"),
@@ -164,27 +161,39 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var clientSection: some View {
         Section("Client") {
-            if let client = selectedClient {
-                Text(client.fullName)
-                    .contentShape(Rectangle())
-                    .onTapGesture {
-                        print("Shown Client: \(client.fullName)")
-                        clientSelectSheetIsPresented.toggle()
+            Button {
+                clientSelectSheetIsPresented.toggle()
+            } label: {
+                HStack {
+                    Image(systemName: "person.circle")
+                        .foregroundStyle(.primary)
+                        .font(.title3)
+                    
+                    if let client = selectedClient {
+                        VStack(alignment: .leading, spacing: 2) {
+                            Text(client.fullName)
+                                .foregroundStyle(.primary)
+                            if !client.email.isEmpty {
+                                Text(client.email)
+                                    .font(.caption)
+                                    .foregroundStyle(.secondary)
+                            }
+                        }
+                    } else {
+                        Text("Select Client")
+                            .foregroundStyle(.secondary)
                     }
-            } else {
-                Button {
-                    clientSelectSheetIsPresented.toggle()
-                } label: {
-                    HStack {
-                        Image(systemName: "plus.circle.fill")
-                            .foregroundColor(.green)
-                        Text("Add Client")
-                            .foregroundColor(.addClient)
-                    }
+                    
+                    Spacer()
+                    
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundStyle(.tertiary)
                 }
             }
-            LocationView(project: project)
+            .buttonStyle(.plain)
             
+            LocationView(project: project)
         }
         .id("clientSection")
     }
@@ -218,14 +227,14 @@ struct ProjectDetailView: View {
                 projectSuggestionsToggleButton
             }
         } label: {
-            Text("Project").foregroundStyle(.secondary)
+            Text("Project").foregroundStyle(.primary)
         }
     }
     
     @ViewBuilder
     private var projectSuggestionsToggleButton: some View {
-        if let client = selectedClient, 
-           let clientProjects = client.project, 
+        if let client = selectedClient,
+           let clientProjects = client.project,
            !clientProjects.isEmpty {
             Button {
                 toggleProjectSuggestions()
@@ -274,34 +283,34 @@ struct ProjectDetailView: View {
                     focusField = nil
                 }
         } label: {
-            Text("Artist").foregroundStyle(.secondary)
+            Text("Artist").foregroundStyle(.primary)
         }
     }
-
+    
     
     @ViewBuilder
     private var expandingDateFields: some View {
         let datePickerExpandDuration = 0.2
         let datePickerExpandDelay = 0.001
         Group {
-              
+            
             HStack {
-              
-                Text("Start")
-                    .foregroundStyle(.secondary)
+                
+                Text("Starts")
+                    .foregroundStyle(.primary)
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                             focusField = nil // Dismiss keyboard
                             showEndTimePicker = false
                             showEndDatePicker = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
-                             if showStartTimePicker && !showStartDatePicker {
-                                showStartTimePicker = false
-                                showStartDatePicker = false
-                            } else {
-                                showStartDatePicker.toggle()
+                                if showStartTimePicker && !showStartDatePicker {
+                                    showStartTimePicker = false
+                                    showStartDatePicker = false
+                                } else {
+                                    showStartDatePicker.toggle()
+                                }
                             }
-                         }
                         }
                     }
                 
@@ -362,21 +371,21 @@ struct ProjectDetailView: View {
             
             HStack {
                 //Spacer()
-                Text("End")
-                    .foregroundStyle(.secondary)
+                Text("Ends")
+                    .foregroundStyle(.primary)
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                             focusField = nil // Dismiss keyboard
                             showStartTimePicker = false
                             showStartDatePicker = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
-                                 if showEndTimePicker && !showEndDatePicker {
+                                if showEndTimePicker && !showEndDatePicker {
                                     showEndTimePicker = false
                                     showEndDatePicker = false
                                 } else {
                                     showEndDatePicker.toggle()
                                 }
-                             }
+                            }
                         }
                     }
                 
@@ -434,7 +443,7 @@ struct ProjectDetailView: View {
                 .padding(.vertical, 12)
                 .id("endTimePicker")
             }
-
+            
             
         }
         .onChange(of: focusField) { oldValue, newValue in
@@ -511,30 +520,39 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var itemsSection: some View {
         Section {
-            if project.items?.count != 0 {
+            if let items = project.items, !items.isEmpty {
                 NavigationLink {
                     ItemListView2(project: project)
                 } label: {
                     HStack {
-                        Text("Items: \(project.items?.count ?? 0)")
+                        Image(systemName: "list.bullet")
+                            .foregroundStyle(.blue)
+                        Text("Items: \(items.count)")
                         Spacer()
-                        Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
+                        VStack(alignment: .trailing, spacing: 4) {
+                            //                            Text("\(items.count)")
+                            //                                .font(.subheadline)
+                            //                                .foregroundStyle(.secondary)
+                            Text(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))
+                                .font(.headline)
+                                .fontWeight(.semibold)
+                        }
                     }
                 }
             }
             
             Button {
-                //saveProject()
                 itemSheetIsPresented.toggle()
-                print("🫑 sheet is presented: \(itemSheetIsPresented)")
             } label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
                         .foregroundStyle(.green)
                     Text("Add Item")
-                        .foregroundColor(.addClient)
+                        .foregroundColor(.primary)
                 }
             }
+        } header: {
+            Text("Items & Fees")
         }
     }
     
@@ -610,17 +628,33 @@ struct ProjectDetailView: View {
         }
         .tint(.green)
     }
-    
+    //MARK: - Toolbar Content Builder
     @ToolbarContentBuilder
     private var toolbarContent: some ToolbarContent {
         ToolbarItem(placement: .topBarLeading) {
-            Button("Cancel", systemImage: "xmark", role: .cancel) {
+            Button {
                 dismiss()
+            } label: {
+                Image(systemName: "xmark")
+                    .foregroundStyle(.primary)
             }
         }
         
         ToolbarItem(placement: .topBarTrailing) {
-            Button("Done", systemImage: "checkmark.circle.fill") {
+            Menu {
+                Button(role: .destructive) {
+                    deleteProject()
+                } label: {
+                    Label("Delete Project", systemImage: "trash")
+                }
+            } label: {
+                Image(systemName: "ellipsis.circle")
+                    .foregroundStyle(.primary)
+            }
+        }
+        
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
                 if endDate < startDate {
                     showAlert.toggle()
                 } else {
@@ -628,6 +662,9 @@ struct ProjectDetailView: View {
                     clearTextFields()
                     dismiss()
                 }
+            } label: {
+                Image(systemName: "checkmark")
+                    .foregroundStyle(.primary)
             }
         }
     }
@@ -832,7 +869,15 @@ struct ProjectDetailView: View {
         }
     }
     
+    private func deleteProject() {
+        modelContext.delete(project)
+        try? modelContext.save()
+        dismiss()
+    }
+    
     func saveProject() {
+        let generator = UINotificationFeedbackGenerator()
+        
         print("Save before: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
         
         project.client = selectedClient
@@ -858,6 +903,7 @@ struct ProjectDetailView: View {
             print("😡 ERROR: Cannot save")
             return
         }
+        generator.notificationOccurred(.success)
     }
     
     func clearTextFields() {

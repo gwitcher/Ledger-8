@@ -57,7 +57,9 @@ struct SortedProjectView: View {
                             }
                             .swipeActions {
                                 Button("Delete", role: .destructive) {
+                                    let generator = UINotificationFeedbackGenerator()
                                     modelContext.delete(project)
+                                    generator.notificationOccurred(.success)
                                 }
                             }
                         }
@@ -73,17 +75,22 @@ struct SortedProjectView: View {
                     }
                     .swipeActions {
                         Button("Delete", role: .destructive) {
+                            let generator = UINotificationFeedbackGenerator()
                             modelContext.delete(project)
+                            generator.notificationOccurred(.success)
                         }
                     }
                     .swipeActions(edge: .leading) {
                         if project.status != .open {
                             Button("Open") {
+                                let generator = UINotificationFeedbackGenerator()
                                 project.dateDelivered = project.dateOpened
                                 project.dateClosed = project.dateOpened
                                 project.delivered = false
                                 project.paid = false
                                 project.status = .open
+                                generator.notificationOccurred(.success)
+                                
                             }
                             .tint(.yellow)
                         }
@@ -91,12 +98,14 @@ struct SortedProjectView: View {
                     .swipeActions(edge: .leading) {
                         if project.status != .closed {
                             Button("Paid") {
+                                let generator = UINotificationFeedbackGenerator()
                                 if !project.delivered {
                                     project.dateDelivered = Date.now
                                 }
                                 project.dateClosed = Date.now
                                 project.paid = true
                                 project.status = .closed
+                                generator.notificationOccurred(.success)
                             }
                             .tint(.green)
                         }
@@ -104,10 +113,12 @@ struct SortedProjectView: View {
                     .swipeActions(edge: .leading) {
                         if project.status != .delivered {
                             Button("Delivered") {
+                                let generator = UINotificationFeedbackGenerator()
                                 project.dateDelivered = Date.now
                                 project.delivered = true
                                 project.paid = false
                                 project.status = .delivered
+                                generator.notificationOccurred(.success)
                             }
                             .tint(.orange)
                         }
@@ -118,6 +129,8 @@ struct SortedProjectView: View {
         }
     }
 }
+
+
 
 #Preview {
     SortedProjectView(sortSelection: .open)

@@ -45,8 +45,6 @@ struct ProjectListView: View {
                             SortedProjectView(sortSelection: sortSelection)
                                 .padding(4)
                             
-                            //CustomPickerView(sortSelection: $sortSelection)
-                            
                             Picker("", selection: $sortSelection) {
                                 ForEach(Status.allCases) {status in
                                     Text(status.rawValue)}
