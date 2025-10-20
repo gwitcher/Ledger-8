@@ -643,7 +643,9 @@ struct ProjectDetailView: View {
         ToolbarItem(placement: .topBarTrailing) {
             Menu {
                 Button(role: .destructive) {
+                    let generator = UINotificationFeedbackGenerator()
                     deleteProject()
+                    generator.notificationOccurred(.success)
                 } label: {
                     Label("Delete Project", systemImage: "trash")
                 }
