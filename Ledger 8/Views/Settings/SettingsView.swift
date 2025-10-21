@@ -14,6 +14,7 @@ struct SettingsView: View {
     
     @AppStorage("userData") var userData = UserData()
     @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
+    @State private var showingCSVImport = false
     
     
     var body: some View {
@@ -64,6 +65,18 @@ struct SettingsView: View {
                     
                 }
                 
+                Section("Data Management") {
+                    Button {
+                        showingCSVImport = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "square.and.arrow.down")
+                                .foregroundColor(.blue)
+                            Text("Import CSV Data")
+                        }
+                    }
+                }
+                
 //                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
 //                    .foregroundStyle(.black)
                 
@@ -77,6 +90,9 @@ struct SettingsView: View {
                         dismiss()
                     }
                 }
+            }
+            .sheet(isPresented: $showingCSVImport) {
+                CSVImportView(modelContext: modelContext)
             }
         }
     }
