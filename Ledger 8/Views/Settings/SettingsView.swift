@@ -15,6 +15,7 @@ struct SettingsView: View {
     @AppStorage("userData") var userData = UserData()
     @AppStorage("InitialInvoiceNumber") var initialInvoiceNumber = 0
     @State private var showingCSVImport = false
+    @State private var showingBackupRestore = false
     
     
     var body: some View {
@@ -75,6 +76,16 @@ struct SettingsView: View {
                             Text("Import CSV Data")
                         }
                     }
+                    
+                    Button {
+                        showingBackupRestore = true
+                    } label: {
+                        HStack {
+                            Image(systemName: "externaldrive.badge.plus")
+                                .foregroundColor(.green)
+                            Text("Backup & Restore")
+                        }
+                    }
                 }
                 
 //                Toggle("Add to Calendar", systemImage: "calendar.badge.plus", isOn: $userData.addToCalendar)
@@ -93,6 +104,10 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showingCSVImport) {
                 CSVImportView(modelContext: modelContext)
+            }
+            .sheet(isPresented: $showingBackupRestore) {
+                BackupView()
+                    .environment(\.modelContext, modelContext)
             }
         }
     }
