@@ -106,7 +106,7 @@ struct SettingsView: View {
                 CSVImportView(modelContext: modelContext)
             }
             .sheet(isPresented: $showingBackupRestore) {
-                BackupView()
+                CompleteBackupView()
                     .environment(\.modelContext, modelContext)
             }
         }

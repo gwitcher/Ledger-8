@@ -73,13 +73,20 @@ class BackupManager: ObservableObject {
             formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
             let fileName = "Ledger8_Backup_\(formatter.string(from: Date())).json"
             
-            let tempURL = FileManager.default.temporaryDirectory.appendingPathComponent(fileName)
-            try data.write(to: tempURL)
+            // Create Backups folder in Documents directory
+            let documentsURL = URL.documentsDirectory
+            let backupsURL = documentsURL.appendingPathComponent("Backups")
+            
+            // Ensure the Backups directory exists
+            try FileManager.default.createDirectory(at: backupsURL, withIntermediateDirectories: true)
+            
+            let fileURL = backupsURL.appendingPathComponent(fileName)
+            try data.write(to: fileURL)
             
             progress = 1.0
             statusMessage = "Backup created successfully!"
             
-            return tempURL
+            return fileURL
             
         } catch {
             errorMessage = "Failed to create backup: \(error.localizedDescription)"

@@ -42,8 +42,14 @@ extension Project {
                                      
         )
         
-        // 2: Save it to our documents directory
-        let url = URL.documentsDirectory.appending(path: invoiceName)
+        // 2: Save it to our documents directory in Invoices folder
+        let documentsURL = URL.documentsDirectory
+        let invoicesURL = documentsURL.appendingPathComponent("Invoices")
+        
+        // Ensure the Invoices directory exists
+        try? FileManager.default.createDirectory(at: invoicesURL, withIntermediateDirectories: true)
+        
+        let url = invoicesURL.appendingPathComponent(invoiceName)
         
         
         
