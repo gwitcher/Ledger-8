@@ -20,6 +20,7 @@ struct CompleteBackupView: View {
     @State private var successMessage = ""
     @State private var backupFileURL: URL?
     @State private var replaceExistingData = false
+    @State private var showingAutoBackupSettings = false
     
     init() {
         // Initialize with a temporary context - will be updated in onAppear
@@ -38,6 +39,12 @@ struct CompleteBackupView: View {
             .navigationTitle("Complete Backup")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button(action: { showingAutoBackupSettings = true }) {
+                        Image(systemName: "gear")
+                    }
+                }
+                
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("Done") {
                         dismiss()
@@ -109,6 +116,9 @@ struct CompleteBackupView: View {
                     .presentationDetents([.medium])
                 }
             }
+            .sheet(isPresented: $showingAutoBackupSettings) {
+                AutoBackupSettingsView(backupManager: backupManager)
+            }
         }
         .onAppear {
             backupManager.updateModelContext(modelContext)
@@ -155,6 +165,46 @@ struct CompleteBackupView: View {
                     Text("• Invoices saved to: Files > Ledger 8 > Invoices")
                         .font(.caption2)
                         .foregroundColor(.secondary)
+                }
+                
+                Divider()
+                    .padding(.vertical, 4)
+                
+                VStack(alignment: .leading, spacing: 4) {
+                    HStack {
+                        Text("🤖 Auto-Backup:")
+                            .font(.caption)
+                            .fontWeight(.medium)
+                            .foregroundColor(.secondary)
+                        
+                        Spacer()
+                        
+                        Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
+                            .font(.caption2)
+                            .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
+                    }
+                    
+                    if backupManager.autoBackupEnabled {
+                        Text("• Frequency: \(backupManager.autoBackupFrequency.displayName)")
+                            .font(.caption2)
+                            .foregroundColor(.secondary)
+                        
+                        if let lastBackup = backupManager.lastAutoBackupDate {
+                            Text("• Last backup: \(lastBackup, style: .relative) ago")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        } else {
+                            Text("• No automatic backups yet")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Button("Configure Auto-Backup") {
+                        showingAutoBackupSettings = true
+                    }
+                    .font(.caption2)
+                    .foregroundColor(.blue)
                 }
             }
             .padding(.vertical, 4)

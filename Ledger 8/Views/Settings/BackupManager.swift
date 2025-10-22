@@ -218,12 +218,12 @@ struct LedgerBackup: Codable {
 }
 
 struct BackupMetadata: Codable {
-    let appVersion = "Ledger 8"
-    let backupVersion = "1.0"
-    let createdDate = Date()
+    var appVersion = "Ledger 8"
+    var backupVersion = "1.0"
+    var createdDate = Date()
     
     #if canImport(UIKit)
-    let deviceName = UIDevice.current.name
+    var deviceName = UIDevice.current.name
     #else
     let deviceName = ProcessInfo.processInfo.hostName
     #endif
