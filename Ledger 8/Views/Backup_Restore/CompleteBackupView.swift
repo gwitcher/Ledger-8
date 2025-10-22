@@ -21,6 +21,8 @@ struct CompleteBackupView: View {
     @State private var backupFileURL: URL?
     @State private var replaceExistingData = false
     @State private var showingAutoBackupSettings = false
+    @State private var showingBackupInfo = false
+    @State private var showingRestoreInfo = false
     
     init() {
         // Initialize with a temporary context - will be updated in onAppear
@@ -82,7 +84,7 @@ struct CompleteBackupView: View {
             }
             .fileImporter(
                 isPresented: $showingFilePicker,
-                allowedContentTypes: [.json],
+                allowedContentTypes: [.json, .data], // Accept JSON and any data files
                 allowsMultipleSelection: false
             ) { result in
                 handleFileImport(result)
@@ -119,6 +121,12 @@ struct CompleteBackupView: View {
             .sheet(isPresented: $showingAutoBackupSettings) {
                 AutoBackupSettingsView(backupManager: backupManager)
             }
+            .sheet(isPresented: $showingBackupInfo) {
+                BackupInfoSheet(backupManager: backupManager)
+            }
+            .sheet(isPresented: $showingRestoreInfo) {
+                RestoreInfoSheet()
+            }
         }
         .onAppear {
             backupManager.updateModelContext(modelContext)
@@ -127,84 +135,46 @@ struct CompleteBackupView: View {
     
     private var backupInfoSection: some View {
         Section {
-            VStack(alignment: .leading, spacing: 8) {
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
                     Image(systemName: "shield.checkered")
                         .foregroundColor(.blue)
                     Text("Complete App Backup")
                         .font(.headline)
+                    
+                    Spacer()
+                    
+                    Button(action: { showingBackupInfo = true }) {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.blue)
+                    }
+                    .buttonStyle(.plain)
+                    .contentShape(Circle())
                 }
                 
-                Text("This backup includes:")
+                Text("Back up and restore all your app data")
                     .font(.subheadline)
                     .foregroundColor(.secondary)
                 
-                VStack(alignment: .leading, spacing: 4) {
-                    Label("User settings & company info", systemImage: "person.circle")
-                    Label("All clients and contact information", systemImage: "person.2")
-                    Label("All projects with locations", systemImage: "folder")
-                    Label("All items and fees", systemImage: "list.bullet")
-                    Label("Invoice numbers and references", systemImage: "doc.text")
-                    Label("App preferences", systemImage: "gear")
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
-                
-                Divider()
-                    .padding(.vertical, 4)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("📁 File Organization:")
-                        .font(.caption)
+                HStack {
+                    Text("Auto-Backup:")
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    
+                    Spacer()
+                    
+                    Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
+                        .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(.secondary)
+                        .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
                     
-                    Text("• Backups saved to: Files > Ledger 8 > Backups")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                    Text("• Invoices saved to: Files > Ledger 8 > Invoices")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
-                
-                Divider()
-                    .padding(.vertical, 4)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    HStack {
-                        Text("🤖 Auto-Backup:")
-                            .font(.caption)
-                            .fontWeight(.medium)
-                            .foregroundColor(.secondary)
-                        
-                        Spacer()
-                        
-                        Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
-                            .font(.caption2)
-                            .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
-                    }
-                    
-                    if backupManager.autoBackupEnabled {
-                        Text("• Frequency: \(backupManager.autoBackupFrequency.displayName)")
-                            .font(.caption2)
-                            .foregroundColor(.secondary)
-                        
-                        if let lastBackup = backupManager.lastAutoBackupDate {
-                            Text("• Last backup: \(lastBackup, style: .relative) ago")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        } else {
-                            Text("• No automatic backups yet")
-                                .font(.caption2)
-                                .foregroundColor(.secondary)
-                        }
-                    }
-                    
-                    Button("Configure Auto-Backup") {
+                    Button("Configure") {
                         showingAutoBackupSettings = true
                     }
-                    .font(.caption2)
-                    .foregroundColor(.blue)
+                    .font(.caption)
+                    .buttonStyle(.bordered)
+                    .buttonBorderShape(.capsule)
+                    .controlSize(.mini)
                 }
             }
             .padding(.vertical, 4)
@@ -212,16 +182,12 @@ struct CompleteBackupView: View {
     }
     
     private var backupSection: some View {
-        Section("Create Complete Backup") {
+        Section("Create Backup") {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Export ALL your app data to a JSON file")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
-                
                 Button(action: createCompleteBackup) {
                     HStack {
                         Image(systemName: "square.and.arrow.up.fill")
-                        Text("Create Complete Backup")
+                        Text("Create Backup")
                         Spacer()
                         if backupManager.isBackingUp {
                             ProgressView()
@@ -261,16 +227,26 @@ struct CompleteBackupView: View {
     }
     
     private var restoreSection: some View {
-        Section("Restore Complete Backup") {
+        Section {
             VStack(alignment: .leading, spacing: 8) {
-                Text("Import ALL data from a complete backup file")
-                    .font(.subheadline)
-                    .foregroundColor(.secondary)
+                HStack {
+                    Text(replaceExistingData ? "Restore Backup (Replace)" : "Restore Backup (Merge)")
+                        .font(.headline)
+                    
+                    Spacer()
+                    
+                    Button(action: { showingRestoreInfo = true }) {
+                        Image(systemName: "info.circle")
+                            .foregroundColor(.blue)
+                    }
+                    .buttonStyle(.plain)
+                    .contentShape(Circle())
+                }
                 
                 Button(action: { showingFilePicker = true }) {
                     HStack {
                         Image(systemName: "square.and.arrow.down.fill")
-                        Text("Choose Complete Backup")
+                        Text("Choose Backup File")
                         Spacer()
                         if backupManager.isRestoring {
                             ProgressView()
@@ -282,16 +258,6 @@ struct CompleteBackupView: View {
                 
                 Toggle("Replace ALL existing data", isOn: $replaceExistingData)
                     .font(.subheadline)
-                
-                VStack(alignment: .leading, spacing: 4) {
-                    Text("⚠️ When enabled, ALL current data will be deleted:")
-                        .font(.caption)
-                        .foregroundColor(.orange)
-                    
-                    Text("• App settings and user info\n• All projects, clients, and items\n• Invoice data and locations\n• All app preferences")
-                        .font(.caption2)
-                        .foregroundColor(.secondary)
-                }
                 
                 if backupManager.isRestoring {
                     VStack(spacing: 8) {
@@ -436,6 +402,193 @@ struct CompleteBackupView: View {
     }
 }
 
+// MARK: - Info Sheets
+
+struct BackupInfoSheet: View {
+    let backupManager: ComprehensiveBackupManager
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("What's Included")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Label("User settings & company info", systemImage: "person.circle")
+                            Label("All clients and contact information", systemImage: "person.2")
+                            Label("All projects with locations", systemImage: "folder")
+                            Label("All items and fees", systemImage: "list.bullet")
+                            Label("Invoice numbers and references", systemImage: "doc.text")
+                            Label("App preferences", systemImage: "gear")
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("📁 File Organization")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("• Backups saved to: Files > Ledger 8 > Backups")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                            Text("• Invoices saved to: Files > Ledger 8 > Invoices")
+                                .font(.subheadline)
+                                .foregroundColor(.secondary)
+                        }
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("🤖 Auto-Backup Status")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            HStack {
+                                Text("Status:")
+                                    .font(.subheadline)
+                                    .foregroundColor(.secondary)
+                                Spacer()
+                                Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
+                                    .font(.subheadline)
+                                    .fontWeight(.medium)
+                                    .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
+                            }
+                            
+                            if backupManager.autoBackupEnabled {
+                                HStack {
+                                    Text("Frequency:")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    Text(backupManager.autoBackupFrequency.displayName)
+                                        .font(.subheadline)
+                                        .foregroundColor(.primary)
+                                }
+                                
+                                HStack {
+                                    Text("Last backup:")
+                                        .font(.subheadline)
+                                        .foregroundColor(.secondary)
+                                    Spacer()
+                                    if let lastBackup = backupManager.lastAutoBackupDate {
+                                        Text(lastBackup, style: .relative)
+                                            .font(.subheadline)
+                                            .foregroundColor(.primary)
+                                    } else {
+                                        Text("Never")
+                                            .font(.subheadline)
+                                            .foregroundColor(.orange)
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Backup Information")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
+
+struct RestoreInfoSheet: View {
+    @Environment(\.dismiss) private var dismiss
+    
+    var body: some View {
+        NavigationStack {
+            ScrollView {
+                VStack(alignment: .leading, spacing: 16) {
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("How Restore Works")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        Text("Import data from a complete backup file created by this app.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("⚠️ Replace Existing Data")
+                            .font(.headline)
+                            .foregroundColor(.orange)
+                        
+                        Text("When enabled, ALL current data will be permanently deleted and replaced with data from the backup file:")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                        
+                        VStack(alignment: .leading, spacing: 4) {
+                            Text("• App settings and user info")
+                            Text("• All projects, clients, and items")
+                            Text("• Invoice data and locations")
+                            Text("• All app preferences")
+                        }
+                        .font(.subheadline)
+                        .foregroundColor(.secondary)
+                        .padding(.leading, 8)
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("💡 Merge Mode")
+                            .font(.headline)
+                            .foregroundColor(.blue)
+                        
+                        Text("When disabled, the backup data will be merged with your existing data. This may result in duplicates if the same items exist in both places.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Divider()
+                    
+                    VStack(alignment: .leading, spacing: 8) {
+                        Text("📋 Recommendation")
+                            .font(.headline)
+                            .foregroundColor(.primary)
+                        
+                        Text("Create a backup of your current data before restoring, especially when using Replace mode.")
+                            .font(.subheadline)
+                            .foregroundColor(.secondary)
+                    }
+                }
+                .padding()
+            }
+            .navigationTitle("Restore Information")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+        .presentationDetents([.medium, .large])
+    }
+}
 
 
 #Preview {

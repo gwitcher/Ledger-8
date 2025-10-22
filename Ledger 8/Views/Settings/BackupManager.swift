@@ -12,6 +12,40 @@ import SwiftUI
 import UIKit
 #endif
 
+// MARK: - Magic Header Constants
+
+fileprivate struct BackupFileHeader {
+    /// Magic number/header for Ledger 8 backup files: "L8BACKUP\0"
+    static let magicHeader = Data([0x4C, 0x38, 0x42, 0x41, 0x43, 0x4B, 0x55, 0x50, 0x00])
+    static let headerLength = 9 // 8 bytes + null terminator
+    
+    /// Validates if data starts with the Ledger 8 backup header
+    static func isValidBackupFile(_ data: Data) -> Bool {
+        guard data.count >= headerLength else { return false }
+        let headerData = data.prefix(headerLength)
+        return headerData == magicHeader
+    }
+    
+    /// Extracts JSON data from a backup file (removes header if present)
+    static func extractJSONData(from data: Data) -> (hasHeader: Bool, jsonData: Data) {
+        if isValidBackupFile(data) {
+            let jsonData = data.dropFirst(headerLength)
+            return (hasHeader: true, jsonData: Data(jsonData))
+        } else {
+            // Legacy backup without header
+            return (hasHeader: false, jsonData: data)
+        }
+    }
+    
+    /// Creates backup file data with magic header + JSON
+    static func createBackupFileData(jsonData: Data) -> Data {
+        var fileData = Data()
+        fileData.append(magicHeader)
+        fileData.append(jsonData)
+        return fileData
+    }
+}
+
 @MainActor
 class BackupManager: ObservableObject {
     @Published var isBackingUp = false
@@ -67,7 +101,10 @@ class BackupManager: ObservableObject {
             encoder.dateEncodingStrategy = .iso8601
             encoder.outputFormatting = [.prettyPrinted, .sortedKeys]
             
-            let data = try encoder.encode(backup)
+            let jsonData = try encoder.encode(backup)
+            
+            // Create backup file with magic header
+            let backupFileData = BackupFileHeader.createBackupFileData(jsonData: jsonData)
             
             let formatter = DateFormatter()
             formatter.dateFormat = "yyyy-MM-dd_HH-mm-ss"
@@ -81,7 +118,7 @@ class BackupManager: ObservableObject {
             try FileManager.default.createDirectory(at: backupsURL, withIntermediateDirectories: true)
             
             let fileURL = backupsURL.appendingPathComponent(fileName)
-            try data.write(to: fileURL)
+            try backupFileData.write(to: fileURL)
             
             progress = 1.0
             statusMessage = "Backup created successfully!"
@@ -110,11 +147,32 @@ class BackupManager: ObservableObject {
             }
             defer { fileURL.stopAccessingSecurityScopedResource() }
             
-            let data = try Data(contentsOf: fileURL)
+            let rawData = try Data(contentsOf: fileURL)
+            
+            // Validate and extract data using magic header
+            let headerValidation = BackupFileHeader.extractJSONData(from: rawData)
+            
+            // Enhanced status message based on header presence
+            if headerValidation.hasHeader {
+                statusMessage = "Validating Ledger 8 backup file..."
+            } else {
+                statusMessage = "Reading legacy backup file..."
+            }
+            
             let decoder = JSONDecoder()
             decoder.dateDecodingStrategy = .iso8601
             
-            let backup = try decoder.decode(LedgerBackup.self, from: data)
+            let backup: LedgerBackup
+            do {
+                backup = try decoder.decode(LedgerBackup.self, from: headerValidation.jsonData)
+            } catch {
+                // Enhanced error handling based on header presence
+                if headerValidation.hasHeader {
+                    throw BackupManagerError.corruptedBackup
+                } else {
+                    throw BackupManagerError.corruptedBackup
+                }
+            }
             
             // Validate backup
             guard backup.metadata.appVersion.hasPrefix("Ledger 8") else {

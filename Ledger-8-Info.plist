@@ -5,6 +5,14 @@
 	<key>CFBundleDocumentTypes</key>
 	<array>
 		<dict>
+			<key>CFBundleTypeExtensions</key>
+			<array>
+				<string>com.ledger8.backup</string>
+			</array>
+			<key>LSHandlerRank</key>
+			<string>Default</string>
+		</dict>
+		<dict>
 			<key>CFBundleTypeName</key>
 			<string>GigTracker Document</string>
 			<key>LSHandlerRank</key>
@@ -47,5 +55,31 @@
 			</dict>
 		</dict>
 	</array>
+	<key>UTExportedTypeIdentifiers</key>
+<array>
+    <dict>
+        <key>UTTypeIdentifier</key>
+        <string>com.ledger8.backup</string>
+        <key>UTTypeDescription</key>
+        <string>Ledger 8 Backup File</string>
+        <key>UTTypeConformsTo</key>
+        <array>
+            <string>public.data</string>
+            <string>public.content</string>
+        </array>
+        <key>UTTypeTagSpecification</key>
+        <dict>
+            <key>public.filename-extension</key>
+            <array>
+                <string>l8backup</string>
+            </array>
+            <key>public.mime-type</key>
+            <array>
+                <string>application/vnd.ledger8.backup</string>
+            </array>
+        </dict>
+    </dict>
+</array>
 </dict>
+
 </plist>
