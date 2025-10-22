@@ -18,6 +18,7 @@ extension Date {
 
 struct SortedProjectView: View {
     @Environment(\.modelContext) var modelContext
+    @EnvironmentObject var undoManager: AppUndoManager
     
     @Query var projects: [Project]
     
@@ -84,6 +85,8 @@ struct SortedProjectView: View {
                                     .swipeActions {
                                         Button("Delete", role: .destructive) {
                                             let generator = UINotificationFeedbackGenerator()
+                                            // Register for undo before deleting
+                                            undoManager.registerDelete(project, context: modelContext)
                                             modelContext.delete(project)
                                             generator.notificationOccurred(.success)
                                         }
@@ -112,6 +115,8 @@ struct SortedProjectView: View {
                             .swipeActions {
                                 Button("Delete", role: .destructive) {
                                     let generator = UINotificationFeedbackGenerator()
+                                    // Register for undo before deleting
+                                    undoManager.registerDelete(project, context: modelContext)
                                     modelContext.delete(project)
                                     generator.notificationOccurred(.success)
                                 }

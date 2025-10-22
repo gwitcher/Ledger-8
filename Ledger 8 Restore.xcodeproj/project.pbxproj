@@ -13,6 +13,16 @@
 		66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616272DAF2BA100161D7E /* ContentView.swift */; };
 		66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616292DAF2BA100161D7E /* Ledger_8App.swift */; };
 		66C616602DB00BBF00161D7E /* SwiftUIFontIcon in Frameworks */ = {isa = PBXBuildFile; productRef = 66C6165F2DB00BBF00161D7E /* SwiftUIFontIcon */; };
+		66F5800B2EA999D4005442C5 /* UndoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800A2EA999D4005442C5 /* UndoManager.swift */; };
+		66F5800D2EA999DB005442C5 /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800C2EA999DB005442C5 /* ShakeDetector.swift */; };
+		66F5800F2EA999EC005442C5 /* DeleteHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800E2EA999EC005442C5 /* DeleteHelpers.swift */; };
+		66F580112EA999F6005442C5 /* ExampleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F580102EA999F6005442C5 /* ExampleListView.swift */; };
+		66F580132EA99A9E005442C5 /* ShakeToUndoExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F580122EA99A9E005442C5 /* ShakeToUndoExample.swift */; };
+		66F580142EA99B68005442C5 /* UndoManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800A2EA999D4005442C5 /* UndoManager.swift */; };
+		66F580152EA99B6C005442C5 /* ShakeDetector.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800C2EA999DB005442C5 /* ShakeDetector.swift */; };
+		66F580162EA99BA2005442C5 /* DeleteHelpers.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F5800E2EA999EC005442C5 /* DeleteHelpers.swift */; };
+		66F580172EA99BB3005442C5 /* ShakeToUndoExample.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F580122EA99A9E005442C5 /* ShakeToUndoExample.swift */; };
+		66F580182EA99BB8005442C5 /* ExampleListView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66F580102EA999F6005442C5 /* ExampleListView.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -42,6 +52,11 @@
 		66C616262DAF2BA100161D7E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		66C616272DAF2BA100161D7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		66C616292DAF2BA100161D7E /* Ledger_8App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger_8App.swift; sourceTree = "<group>"; };
+		66F5800A2EA999D4005442C5 /* UndoManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = UndoManager.swift; sourceTree = "<group>"; };
+		66F5800C2EA999DB005442C5 /* ShakeDetector.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShakeDetector.swift; sourceTree = "<group>"; };
+		66F5800E2EA999EC005442C5 /* DeleteHelpers.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DeleteHelpers.swift; sourceTree = "<group>"; };
+		66F580102EA999F6005442C5 /* ExampleListView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ExampleListView.swift; sourceTree = "<group>"; };
+		66F580122EA99A9E005442C5 /* ShakeToUndoExample.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ShakeToUndoExample.swift; sourceTree = "<group>"; };
 		66F677F42EA8A25D00145C15 /* Ledger 8Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -102,6 +117,11 @@
 				66F677F52EA8A25D00145C15 /* Ledger 8Tests */,
 				66A540BD2EA9340300C6E21E /* Ledger 8Tests2 */,
 				66C616102DAF2B2E00161D7E /* Products */,
+				66F5800A2EA999D4005442C5 /* UndoManager.swift */,
+				66F5800C2EA999DB005442C5 /* ShakeDetector.swift */,
+				66F5800E2EA999EC005442C5 /* DeleteHelpers.swift */,
+				66F580102EA999F6005442C5 /* ExampleListView.swift */,
+				66F580122EA99A9E005442C5 /* ShakeToUndoExample.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -297,8 +317,13 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66F580152EA99B6C005442C5 /* ShakeDetector.swift in Sources */,
+				66F580162EA99BA2005442C5 /* DeleteHelpers.swift in Sources */,
+				66F580172EA99BB3005442C5 /* ShakeToUndoExample.swift in Sources */,
+				66F580182EA99BB8005442C5 /* ExampleListView.swift in Sources */,
 				66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */,
 				66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */,
+				66F580142EA99B68005442C5 /* UndoManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -306,6 +331,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66F5800F2EA999EC005442C5 /* DeleteHelpers.swift in Sources */,
+				66F580112EA999F6005442C5 /* ExampleListView.swift in Sources */,
+				66F5800D2EA999DB005442C5 /* ShakeDetector.swift in Sources */,
+				66F580132EA99A9E005442C5 /* ShakeToUndoExample.swift in Sources */,
+				66F5800B2EA999D4005442C5 /* UndoManager.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

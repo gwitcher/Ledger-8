@@ -12,6 +12,7 @@ import SwiftData
 struct ProjectListView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.colorScheme) var colorScheme
+    @EnvironmentObject var undoManager: AppUndoManager
     
     @Query(sort: \Project.startDate) var projects: [Project]
     
