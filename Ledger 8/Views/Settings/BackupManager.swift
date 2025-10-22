@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import SwiftUI
+import CryptoKit
 #if canImport(UIKit)
 import UIKit
 #endif
@@ -279,6 +280,11 @@ struct BackupMetadata: Codable {
     var appVersion = "Ledger 8"
     var backupVersion = "1.0"
     var createdDate = Date()
+    
+    // Checksum validation fields
+    var contentChecksum: String?
+    var checksumAlgorithm: String?
+    var fileSize: Int?
     
     #if canImport(UIKit)
     var deviceName = UIDevice.current.name
