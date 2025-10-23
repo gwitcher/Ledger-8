@@ -68,14 +68,7 @@ struct AddInvoiceView: View {
             // Provide user-friendly error messages with actionable advice
             switch true {
             case errorMessage.contains("invalid") || errorMessage.contains("incomplete"):
-                errorAlertMessage = """
-                Unable to generate invoice due to missing information.
-                
-                Please check:
-                • Company information is filled out in Settings
-                • Project has at least one item with a fee
-                • All required fields are completed
-                """
+                errorAlertMessage = generateDetailedValidationMessage()
                 
             case errorMessage.contains("storage") || errorMessage.contains("space"):
                 errorAlertMessage = """
@@ -99,18 +92,65 @@ struct AddInvoiceView: View {
                 """
             }
         } else {
-            errorAlertMessage = """
-            Invoice generation failed for an unknown reason.
-            
-            Please ensure:
-            • Company information is set up in Settings
-            • Project has items with fees
-            • Device has sufficient storage space
-            """
+            errorAlertMessage = generateDetailedValidationMessage()
         }
         
         showingErrorAlert = true
         print("😡 Invoice generation failed: \(invoiceManager.errorMessage ?? "Unknown error")")
+    }
+    
+    private func generateDetailedValidationMessage() -> String {
+        var issues: [String] = []
+        
+        // Check company data
+        let userData: UserData
+        if let userDataString = UserDefaults.standard.string(forKey: "userData"),
+           let loadedUserData = UserData(rawValue: userDataString) {
+            userData = loadedUserData
+        } else {
+            userData = UserData()
+        }
+        
+        let company = userData.company
+        if company.name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && 
+           company.contact.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            issues.append("• Company information: Enter either a Company Name OR Contact Person name in Settings")
+        }
+        
+        // Check project items
+        if let items = project.items {
+            if items.isEmpty {
+                issues.append("• Project items: Add at least one service item with a fee")
+            } else {
+                let total = project.calculateFeeTotal(items: items)
+                if total < 0 {
+                    issues.append("• Project total: Total amount cannot be negative (currently $\(String(format: "%.2f", total)))")
+                }
+            }
+        } else {
+            issues.append("• Project items: Add at least one service item with a fee")
+        }
+        
+        // Check project basic info
+        if project.projectName.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty {
+            issues.append("• Project name: Enter a project name")
+        }
+        
+        let baseMessage = "Cannot generate invoice. Please fix these issues:"
+        
+        if issues.isEmpty {
+            return """
+            Unable to generate invoice due to validation error.
+            
+            Please ensure:
+            • Company Name OR Contact Person is set in Settings
+            • Project has a name
+            • Project has at least one item with a fee
+            • Total amount is not negative
+            """
+        } else {
+            return baseMessage + "\n\n" + issues.joined(separator: "\n")
+        }
     }
     
     private func saveInvoice(newInvoice: Invoice) {
