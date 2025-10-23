@@ -7,23 +7,44 @@
 
 import SwiftUI
 import PDFKit
+import os.log
 
 struct ShowInvoice: View {
     @Environment(\.dismiss) var dismiss
     
     let pdfURL: URL
     let pdfTitle: String
-  
     
+    @State private var showingShareError = false
+    @State private var shareErrorMessage = ""
+    @State private var isValidatingFile = true
+    @State private var fileExists = false
+    
+    private let logger = Logger(subsystem: "com.ledger8.invoice", category: "PDFViewer")
+  
     var body: some View {
         NavigationStack {
             VStack {
-                PDFKitView(url: pdfURL)
-                    .scaledToFit()
+                if isValidatingFile {
+                    ProgressView("Loading PDF...")
+                        .frame(maxWidth: .infinity, maxHeight: .infinity)
+                } else if fileExists {
+                    PDFKitView(url: pdfURL)
+                        .scaledToFit()
+                } else {
+                    ContentUnavailableView(
+                        "PDF Not Available",
+                        systemImage: "doc.questionmark",
+                        description: Text("The PDF file could not be loaded. It may have been moved or deleted.")
+                    )
+                }
             }
             .toolbar {
                 ToolbarItem {
-                    ShareLink(item: pdfURL)
+                    ShareLink(item: pdfURL) {
+                        Label("Share", systemImage: "square.and.arrow.up")
+                    }
+                    .disabled(!fileExists)
                 }
                 
                 ToolbarItem(placement: .topBarLeading) {
@@ -31,20 +52,57 @@ struct ShowInvoice: View {
                         dismiss()
                     }
                 }
-                
             }
             .navigationTitle(pdfTitle)
             .navigationBarTitleDisplayMode(.inline)
+            .task {
+                await validatePDFFile()
+            }
+            .alert("Share Error", isPresented: $showingShareError) {
+                Button("OK") { }
+            } message: {
+                Text(shareErrorMessage)
+            }
+        }
+    }
+    
+    private func validatePDFFile() async {
+        isValidatingFile = true
+        defer { isValidatingFile = false }
+        
+        // Check if file exists
+        guard FileManager.default.fileExists(atPath: pdfURL.path) else {
+            logger.error("PDF file not found: \(pdfURL.path)")
+            fileExists = false
+            return
         }
         
+        // Validate file size
+        do {
+            let attributes = try FileManager.default.attributesOfItem(atPath: pdfURL.path)
+            if let fileSize = attributes[.size] as? Int64 {
+                guard fileSize > 0 else {
+                    logger.error("PDF file is empty: \(pdfURL.lastPathComponent)")
+                    fileExists = false
+                    return
+                }
+                logger.info("PDF file validated: \(pdfURL.lastPathComponent), size: \(fileSize) bytes")
+            }
+        } catch {
+            logger.error("Failed to validate PDF file: \(error.localizedDescription)")
+            fileExists = false
+            return
+        }
         
-        
+        fileExists = true
     }
 }
 
 struct PDFKitView: UIViewRepresentable {
-    
     let url: URL
+    
+    @State private var showingLoadError = false
+    private let logger = Logger(subsystem: "com.ledger8.invoice", category: "PDFKit")
     
     init(url: URL) {
         self.url = url
@@ -52,16 +110,41 @@ struct PDFKitView: UIViewRepresentable {
     
     func makeUIView(context: Context) -> PDFView {
         let pdfView = PDFView()
-        pdfView.document = PDFDocument(url: self.url)
+        
+        // Configure PDF view for better performance and UX
         pdfView.autoScales = true
         pdfView.displayDirection = .horizontal
-        pdfView.minScaleFactor = 0.5
-        pdfView.maxScaleFactor = 2.0
+        pdfView.minScaleFactor = 0.25
+        pdfView.maxScaleFactor = 4.0
+        pdfView.displayMode = .singlePage
+        
+        // Load PDF document with error handling
+        loadPDFDocument(into: pdfView)
+        
         return pdfView
     }
     
     func updateUIView(_ pdfView: PDFView, context: Context) {
-        // Update pdf if needed
+        // Reload PDF if URL changes
+        if pdfView.document?.documentURL != url {
+            loadPDFDocument(into: pdfView)
+        }
+    }
+    
+    private func loadPDFDocument(into pdfView: PDFView) {
+        DispatchQueue.global(qos: .userInitiated).async {
+            let document = PDFDocument(url: self.url)
+            
+            DispatchQueue.main.async {
+                if let document = document {
+                    pdfView.document = document
+                    self.logger.info("PDF document loaded successfully: \(self.url.lastPathComponent)")
+                } else {
+                    self.logger.error("Failed to load PDF document: \(self.url.lastPathComponent)")
+                    // Could show an error view here
+                }
+            }
+        }
     }
 }
 

@@ -78,7 +78,10 @@ struct UserData: Codable {
     var bankingInfo = BankingInfo()
     var addToCalendar = false
     
-    init() {}
+    init() {
+        // Use default empty values (set by property initializers)
+        // UserDefaults loading should only happen through @AppStorage in SwiftUI
+    }
     
     enum CodingKeys: CodingKey {
         case userFirstName
