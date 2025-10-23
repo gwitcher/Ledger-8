@@ -19,7 +19,45 @@ struct Company: Codable {
     var email = ""
     
     var cityStateZip: String {
-        "\(city), \(state) \(zip)"
+        let trimmedCity = city.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedState = state.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedZip = zip.trimmingCharacters(in: .whitespacesAndNewlines)
+        
+        // If all are empty, return empty string
+        if trimmedCity.isEmpty && trimmedState.isEmpty && trimmedZip.isEmpty {
+            return ""
+        }
+        
+        // Build the string dynamically
+        var result = ""
+        
+        if !trimmedCity.isEmpty {
+            result += trimmedCity
+        }
+        
+        if !trimmedState.isEmpty {
+            if !result.isEmpty {
+                result += ", "
+            }
+            result += trimmedState
+        }
+        
+        if !trimmedZip.isEmpty {
+            if !result.isEmpty {
+                result += " "
+            }
+            result += trimmedZip
+        }
+        
+        return result
+    }
+    
+    /// Returns true if the company has enough information to create an invoice
+    /// Requires either a company name or contact information
+    var isValidForInvoice: Bool {
+        let trimmedName = name.trimmingCharacters(in: .whitespacesAndNewlines)
+        let trimmedContact = contact.trimmingCharacters(in: .whitespacesAndNewlines)
+        return !trimmedName.isEmpty || !trimmedContact.isEmpty
     }
 }
 
