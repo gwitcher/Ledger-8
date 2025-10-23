@@ -21,6 +21,7 @@ struct InvoiceLinkView: View {
     @State private var showingErrorAlert = false
     @State private var errorMessage = ""
     @State private var isDeleting = false
+    @State private var pendingDeletion = false // New state to prevent rapid state changes
     
     private let logger = Logger(subsystem: "com.ledger8.invoice", category: "InvoiceLink")
     
@@ -43,13 +44,18 @@ struct InvoiceLinkView: View {
                 }
             }
             .onTapGesture {
-                openInvoice()
-            }
-            .swipeActions {
-                Button("Delete", role: .destructive) {
-                    showingDeleteConfirmation = true
+                if !isDeleting && !pendingDeletion {
+                    openInvoice()
                 }
-                .disabled(isDeleting)
+            }
+            .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                Button {
+                    requestDeleteConfirmation()
+                } label: {
+                    Label("Delete", systemImage: "trash")
+                }
+                .tint(.red)
+                .disabled(isDeleting || pendingDeletion)
             }
             .onAppear {
                 validateInvoiceFile()
@@ -57,17 +63,18 @@ struct InvoiceLinkView: View {
             .sheet(isPresented: $invoiceSheetIsPresented) {
                 invoiceSheet
             }
-            .confirmationDialog(
+            .alert(
                 "Delete Invoice",
-                isPresented: $showingDeleteConfirmation,
-                titleVisibility: .visible
+                isPresented: $showingDeleteConfirmation
             ) {
-                Button("Delete Invoice", role: .destructive) {
+                Button("Delete", role: .destructive) {
                     Task {
                         await deleteInvoiceWithValidation()
                     }
                 }
-                Button("Cancel", role: .cancel) { }
+                Button("Cancel", role: .cancel) {
+                    resetDeletionState()
+                }
             } message: {
                 Text("This will permanently delete the invoice PDF file. This action cannot be undone.")
             }
@@ -123,6 +130,22 @@ struct InvoiceLinkView: View {
     
     // MARK: - Helper Methods
     
+    private func requestDeleteConfirmation() {
+        guard !isDeleting && !pendingDeletion else { return }
+        
+        pendingDeletion = true
+        
+        // Small delay to ensure swipe action completes before showing alert
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
+            showingDeleteConfirmation = true
+        }
+    }
+    
+    private func resetDeletionState() {
+        pendingDeletion = false
+        showingDeleteConfirmation = false
+    }
+    
     private func openInvoice() {
         guard let invoice = project.invoice else {
             showError("No invoice available for this project")
@@ -160,11 +183,18 @@ struct InvoiceLinkView: View {
     private func deleteInvoiceWithValidation() async {
         guard let invoice = project.invoice else {
             showError("No invoice to delete")
+            resetDeletionState()
             return
         }
         
+        // Set deleting state
         isDeleting = true
-        defer { isDeleting = false }
+        showingDeleteConfirmation = false // Dismiss alert immediately
+        
+        defer { 
+            isDeleting = false 
+            resetDeletionState()
+        }
         
         do {
             try await performInvoiceDeletion(invoice: invoice)
@@ -179,33 +209,92 @@ struct InvoiceLinkView: View {
     private func performInvoiceDeletion(invoice: Invoice) async throws {
         // Validate invoice exists
         guard let fileURL = invoice.url else {
+            logger.error("Invoice has no file URL")
             throw InvoiceFileError.invalidURL
         }
         
-        // Check if file exists before attempting deletion
-        guard FileManager.default.fileExists(atPath: fileURL.path) else {
-            // File doesn't exist, just remove from database
-            logger.info("File not found on disk, removing database entry: \(invoice.name)")
+        logger.info("Attempting to delete invoice file at: \(fileURL.path)")
+        
+        // Check if file exists at the original location
+        let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
+        logger.info("File exists at original path: \(fileExists) - \(fileURL.path)")
+        
+        var actualFileURL: URL? = nil
+        
+        if fileExists {
+            actualFileURL = fileURL
+        } else {
+            // Check alternative locations where the file might actually be
+            let fileName = fileURL.lastPathComponent
+            
+            // Check in shared container (Files app visible location)
+            let possibleLocations = [
+                // Try app group container if it exists
+                FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ledger8")?.appendingPathComponent("Documents/Invoices/\(fileName)"),
+                // Try other common locations
+                URL.documentsDirectory.appendingPathComponent("Invoices/\(fileName)"),
+                FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Invoices/\(fileName)"),
+            ].compactMap { $0 }
+            
+            for possibleURL in possibleLocations {
+                logger.info("Checking alternative location: \(possibleURL.path)")
+                if FileManager.default.fileExists(atPath: possibleURL.path) {
+                    logger.info("✅ Found file at alternative location: \(possibleURL.path)")
+                    actualFileURL = possibleURL
+                    break
+                }
+            }
+        }
+        
+        guard let targetURL = actualFileURL else {
+            // File doesn't exist anywhere, just remove from database
+            logger.info("File not found in any location, removing database entry: \(invoice.name)")
             modelContext.delete(invoice)
             try modelContext.save()
             return
         }
         
-        // Validate file size and permissions before deletion
+        // Log the actual file path being deleted
+        logger.info("Found file to delete at: \(targetURL.path)")
+        
+        // Check file permissions
+        let isReadable = FileManager.default.isReadableFile(atPath: targetURL.path)
+        let isWritable = FileManager.default.isWritableFile(atPath: targetURL.path)
+        let isDeletable = FileManager.default.isDeletableFile(atPath: targetURL.path)
+        
+        logger.info("File permissions - Readable: \(isReadable), Writable: \(isWritable), Deletable: \(isDeletable)")
+        
+        if !isDeletable {
+            logger.error("File is not deletable due to permissions")
+            throw InvoiceFileError.deletionFailed("Insufficient permissions to delete file")
+        }
+        
+        // Validate file size before deletion
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
+            let attributes = try FileManager.default.attributesOfItem(atPath: targetURL.path)
             let fileSize = attributes[.size] as? Int64 ?? 0
-            logger.info("Deleting invoice file: \(fileURL.lastPathComponent), size: \(fileSize)")
+            logger.info("Deleting invoice file: \(targetURL.lastPathComponent), size: \(fileSize) bytes")
         } catch {
             logger.warning("Could not read file attributes: \(error.localizedDescription)")
         }
         
         // Attempt to delete the file
         do {
-            try FileManager.default.removeItem(at: fileURL)
-            logger.info("Invoice file deleted: \(fileURL.lastPathComponent)")
+            try FileManager.default.removeItem(at: targetURL)
+            logger.info("✅ Invoice file successfully deleted: \(targetURL.lastPathComponent)")
+            
+            // Verify deletion was successful
+            let stillExists = FileManager.default.fileExists(atPath: targetURL.path)
+            if stillExists {
+                logger.error("❌ File still exists after deletion attempt!")
+                throw InvoiceFileError.deletionFailed("File deletion appeared to succeed but file still exists")
+            } else {
+                logger.info("✅ Confirmed file no longer exists on disk")
+            }
+            
         } catch {
-            logger.error("File deletion failed: \(error.localizedDescription)")
+            logger.error("❌ File deletion failed: \(error.localizedDescription)")
+            logger.error("Error details: \(error)")
             throw InvoiceFileError.deletionFailed(error.localizedDescription)
         }
         
@@ -219,7 +308,7 @@ struct InvoiceLinkView: View {
         while retryCount < maxRetries {
             do {
                 try modelContext.save()
-                logger.info("Database updated successfully")
+                logger.info("✅ Database updated successfully - invoice removed")
                 break
             } catch {
                 retryCount += 1
@@ -236,6 +325,7 @@ struct InvoiceLinkView: View {
     }
     
     private func showError(_ message: String) {
+        logger.error("Showing error to user: \(message)")
         errorMessage = message
         showingErrorAlert = true
     }
