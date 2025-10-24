@@ -108,6 +108,9 @@ struct ItemDetailView: View {
         
         project.items?.append(newItem)
         
+        // Flag project invoice for update since a new item was added
+        project.flagInvoiceForUpdate()
+        
         guard let _ = try? modelContext.save() else {
             print("ERROR: could not save")
             return

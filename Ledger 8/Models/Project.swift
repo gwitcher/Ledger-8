@@ -30,6 +30,9 @@ class Project: Identifiable {
     @Relationship(deleteRule: .cascade) var items: [Item]?
     @Relationship var client: Client?
 
+    // Invoice update tracking
+    var invoiceUpdateFlag: Bool = false
+
     // ADD THIS LINE
     var location: Spot?
 
@@ -86,5 +89,28 @@ class Project: Identifiable {
         case .game:
                 .gamepad
         }
+    }
+    
+    // Computed property to check if invoice needs updating
+    var invoiceNeedsUpdate: Bool {
+        guard invoice != nil else { return false }
+        return invoiceUpdateFlag
+    }
+    
+    // Helper functions to manage invoice update flag
+    func flagInvoiceForUpdate() {
+        if invoice != nil {
+            invoiceUpdateFlag = true
+        }
+    }
+    
+    func clearInvoiceUpdateFlag() {
+        invoiceUpdateFlag = false
+    }
+    
+    // Call this when invoice is deleted
+    func deleteInvoice() {
+        invoice = nil
+        invoiceUpdateFlag = false
     }
 }

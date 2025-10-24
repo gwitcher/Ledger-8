@@ -561,7 +561,17 @@ struct ProjectDetailView: View {
         if statusChange {
             Section("Invoice") {
                 if project.invoice != nil {
-                    InvoiceLinkView(project: project)
+                    VStack(alignment: .leading, spacing: 8) {
+                        InvoiceLinkView(project: project)
+                        
+                        // Warning message when invoice needs update
+                        if project.invoiceNeedsUpdate {
+                            Text("⚠️ Warning: Project info has changed. Please delete invoice and create new.")
+                                .font(.caption)
+                                .foregroundColor(.orange)
+                                .padding(.top, 4)
+                        }
+                    }
                 } else {
                     AddInvoiceView(project: project)
                 }
@@ -882,6 +892,11 @@ struct ProjectDetailView: View {
         
         print("Save before: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
         
+        // Check for changes that would affect an invoice
+        let projectNameChanged = project.projectName != projectName
+        let clientChanged = project.client != selectedClient
+        
+        // Apply the changes
         project.client = selectedClient
         
         print("Save after: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
@@ -898,6 +913,11 @@ struct ProjectDetailView: View {
         project.dateClosed = dateClosed
         project.status = status
         project.endDateSelected = endDateSelected
+        
+        // Flag invoice for update if invoice-relevant changes occurred
+        if projectNameChanged || clientChanged {
+            project.flagInvoiceForUpdate()
+        }
         
         modelContext.insert(project)
         

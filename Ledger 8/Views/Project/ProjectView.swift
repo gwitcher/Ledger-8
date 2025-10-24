@@ -25,7 +25,7 @@ struct ProjectView: View {
             VStack(alignment: .leading, spacing: 6) {
                 
                 Text(project.client?.fullName ?? "Add Client")
-            
+                
                     .font(.subheadline)
                     .foregroundStyle(.primary)
                     .bold()
@@ -40,14 +40,14 @@ struct ProjectView: View {
                 Text(project.startDate.formatted(date: .abbreviated, time: .omitted))
                     .font(.footnote)
                     .foregroundStyle(.secondary)
-                    //.opacity(0.7)
+                //.opacity(0.7)
                 
             }
             
             Spacer()
             
             VStack (alignment: .trailing, spacing: 6) {
-              
+                
                 Text("\(project.calculateFeeTotal(items: project.items!).formatted(.currency(code: "USD")))")
                     .font(.subheadline)
                     .foregroundStyle(project.status.statusColor)
@@ -55,25 +55,36 @@ struct ProjectView: View {
                     .lineLimit(1)
                 
                 Text("\(project.mediaType.rawValue)")
-              
+                
                     .font(.footnote)
                     .foregroundStyle(.primary)
                     .opacity(0.7)
                     .lineLimit(1)
                 
-                Text(" ^[\(project.items?.count ?? 0) Items](inflect: true)")
-                    .font(.footnote)
-                    .foregroundColor(.secondary)
-                    //.opacity(0.7)
-                
+                // Option 5: Replace items count with invoice indicator when present
+                // BUT only show invoice if status is delivered or closed
+                if project.invoice != nil && (project.status == .delivered || project.status == .closed) {
+                    HStack(spacing: 2) {
+                        Image(systemName: project.invoiceNeedsUpdate ? "exclamationmark.triangle" : "doc.text")
+                            .font(.caption)
+                            .foregroundColor(project.invoiceNeedsUpdate ? .orange : .primary)
+                        Text("Invoice")
+                            .font(.footnote)
+                            .foregroundColor(project.invoiceNeedsUpdate ? .orange : .primary)
+                    }
+                } else {
+                    Text(" ^[\(project.items?.count ?? 0) Items](inflect: true)")
+                        .font(.footnote)
+                        .foregroundColor(.secondary)
+                }
                 
             }
         }
         .padding([.top, .bottom], 6)
         
     }
+    
 }
-
 #Preview {
     ProjectView(project: Project(projectName: "Dummy", startDate: Date(), items: []))
     

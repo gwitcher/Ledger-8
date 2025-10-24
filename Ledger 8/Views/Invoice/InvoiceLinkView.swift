@@ -33,9 +33,11 @@ struct InvoiceLinkView: View {
             
             HStack {
                 Image(systemName: "doc")
+                    .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
                 Text("\(project.invoice?.name ?? "No Invoice")...")
                     .font(.footnote)
                     .minimumScaleFactor(0.5)
+                    .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
                 
                 if isDeleting {
                     Spacer()
@@ -199,6 +201,10 @@ struct InvoiceLinkView: View {
         do {
             try await performInvoiceDeletion(invoice: invoice)
             project.invoice = nil
+            
+            // Reset the invoice update flag when invoice is deleted
+            project.clearInvoiceUpdateFlag()
+            
             logger.info("Invoice deleted successfully: \(invoice.name)")
         } catch {
             logger.error("Failed to delete invoice: \(error.localizedDescription)")
