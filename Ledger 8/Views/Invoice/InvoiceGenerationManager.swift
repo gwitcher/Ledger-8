@@ -234,10 +234,7 @@ final class InvoiceGenerationManager {
                         InvoiceLogger.logPDFGeneration(.info, "PDF file created: \(invoiceData.url.lastPathComponent)")
                         continuation.resume()
                     }
-                } catch {
-                    InvoiceLogger.logPDFGeneration(.error, "PDF rendering failed: \(error.localizedDescription)")
-                    continuation.resume(throwing: InvoiceGenerationError.templateRenderingFailed)
-                }
+                } 
             }
         }
     }

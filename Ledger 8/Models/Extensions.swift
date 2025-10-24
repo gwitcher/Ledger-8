@@ -227,32 +227,27 @@ extension Project {
     private func generatePDFAsync(project: Project, outputURL: URL) async throws {
         return try await withCheckedThrowingContinuation { continuation in
             Task { @MainActor in
-                do {
-                    let renderer = ImageRenderer(content: InvoiceTemplateView(project: project))
+                let renderer = ImageRenderer(content: InvoiceTemplateView(project: project))
+                
+                // Configure renderer for better quality
+                renderer.proposedSize = .init(width: 612, height: 792) // Letter size
+                
+                // Start the rendering process
+                renderer.render { size, context in
+                    var box = CGRect(x: 0, y: 0, width: size.width, height: size.height)
                     
-                    // Configure renderer for better quality
-                    renderer.proposedSize = .init(width: 612, height: 792) // Letter size
-                    
-                    // Start the rendering process
-                    renderer.render { size, context in
-                        var box = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-                        
-                        guard let pdf = CGContext(outputURL as CFURL, mediaBox: &box, nil) else {
-                            logger.error("Failed to create PDF context")
-                            continuation.resume(throwing: InvoiceGenerationError.pdfCreationFailed)
-                            return
-                        }
-                        
-                        pdf.beginPDFPage(nil)
-                        context(pdf)
-                        pdf.endPDFPage()
-                        pdf.closePDF()
-                        
-                        continuation.resume()
+                    guard let pdf = CGContext(outputURL as CFURL, mediaBox: &box, nil) else {
+                        logger.error("Failed to create PDF context")
+                        continuation.resume(throwing: InvoiceGenerationError.pdfCreationFailed)
+                        return
                     }
-                } catch {
-                    logger.error("PDF rendering failed: \(error.localizedDescription)")
-                    continuation.resume(throwing: InvoiceGenerationError.templateRenderingFailed)
+                    
+                    pdf.beginPDFPage(nil)
+                    context(pdf)
+                    pdf.endPDFPage()
+                    pdf.closePDF()
+                    
+                    continuation.resume()
                 }
             }
         }

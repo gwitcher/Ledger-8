@@ -27,7 +27,7 @@ struct InvoiceLinkView: View {
     
     var body: some View {
         
-        let path = project.invoice?.url?.absoluteString
+        let _ = project.invoice?.url?.absoluteString
         
         NavigationStack {
             

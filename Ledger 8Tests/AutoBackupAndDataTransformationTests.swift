@@ -45,8 +45,10 @@ struct AutoBackupSystemTests {
         UserDefaults.standard.removeObject(forKey: "autoBackupFrequency") 
         UserDefaults.standard.removeObject(forKey: "maxBackupsToKeep")
         
-        // Create backup manager (should load defaults)
-        let backupManager = await ComprehensiveBackupManager(modelContext: testContainer.mainContext)
+        // Create backup manager on MainActor (should load defaults)
+        let backupManager = await MainActor.run {
+            ComprehensiveBackupManager(modelContext: testContainer.mainContext)
+        }
         
         // Test default values
         await MainActor.run {
@@ -111,7 +113,9 @@ struct AutoBackupSystemTests {
     @Test("Auto-backup trigger logic handles all scenarios")
     func autoBackupTriggerLogic() async throws {
         let testContainer = try createTestModelContainer()
-        let backupManager = await ComprehensiveBackupManager(modelContext: testContainer.mainContext)
+        let backupManager = await MainActor.run {
+            ComprehensiveBackupManager(modelContext: testContainer.mainContext)
+        }
         
         await MainActor.run {
             // Test 1: Never backed up before - should backup (simulated)
