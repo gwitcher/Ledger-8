@@ -11,6 +11,7 @@
 		66622B142EABE37E00B5E990 /* ProjectModalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66622B122EABE35700B5E990 /* ProjectModalViews.swift */; };
 		66622B162EABFD0600B5E990 /* Features and price points.md in Resources */ = {isa = PBXBuildFile; fileRef = 66622B152EABFD0600B5E990 /* Features and price points.md */; };
 		66622B172EABFD0700B5E990 /* Features and price points.md in Resources */ = {isa = PBXBuildFile; fileRef = 66622B152EABFD0600B5E990 /* Features and price points.md */; };
+		66622B192EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 66622B182EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md */; };
 		66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */; };
 		66BF7E3F2EAB492400D24754 /* InvoiceIconPreviewOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
@@ -42,6 +43,7 @@
 		662222EE2E9792CE00AC1315 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
 		66622B122EABE35700B5E990 /* ProjectModalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModalViews.swift; sourceTree = "<group>"; };
 		66622B152EABFD0600B5E990 /* Features and price points.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Features and price points.md"; sourceTree = "<group>"; };
+		66622B182EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Ledger8_Enterprise_Development_Plan.md; sourceTree = "<group>"; };
 		66A540BC2EA9340300C6E21E /* Ledger 8Tests2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Ledger8_Core_UI_Development_Plan.md; sourceTree = "<group>"; };
 		66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceIconPreviewOptions.swift; sourceTree = "<group>"; };
@@ -145,6 +147,7 @@
 				66C616252DAF2BA100161D7E /* Preview Content */,
 				66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */,
 				66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */,
+				66622B182EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md */,
 			);
 			path = "Ledger 8";
 			sourceTree = "<group>";
@@ -285,6 +288,7 @@
 				66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */,
 				66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */,
 				66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */,
+				66622B192EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

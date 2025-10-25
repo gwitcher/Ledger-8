@@ -811,13 +811,18 @@ struct ProjectDetailView: View {
     }
     
     private func handleDeliveredChange() {
-        dateDelivered = Date.now
+        if delivered && dateDelivered == Date.distantPast {
+              dateDelivered = Date.now
+          }
         updateProjectStatus()
         saveProject()
     }
     
     private func handlePaidChange() {
-        dateClosed = Date.now
+        if paid && dateClosed == Date.distantFuture {
+            dateClosed = Date.now
+        }
+        
         if !delivered {
             delivered = true
         }
