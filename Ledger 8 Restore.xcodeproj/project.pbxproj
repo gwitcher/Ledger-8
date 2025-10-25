@@ -7,7 +7,10 @@
 	objects = {
 
 /* Begin PBXBuildFile section */
-		6660F3942E9B26B9007AA17D /* DevelopmentSuggestions.md in Resources */ = {isa = PBXBuildFile; fileRef = 6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */; };
+		66622B132EABE35700B5E990 /* ProjectModalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66622B122EABE35700B5E990 /* ProjectModalViews.swift */; };
+		66622B142EABE37E00B5E990 /* ProjectModalViews.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66622B122EABE35700B5E990 /* ProjectModalViews.swift */; };
+		66622B162EABFD0600B5E990 /* Features and price points.md in Resources */ = {isa = PBXBuildFile; fileRef = 66622B152EABFD0600B5E990 /* Features and price points.md */; };
+		66622B172EABFD0700B5E990 /* Features and price points.md in Resources */ = {isa = PBXBuildFile; fileRef = 66622B152EABFD0600B5E990 /* Features and price points.md */; };
 		66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */; };
 		66BF7E3F2EAB492400D24754 /* InvoiceIconPreviewOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
@@ -37,7 +40,8 @@
 /* Begin PBXFileReference section */
 		66175B1D2DB0E3AB008F6D80 /* Ledger-8-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "Ledger-8-Info.plist"; sourceTree = SOURCE_ROOT; };
 		662222EE2E9792CE00AC1315 /* .gitignore */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = .gitignore; sourceTree = "<group>"; };
-		6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = DevelopmentSuggestions.md; sourceTree = "<group>"; };
+		66622B122EABE35700B5E990 /* ProjectModalViews.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectModalViews.swift; sourceTree = "<group>"; };
+		66622B152EABFD0600B5E990 /* Features and price points.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = "Features and price points.md"; sourceTree = "<group>"; };
 		66A540BC2EA9340300C6E21E /* Ledger 8Tests2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Ledger8_Core_UI_Development_Plan.md; sourceTree = "<group>"; };
 		66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceIconPreviewOptions.swift; sourceTree = "<group>"; };
@@ -106,6 +110,8 @@
 				66F677F52EA8A25D00145C15 /* Ledger 8Tests */,
 				66A540BD2EA9340300C6E21E /* Ledger 8Tests2 */,
 				66C616102DAF2B2E00161D7E /* Products */,
+				66622B122EABE35700B5E990 /* ProjectModalViews.swift */,
+				66622B152EABFD0600B5E990 /* Features and price points.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -137,7 +143,6 @@
 				66C6165A2DB007F500161D7E /* Models */,
 				66C6165B2DB0080400161D7E /* Views */,
 				66C616252DAF2BA100161D7E /* Preview Content */,
-				6660F3932E9B26B9007AA17D /* DevelopmentSuggestions.md */,
 				66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */,
 				66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */,
 			);
@@ -276,7 +281,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
-				6660F3942E9B26B9007AA17D /* DevelopmentSuggestions.md in Resources */,
+				66622B172EABFD0700B5E990 /* Features and price points.md in Resources */,
 				66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */,
 				66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */,
 				66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */,
@@ -287,6 +292,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66622B162EABFD0600B5E990 /* Features and price points.md in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -305,6 +311,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */,
+				66622B142EABE37E00B5E990 /* ProjectModalViews.swift in Sources */,
 				66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */,
 				66BF7E3F2EAB492400D24754 /* InvoiceIconPreviewOptions.swift in Sources */,
 			);
@@ -314,6 +321,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66622B132EABE35700B5E990 /* ProjectModalViews.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

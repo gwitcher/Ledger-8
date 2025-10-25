@@ -20,17 +20,17 @@
 
 ## Phase 1: Visual Status & Flow Clarity (Week 1)
 
-### Priority 1: Invoice Status Visualization in Project Flow
-**Current Gap**: Users cannot quickly identify invoice status across projects
-**Missing Elements**:
-- Visual indicators in ProjectListView showing which projects have invoices
-- Invoice status badges in ProjectView component (generated/pending/none)
-- Quick visual scan of project invoice states
+<!--### Priority 1: Invoice Status Visualization in Project Flow-->
+<!--**Current Gap**: Users cannot quickly identify invoice status across projects-->
+<!--**Missing Elements**:-->
+<!--- Visual indicators in ProjectListView showing which projects have invoices-->
+<!--- Invoice status badges in ProjectView component (generated/pending/none)-->
+<!--- Quick visual scan of project invoice states-->
 
-**Implementation Needs**:
-- Status icons or badges in project list items
-- Color coding for different invoice states
-- Invoice status in project summary views
+<!--**Implementation Needs**:-->
+<!--- Status icons or badges in project list items-->
+<!--- Color coding for different invoice states-->
+<!--- Invoice status in project summary views-->
 
 ### Priority 2: Project Status Flow Completion
 **Current Gap**: Unclear progression through project lifecycle
@@ -38,23 +38,24 @@
 - Clear progression: Open → Ready → Complete → Invoiced → Paid
 - Status change triggers and automation
 - Workflow guidance for next actions
+- Animation when status changed in projectListView
 
-**Implementation Needs**:
-- Status progression indicators
-- Contextual action suggestions
-- Automated status updates when invoices are generated
+<!--**Implementation Needs**:-->
+<!--- Status progression indicators-->
+<!--- Contextual action suggestions-->
+<!--- Automated status updates when invoices are generated-->
 
-### Priority 3: Data Integrity & User Guidance
-**Current Gap**: Users don't understand why projects can't be invoiced
-**Missing Elements**:
-- Validation feedback for incomplete projects
-- Guided flow for missing requirements
-- Clear error messaging and resolution steps
+<!--### Priority 3: Data Integrity & User Guidance-->
+<!--**Current Gap**: Users don't understand why projects can't be invoiced-->
+<!--**Missing Elements**:-->
+<!--- Validation feedback for incomplete projects-->
+<!--- Guided flow for missing requirements-->
+<!--- Clear error messaging and resolution steps-->
 
-**Implementation Needs**:
-- Validation messaging in UI
-- Requirement checklists for invoice generation
-- Guided setup for incomplete projects
+<!--**Implementation Needs**:-->
+<!--- Validation messaging in UI-->
+<!--- Requirement checklists for invoice generation-->
+<!--- Guided setup for incomplete projects-->
 
 ## Phase 2: Invoice Management Polish (Week 2)
 
@@ -62,7 +63,7 @@
 **Current Gap**: Limited post-generation invoice management
 **Missing Elements**:
 - Quick access to view/share existing invoices from project list
-- Invoice actions (re-generate, delete, share) in project detail
+<!--- Invoice actions (re-generate, delete, share) in project detail-->
 - Invoice history and version management
 
 **Implementation Needs**:
@@ -75,7 +76,7 @@
 **Missing Elements**:
 - Invoice status: Generated → Sent → Paid workflow
 - Payment tracking and reminders
-- Invoice delivery confirmation
+<!--- Invoice delivery confirmation-->
 
 **Implementation Needs**:
 - Invoice status management
@@ -99,7 +100,7 @@
 ### Priority 7: Client-Project Relationship Visibility
 **Current Gap**: Unclear client project history and value
 **Missing Elements**:
-- Project list per client in ClientListView
+- Project list per client in ClientDetailView (New View)
 - Client project count and revenue summaries
 - Historical project timeline per client
 
