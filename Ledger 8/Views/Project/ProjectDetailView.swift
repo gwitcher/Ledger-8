@@ -563,20 +563,28 @@ struct ProjectDetailView: View {
                 if project.invoice != nil {
                     VStack(alignment: .leading, spacing: 8) {
                         InvoiceLinkView(project: project)
+                        Divider()
+                        invoiceWarningAlert
                         
-                        // Warning message when invoice needs update
-                        if project.invoiceNeedsUpdate {
-                            Text("⚠️ Warning: Project info has changed. Please delete invoice and create new.")
-                                .font(.caption)
-                                .foregroundColor(.orange)
-                                .padding(.top, 4)
-                        }
                     }
                 } else {
                     AddInvoiceView(project: project)
                 }
             }
         }
+    }
+    
+    @ViewBuilder
+    private var invoiceWarningAlert: some View {
+        
+        // Warning message when invoice needs update
+        if project.invoiceNeedsUpdate {
+            Text("⚠️ Warning: Project info has changed. Please delete invoice and create new.")
+                .font(.caption)
+                .foregroundColor(.orange)
+                .padding(.top, 4)
+        }
+        
     }
     
     @ViewBuilder

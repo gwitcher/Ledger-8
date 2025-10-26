@@ -31,18 +31,20 @@ struct InvoiceLinkView: View {
         
         NavigationStack {
             
-            HStack {
-                Image(systemName: "doc")
-                    .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
-                Text("\(project.invoice?.name ?? "No Invoice")...")
-                    .font(.footnote)
-                    .minimumScaleFactor(0.5)
-                    .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
-                
-                if isDeleting {
-                    Spacer()
-                    ProgressView()
-                        .scaleEffect(0.8)
+            VStack(alignment: .leading) {
+                HStack {
+                    Image(systemName: "doc")
+                        .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
+                    Text("\(project.invoice?.name ?? "No Invoice")...")
+                        .font(.footnote)
+                        .minimumScaleFactor(0.5)
+                        .foregroundColor(project.invoiceNeedsUpdate ? .red : .primary)
+                    
+                    if isDeleting {
+                        Spacer()
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    }
                 }
             }
             .onTapGesture {

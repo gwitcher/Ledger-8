@@ -78,7 +78,7 @@ struct SortedProjectView: View {
                         ForEach(groupedProjectsByMonthYear, id: \.key) { group in
                             Section(header: Text(group.key).font(.headline).foregroundStyle(.secondary)) {
                                 ForEach(group.value) { project in
-                                    NavigationLink(destination: ProjectDetailView(project: project)) {
+                                    NavigationLink(destination: ProjectEventDetailView(project: project)) {
                                         ProjectView(project: project)
                                     }
                                     .swipeActions {
@@ -106,7 +106,7 @@ struct SortedProjectView: View {
                 } else {
                     List {
                         ForEach(filteredProjects) { project in
-                            NavigationLink(destination: ProjectDetailView(project: project)) {
+                            NavigationLink(destination: ProjectEventDetailView(project: project)) {
                                 ProjectView(project: project)
                             }
                             .swipeActions {
