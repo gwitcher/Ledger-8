@@ -125,6 +125,7 @@
 				66F677F52EA8A25D00145C15 /* Ledger 8Tests */,
 				66C616102DAF2B2E00161D7E /* Products */,
 				66622B122EABE35700B5E990 /* ProjectModalViews.swift */,
+				6608D4812EAEDE3700B104FA /* Critical_Fixes_Code_Templates.swift */,
 				6608D4792EAEC7C000B104FA /* ledger8_production_plan (1).md */,
 				66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */,
 				66622B182EAD50B000B5E990 /* Ledger8_Enterprise_Development_Plan.md */,
@@ -134,7 +135,6 @@
 				6608D47D2EAEDA4400B104FA /* Fixes and Todos.md */,
 				6608D47F2EAEDCDE00B104FA /* Integrated_Production_Plan.md */,
 				6608D5EF2EAF3A1A00B104FA /* Integrated_Production_Plan_With_UI_Modernization.md */,
-				6608D4812EAEDE3700B104FA /* Critical_Fixes_Code_Templates.swift */,
 			);
 			sourceTree = "<group>";
 		};

@@ -116,7 +116,7 @@ class NavigationCoordinator {
             ProjectItemsView(project: project)
                 .environment(self) // Pass coordinator to child views
                 
-        case .itemEditor(let project, let item):
+        case .itemEditor(_, let item):
             ItemEditView(item: item)
                 .environment(self)
         }
