@@ -138,14 +138,18 @@ struct EnhancedItemRowView: View {
     }
     
     private var backgroundColor: some View {
-        Color(.systemBackground)
-            .overlay(
-                LinearGradient(
-                    colors: [item.itemType.color.opacity(0.05), Color.clear],
-                    startPoint: .leading,
-                    endPoint: .trailing
-                )
+        // Modern Liquid Glass approach
+        ZStack {
+            // Base glass effect
+            .regularMaterial
+            
+            // Subtle color accent
+            LinearGradient(
+                colors: [item.itemType.color.opacity(0.08), Color.clear],
+                startPoint: .leading,
+                endPoint: .trailing
             )
+        }
     }
 }
 
