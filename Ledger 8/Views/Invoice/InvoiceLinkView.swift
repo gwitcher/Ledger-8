@@ -92,22 +92,15 @@ struct InvoiceLinkView: View {
     
     @ViewBuilder
     private var invoiceSheet: some View {
-        if let pdfURL = project.invoice?.url {
+        if let invoice = project.invoice,
+           let originalURL = invoice.url,
+           let resolvedURL = resolveInvoiceFileLocation(originalURL: originalURL, fileName: invoice.name) {
+            
             NavigationStack {
-                Group {
-                    if FileManager.default.fileExists(atPath: pdfURL.path) {
-                        VStack{
-                            WebkitPdfView(pdfURL: pdfURL, pdfTitle: project.invoice!.name)
-                        }
-                    } else {
-                        ContentUnavailableView(
-                            "Invoice File Missing",
-                            systemImage: "doc.questionmark",
-                            description: Text("The invoice PDF file could not be found. It may have been moved or deleted.")
-                        )
-                    }
+                VStack{
+                    WebkitPdfView(pdfURL: resolvedURL, pdfTitle: invoice.name)
                 }
-                .navigationTitle(project.invoice?.name ?? "Invoice")
+                .navigationTitle(invoice.name)
                 .navigationBarTitleDisplayMode(.inline)
                 .toolbar {
                     ToolbarItem(placement: .topBarLeading) {
@@ -116,18 +109,24 @@ struct InvoiceLinkView: View {
                         }
                     }
                     
-                    if FileManager.default.fileExists(atPath: pdfURL.path) {
-                        ToolbarItem(placement: .topBarTrailing) {
-                            ShareLink(item: pdfURL)
-                        }
+                    ToolbarItem(placement: .topBarTrailing) {
+                        ShareLink(item: resolvedURL)
+                    }
+                }
+                .onAppear {
+                    // Update stored URL if we found it in a different location
+                    if resolvedURL != originalURL {
+                        logger.info("Invoice file found at new location in sheet, updating stored URL")
+                        invoice.url = resolvedURL
+                        try? modelContext.save()
                     }
                 }
             }
         } else {
             ContentUnavailableView(
-                "No Invoice Available",
-                systemImage: "doc.badge.plus",
-                description: Text("Generate an invoice for this project to view it here.")
+                "Invoice File Missing",
+                systemImage: "doc.questionmark",
+                description: Text("The invoice PDF file could not be found. It may have been moved or deleted.")
             )
         }
     }
@@ -156,15 +155,22 @@ struct InvoiceLinkView: View {
             return
         }
         
-        guard let url = invoice.url else {
+        guard let originalURL = invoice.url else {
             showError("Invoice file location is unknown")
             return
         }
         
-        // Check if file exists before opening
-        guard FileManager.default.fileExists(atPath: url.path) else {
+        // Try to resolve the file location with enhanced logic
+        guard let resolvedURL = resolveInvoiceFileLocation(originalURL: originalURL, fileName: invoice.name) else {
             showError("Invoice file not found. It may have been moved or deleted.")
             return
+        }
+        
+        // Update the stored URL if we found it in a different location
+        if resolvedURL != originalURL {
+            logger.info("Invoice file found at new location, updating stored URL")
+            invoice.url = resolvedURL
+            try? modelContext.save()
         }
         
         logger.info("Opening invoice: \(invoice.name)")
@@ -173,13 +179,19 @@ struct InvoiceLinkView: View {
     
     private func validateInvoiceFile() {
         guard let invoice = project.invoice,
-              let url = invoice.url else { return }
+              let originalURL = invoice.url else { return }
         
-        // Check if file still exists
-        if !FileManager.default.fileExists(atPath: url.path) {
-            logger.warning("Invoice file missing: \(url.path)")
-        } else {
+        // Try to resolve the file location
+        if let resolvedURL = resolveInvoiceFileLocation(originalURL: originalURL, fileName: invoice.name) {
+            // Update stored URL if we found it in a different location
+            if resolvedURL != originalURL {
+                logger.info("Invoice file found at new location during validation, updating stored URL")
+                invoice.url = resolvedURL
+                try? modelContext.save()
+            }
             logger.info("Invoice file validated: \(invoice.name)")
+        } else {
+            logger.warning("Invoice file missing: \(originalURL.path)")
         }
     }
     
@@ -214,47 +226,156 @@ struct InvoiceLinkView: View {
         }
     }
     
+    // MARK: - Enhanced URL Resolution Logic
+    
+    /// Attempts to locate an invoice file using multiple search strategies
+    /// - Parameters:
+    ///   - originalURL: The original stored file URL
+    ///   - fileName: The invoice file name for fallback searching
+    /// - Returns: The resolved file URL if found, nil otherwise
+    private func resolveInvoiceFileLocation(originalURL: URL, fileName: String) -> URL? {
+        // Strategy 1: Try the original URL first
+        if FileManager.default.fileExists(atPath: originalURL.path) {
+            logger.info("Invoice file found at original location: \(originalURL.path)")
+            return originalURL
+        }
+        
+        logger.info("Original URL invalid, searching for file: \(fileName)")
+        
+        // Strategy 2: Search in common invoice storage locations
+        let searchLocations = generateSearchLocations(fileName: fileName)
+        
+        for candidateURL in searchLocations {
+            if FileManager.default.fileExists(atPath: candidateURL.path) {
+                logger.info("✅ Invoice file found at: \(candidateURL.path)")
+                return candidateURL
+            } else {
+                logger.debug("Checked location (not found): \(candidateURL.path)")
+            }
+        }
+        
+        // Strategy 3: Recursive search in Documents directory
+        if let foundURL = recursiveFileSearch(fileName: fileName, in: URL.documentsDirectory) {
+            logger.info("✅ Invoice file found via recursive search: \(foundURL.path)")
+            return foundURL
+        }
+        
+        // Strategy 4: Search by partial filename matching (in case of minor name changes)
+        if let foundURL = searchByPartialName(fileName: fileName) {
+            logger.info("✅ Invoice file found via partial name match: \(foundURL.path)")
+            return foundURL
+        }
+        
+        logger.warning("❌ Invoice file not found in any location: \(fileName)")
+        return nil
+    }
+    
+    /// Generates a comprehensive list of potential file locations
+    private func generateSearchLocations(fileName: String) -> [URL] {
+        var locations: [URL] = []
+        
+        // Current app's Documents/Invoices directory
+        locations.append(URL.documentsDirectory.appendingPathComponent("Invoices/\(fileName)"))
+        
+        // App Group container (if available)
+        if let groupContainer = FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ledger8") {
+            locations.append(groupContainer.appendingPathComponent("Documents/Invoices/\(fileName)"))
+            locations.append(groupContainer.appendingPathComponent("Invoices/\(fileName)"))
+        }
+        
+        // Standard Documents directory variations
+        if let standardDocsDir = FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first {
+            locations.append(standardDocsDir.appendingPathComponent("Invoices/\(fileName)"))
+            locations.append(standardDocsDir.appendingPathComponent(fileName))
+        }
+        
+        // Direct in Documents root
+        locations.append(URL.documentsDirectory.appendingPathComponent(fileName))
+        
+        // iCloud Drive locations (if available)
+        if let iCloudContainer = FileManager.default.url(forUbiquityContainerIdentifier: nil) {
+            locations.append(iCloudContainer.appendingPathComponent("Documents/Invoices/\(fileName)"))
+            locations.append(iCloudContainer.appendingPathComponent("Documents/\(fileName)"))
+        }
+        
+        // Additional fallback locations within the app sandbox
+        if let tempDir = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask).first {
+            locations.append(tempDir.appendingPathComponent("Invoices/\(fileName)"))
+        }
+        
+        return locations
+    }
+    
+    /// Performs a recursive search for the file in a directory tree
+    private func recursiveFileSearch(fileName: String, in directory: URL) -> URL? {
+        let fileManager = FileManager.default
+        
+        guard let enumerator = fileManager.enumerator(
+            at: directory,
+            includingPropertiesForKeys: [.isDirectoryKey, .nameKey],
+            options: [.skipsHiddenFiles]
+        ) else {
+            return nil
+        }
+        
+        for case let url as URL in enumerator {
+            do {
+                let resourceValues = try url.resourceValues(forKeys: [.isDirectoryKey, .nameKey])
+                
+                // Skip directories
+                if resourceValues.isDirectory == true {
+                    continue
+                }
+                
+                // Check for exact filename match
+                if resourceValues.name == fileName {
+                    return url
+                }
+            } catch {
+                logger.warning("Error reading resource values for \(url.path): \(error)")
+            }
+        }
+        
+        return nil
+    }
+    
+    /// Searches for files with similar names (handles minor variations)
+    private func searchByPartialName(fileName: String) -> URL? {
+        let baseFileName = fileName.replacingOccurrences(of: ".pdf", with: "")
+        let searchDirectory = URL.documentsDirectory.appendingPathComponent("Invoices")
+        
+        guard let enumerator = FileManager.default.enumerator(
+            at: searchDirectory,
+            includingPropertiesForKeys: [.nameKey],
+            options: [.skipsHiddenFiles, .skipsSubdirectoryDescendants]
+        ) else {
+            return nil
+        }
+        
+        for case let url as URL in enumerator {
+            let candidateName = url.lastPathComponent
+            
+            // Look for files that contain the base name and are PDFs
+            if candidateName.contains(baseFileName) && candidateName.hasSuffix(".pdf") {
+                logger.info("Found potential match via partial name: \(candidateName)")
+                return url
+            }
+        }
+        
+        return nil
+    }
+
     private func performInvoiceDeletion(invoice: Invoice) async throws {
         // Validate invoice exists
-        guard let fileURL = invoice.url else {
+        guard let originalURL = invoice.url else {
             logger.error("Invoice has no file URL")
             throw InvoiceFileError.invalidURL
         }
         
-        logger.info("Attempting to delete invoice file at: \(fileURL.path)")
+        logger.info("Attempting to delete invoice: \(invoice.name)")
         
-        // Check if file exists at the original location
-        let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
-        logger.info("File exists at original path: \(fileExists) - \(fileURL.path)")
-        
-        var actualFileURL: URL? = nil
-        
-        if fileExists {
-            actualFileURL = fileURL
-        } else {
-            // Check alternative locations where the file might actually be
-            let fileName = fileURL.lastPathComponent
-            
-            // Check in shared container (Files app visible location)
-            let possibleLocations = [
-                // Try app group container if it exists
-                FileManager.default.containerURL(forSecurityApplicationGroupIdentifier: "group.com.ledger8")?.appendingPathComponent("Documents/Invoices/\(fileName)"),
-                // Try other common locations
-                URL.documentsDirectory.appendingPathComponent("Invoices/\(fileName)"),
-                FileManager.default.urls(for: .documentDirectory, in: .userDomainMask).first?.appendingPathComponent("Invoices/\(fileName)"),
-            ].compactMap { $0 }
-            
-            for possibleURL in possibleLocations {
-                logger.info("Checking alternative location: \(possibleURL.path)")
-                if FileManager.default.fileExists(atPath: possibleURL.path) {
-                    logger.info("✅ Found file at alternative location: \(possibleURL.path)")
-                    actualFileURL = possibleURL
-                    break
-                }
-            }
-        }
-        
-        guard let targetURL = actualFileURL else {
+        // Use enhanced resolution to find the actual file location
+        guard let actualFileURL = resolveInvoiceFileLocation(originalURL: originalURL, fileName: invoice.name) else {
             // File doesn't exist anywhere, just remove from database
             logger.info("File not found in any location, removing database entry: \(invoice.name)")
             modelContext.delete(invoice)
@@ -263,12 +384,12 @@ struct InvoiceLinkView: View {
         }
         
         // Log the actual file path being deleted
-        logger.info("Found file to delete at: \(targetURL.path)")
+        logger.info("Found file to delete at: \(actualFileURL.path)")
         
         // Check file permissions
-        let isReadable = FileManager.default.isReadableFile(atPath: targetURL.path)
-        let isWritable = FileManager.default.isWritableFile(atPath: targetURL.path)
-        let isDeletable = FileManager.default.isDeletableFile(atPath: targetURL.path)
+        let isReadable = FileManager.default.isReadableFile(atPath: actualFileURL.path)
+        let isWritable = FileManager.default.isWritableFile(atPath: actualFileURL.path)
+        let isDeletable = FileManager.default.isDeletableFile(atPath: actualFileURL.path)
         
         logger.info("File permissions - Readable: \(isReadable), Writable: \(isWritable), Deletable: \(isDeletable)")
         
@@ -279,20 +400,20 @@ struct InvoiceLinkView: View {
         
         // Validate file size before deletion
         do {
-            let attributes = try FileManager.default.attributesOfItem(atPath: targetURL.path)
+            let attributes = try FileManager.default.attributesOfItem(atPath: actualFileURL.path)
             let fileSize = attributes[.size] as? Int64 ?? 0
-            logger.info("Deleting invoice file: \(targetURL.lastPathComponent), size: \(fileSize) bytes")
+            logger.info("Deleting invoice file: \(actualFileURL.lastPathComponent), size: \(fileSize) bytes")
         } catch {
             logger.warning("Could not read file attributes: \(error.localizedDescription)")
         }
         
         // Attempt to delete the file
         do {
-            try FileManager.default.removeItem(at: targetURL)
-            logger.info("✅ Invoice file successfully deleted: \(targetURL.lastPathComponent)")
+            try FileManager.default.removeItem(at: actualFileURL)
+            logger.info("✅ Invoice file successfully deleted: \(actualFileURL.lastPathComponent)")
             
             // Verify deletion was successful
-            let stillExists = FileManager.default.fileExists(atPath: targetURL.path)
+            let stillExists = FileManager.default.fileExists(atPath: actualFileURL.path)
             if stillExists {
                 logger.error("❌ File still exists after deletion attempt!")
                 throw InvoiceFileError.deletionFailed("File deletion appeared to succeed but file still exists")
