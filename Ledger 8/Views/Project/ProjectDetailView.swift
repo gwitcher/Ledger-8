@@ -522,7 +522,7 @@ struct ProjectDetailView: View {
         Section {
             if let items = project.items, !items.isEmpty {
                 NavigationLink {
-                    ItemListView2(project: project)
+                    EnhancedProjectItemListView(project: project)
                 } label: {
                     HStack {
                         Image(systemName: "list.bullet")

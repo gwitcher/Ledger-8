@@ -15,27 +15,53 @@ struct EnhancedItemListView: View {
     @Environment(\.modelContext) var modelContext
     let items: [Item]
     let onItemTap: ((Item) -> Void)?
-    let onItemEdit: ((Item) -> Void)?
+    
+    @State private var selectedItemForEditing: Item?
     
     var body: some View {
-        if items.isEmpty {
-            EmptyItemsView()
-        } else {
-            List {
-                ForEach(items) { item in
-                    EnhancedItemRowView(
-                        item: item,
-                        onTap: { onItemTap?(item) },
-                        onEdit: { onItemEdit?(item) }
-                    )
-                    .listRowBackground(Color.clear)
-                    .listRowSeparator(.hidden)
-                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+        VStack(spacing: 0) {
+            if !items.isEmpty {
+                // Total fee header
+                HStack {
+                    Spacer()
+                    Text("Total: \(totalFee, format: .currency(code: "USD"))")
+                        .font(.title2)
+                        .fontWeight(.bold)
+                        .foregroundColor(.primary)
+                    Spacer()
                 }
-                .onDelete(perform: deleteItems)
+                .padding(.horizontal, 20)
+                .padding(.vertical, 16)
+                .background(Color(.systemGroupedBackground))
             }
-            .listStyle(.plain)
+            
+            if items.isEmpty {
+                EmptyItemsView()
+            } else {
+                List {
+                    ForEach(items) { item in
+                        EnhancedItemRowView(
+                            item: item,
+                            onTap: { 
+                                selectedItemForEditing = item
+                            }
+                        )
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
+                        .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
+                    }
+                    .onDelete(perform: deleteItems)
+                }
+                .listStyle(.plain)
+                .sheet(item: $selectedItemForEditing) { item in
+                    ItemEditView(item: item)
+                }
+            }
         }
+    }
+    
+    private var totalFee: Double {
+        items.reduce(0) { $0 + $1.fee }
     }
     
     private func deleteItems(offsets: IndexSet) {
@@ -56,7 +82,6 @@ struct EnhancedItemListView: View {
 struct EnhancedItemRowView: View {
     let item: Item
     let onTap: () -> Void
-    let onEdit: () -> Void
     
     @State private var isPressed = false
     
@@ -96,18 +121,10 @@ struct EnhancedItemRowView: View {
             Spacer()
             
             // Right: Fee
-            VStack(alignment: .trailing, spacing: 4) {
-                Text(item.fee, format: .currency(code: "USD"))
-                    .font(.title3)
-                    .fontWeight(.bold)
-                    .foregroundColor(.primary)
-                
-                Button(action: onEdit) {
-                    Image(systemName: "pencil")
-                        .font(.caption)
-                        .foregroundColor(.blue)
-                }
-            }
+            Text(item.fee, format: .currency(code: "USD"))
+                .font(.title3)
+                .fontWeight(.bold)
+                .foregroundColor(.primary)
         }
         .padding(.horizontal, 16)
         .padding(.vertical, 14)
@@ -118,11 +135,6 @@ struct EnhancedItemRowView: View {
         .onTapGesture {
             onTap()
         }
-        .onLongPressGesture(minimumDuration: 0) { pressing in
-            withAnimation(.easeInOut(duration: 0.1)) {
-                isPressed = pressing
-            }
-        } perform: {}
     }
     
     private var backgroundColor: some View {
@@ -256,13 +268,17 @@ extension Item {
             items: Item.mockItems,
             onItemTap: { item in
                 print("Tapped item: \(item.name)")
-            },
-            onItemEdit: { item in
-                print("Edit item: \(item.name)")
             }
         )
         .navigationTitle("Project Items")
         .background(Color(.systemGroupedBackground))
+        .toolbar {
+            ToolbarItem(placement: .bottomBar) {
+                Button("Add Item") {
+                    print("Add item tapped")
+                }
+            }
+        }
     }
     .modelContainer(for: [Item.self, Project.self], inMemory: true)
 }
@@ -271,8 +287,7 @@ extension Item {
     NavigationStack {
         EnhancedItemListView(
             items: [],
-            onItemTap: nil,
-            onItemEdit: nil
+            onItemTap: nil
         )
         .navigationTitle("Project Items")
         .background(Color(.systemGroupedBackground))
@@ -284,20 +299,17 @@ extension Item {
     VStack(spacing: 16) {
         EnhancedItemRowView(
             item: Item.mockItems[0],
-            onTap: { print("Tapped") },
-            onEdit: { print("Edit") }
+            onTap: { print("Tapped") }
         )
         
         EnhancedItemRowView(
             item: Item.mockItems[1],
-            onTap: { print("Tapped") },
-            onEdit: { print("Edit") }
+            onTap: { print("Tapped") }
         )
         
         EnhancedItemRowView(
             item: Item.mockItems[2],
-            onTap: { print("Tapped") },
-            onEdit: { print("Edit") }
+            onTap: { print("Tapped") }
         )
     }
     .padding()

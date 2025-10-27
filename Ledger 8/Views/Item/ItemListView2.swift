@@ -74,7 +74,7 @@ struct ItemListView2: View {
                         dismiss()
                     }
                 }
-                ToolbarItem(placement: .status) {
+                ToolbarItem(placement: .topBarLeading) {
                     Button {
                         sheetIsPresented.toggle()
                     } label: {

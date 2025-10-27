@@ -295,7 +295,7 @@ struct ProjectEventDetailView: View {
             ProjectDetailView(project: project)
         }
         .sheet(isPresented: $itemListIsShowing) {
-            ItemListView2(project: project)
+            EnhancedProjectItemListView(project: project)
         }
     }
     // MARK: - Helper Functions
