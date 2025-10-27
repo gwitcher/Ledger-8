@@ -47,6 +47,9 @@ struct ProjectDetailView: View {
     @State private var scrollProxy: ScrollViewProxy?
     @State var selectedLocation = Place(mapItem: MKMapItem())
     
+    // Debounced saving
+    @State private var saveWorkItem: DispatchWorkItem?
+    
     @FocusState private var focusField: ProjectField?
     
     // Helper function to sort projects by frequency and then alphabetically
@@ -152,6 +155,7 @@ struct ProjectDetailView: View {
             }
             .onChange(of: selectedClient) {
                 showProjectSuggestions = false
+                autoSaveProjectChanges()
             }
         }
     }
@@ -224,6 +228,9 @@ struct ProjectDetailView: View {
                     .onChange(of: focusField) {
                         handleProjectFieldFocusChange()
                     }
+                    .onChange(of: projectName) { _, newValue in
+                        debouncedAutoSave() // Use debounced for project name to avoid saving while typing
+                    }
                 projectSuggestionsToggleButton
             }
         } label: {
@@ -281,6 +288,9 @@ struct ProjectDetailView: View {
                 .focused($focusField, equals: .artist)
                 .onSubmit {
                     focusField = nil
+                }
+                .onChange(of: artist) { _, newValue in
+                    debouncedAutoSave() // Use debounced for artist to avoid saving while typing
                 }
         } label: {
             Text("Artist").foregroundStyle(.primary)
@@ -514,6 +524,9 @@ struct ProjectDetailView: View {
                     Text(type.rawValue)
                 }
             }
+            .onChange(of: mediaType) { _, newValue in
+                autoSaveProjectChanges()
+            }
         }
     }
     
@@ -590,6 +603,9 @@ struct ProjectDetailView: View {
         Section("Notes") {
             TextField("", text: $notes, axis: .vertical)
                 .focused($focusField, equals: .notes)
+                .onChange(of: notes) { _, newValue in
+                    debouncedAutoSave() // Use debounced for notes to avoid saving while typing
+                }
         }
         .id("notesSection")
     }
@@ -757,6 +773,15 @@ struct ProjectDetailView: View {
         dateClosed = project.dateClosed
         status = project.status
         endDateSelected = project.endDateSelected
+        
+        // Ensure new projects are immediately persisted
+        // In SwiftData, we can't check if an object is registered like in Core Data
+        // Instead, we'll use a simple check based on whether the project has default values
+        if project.projectName.isEmpty && project.artist.isEmpty {
+            // This appears to be a new project, ensure it's inserted
+            modelContext.insert(project)
+            try? modelContext.save()
+        }
     }
     
     private func handleProjectFieldFocusChange() {
@@ -937,6 +962,48 @@ struct ProjectDetailView: View {
             return
         }
         generator.notificationOccurred(.success)
+    }
+    
+    /// Auto-save project changes without feedback or validation - Apple's recommended approach
+    private func autoSaveProjectChanges() {
+        // Apply current field values to the project
+        project.client = selectedClient
+        project.projectName = projectName
+        project.artist = artist
+        project.startDate = startDate
+        project.endDate = endDate
+        project.mediaType = mediaType
+        project.notes = notes
+        project.delivered = delivered
+        project.paid = paid
+        project.dateDelivered = dateDelivered
+        project.dateClosed = dateClosed
+        project.status = status
+        project.endDateSelected = endDateSelected
+        
+        // Ensure project is in context and save
+        // In SwiftData, we don't need to check if object is registered
+        // The insert operation is safe to call multiple times
+        modelContext.insert(project)
+        
+        // Save quietly without feedback
+        try? modelContext.save()
+    }
+    
+    /// Debounced auto-save to reduce frequent saves (Apple's recommended performance optimization)
+    private func debouncedAutoSave() {
+        // Cancel previous save work item
+        saveWorkItem?.cancel()
+        
+        // Create new work item with delay
+        saveWorkItem = DispatchWorkItem {
+            self.autoSaveProjectChanges()
+        }
+        
+        // Execute after delay (0.5 seconds is Apple's suggested debounce time)
+        if let workItem = saveWorkItem {
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
+        }
     }
     
     func clearTextFields() {
