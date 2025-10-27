@@ -62,15 +62,15 @@ struct CompleteBackupView: View {
             }
             .alert("Success", isPresented: $showingSuccessAlert) {
                 
-                Button("Dismiss") {
-                    dismiss()
-                }
-                
                 Button("OK") {
                     // Only show share sheet for backup creation, not for restore or delete
                     if backupFileURL != nil && successMessage.contains("backup created") {
                         showingShareSheet = true
                     }
+                }
+                
+                Button("Dismiss") {
+                    dismiss()
                 }
                 
                 

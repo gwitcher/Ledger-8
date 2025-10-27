@@ -530,9 +530,6 @@ struct ProjectDetailView: View {
                         Text("Items: \(items.count)")
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
-                            //                            Text("\(items.count)")
-                            //                                .font(.subheadline)
-                            //                                .foregroundStyle(.secondary)
                             Text(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))
                                 .font(.headline)
                                 .fontWeight(.semibold)
@@ -563,7 +560,7 @@ struct ProjectDetailView: View {
                 if project.invoice != nil {
                     VStack(alignment: .leading, spacing: 8) {
                         InvoiceLinkView(project: project)
-                        Divider()
+                        
                         invoiceWarningAlert
                         
                     }
@@ -579,6 +576,7 @@ struct ProjectDetailView: View {
         
         // Warning message when invoice needs update
         if project.invoiceNeedsUpdate {
+            Divider()
             Text("⚠️ Warning: Project info has changed. Please delete invoice and create new.")
                 .font(.caption)
                 .foregroundColor(.orange)

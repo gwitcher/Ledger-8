@@ -91,7 +91,7 @@ struct ItemEditView: View {
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Done", systemImage: "checkmar.circle.fill") {
+                    Button("Done", systemImage: "checkmark") {
                         // Check if item fee changed (main thing that affects invoice)
                         let feeChanged = item.fee != (fee ?? .zero)
                         let nameChanged = item.name != name

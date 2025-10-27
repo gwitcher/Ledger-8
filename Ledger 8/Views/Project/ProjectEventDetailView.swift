@@ -1,16 +1,17 @@
 import SwiftUI
 import MapKit
 import SwiftUIFontIcon
+import SwiftData
 
 struct ProjectEventDetailView: View {
-    @State var project: Project
+    @Bindable var project: Project  // FIXED: Use @Bindable instead of @State
+    @Environment(\.modelContext) private var modelContext
     @State private var region: MKCoordinateRegion = MKCoordinateRegion()
-    @State private var status: Status
     @State private var projectDetialViewIsShowing = false
+    @State private var itemListIsShowing = false
     
     init(project: Project) {
-        self._project = State(initialValue: project)
-        self._status = State(initialValue: project.status)
+        self.project = project  // FIXED: Direct assignment with @Bindable
         if let location = project.location {
             let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
             self._region = State(initialValue: MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)))
@@ -19,14 +20,13 @@ struct ProjectEventDetailView: View {
     
     var body: some View {
         ScrollView {
-            VStack(alignment: .leading, spacing: 12) {
+            VStack(alignment: .leading, spacing: 16) {  // FIXED: Consistent spacing throughout
                 
                 //MARK: - Project Name
-                HStack{
+                HStack(spacing: 12) {  // FIXED: Consistent spacing
                     Text(project.projectName)
                         .font(.largeTitle)
                         .fontWeight(.bold)
-                        .padding(.bottom, 4)
                     
                     RoundedRectangle(cornerRadius: 20, style: .continuous)
                         .fill(Color.mintyFresh3.opacity(0.6))
@@ -34,13 +34,39 @@ struct ProjectEventDetailView: View {
                         .overlay {
                             FontIcon.text(.awesome5Solid(code: project.icon), fontsize: 20, color: Color.quiteClear2)
                         }
-                    
                 }
+                .padding(.bottom, 4)  // FIXED: Consistent bottom spacing
                 
                 //MARK: - Client
-                HStack{
-                    Text(project.client?.fullName ?? "No Client")
-                        .font(.title3)
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {  // FIXED: Better structure
+                        
+                            Text("Client")
+                                .font(.headline)
+                                .foregroundColor(.secondary)
+                        
+                            Text(project.client?.fullName ?? "No Client Assigned")
+                                .font(.title3)
+                                .fontWeight(.medium)
+                        }
+                    
+                    if !project.artist.isEmpty {
+                        
+                        Spacer()
+                        
+                        VStack(alignment: .leading, spacing: 4) {  // FIXED: Better structure
+                            
+                                Text("Artist")
+                                    .font(.headline)
+                                    .foregroundColor(.secondary)
+                            
+                                Text(project.artist)
+                                    .font(.title3)
+                                    .fontWeight(.medium)
+                            }
+                        
+                        Spacer()
+                    }
                     
                     
                 }
@@ -68,15 +94,19 @@ struct ProjectEventDetailView: View {
                 }
                 
                 //MARK: - Date and Time
-                
-                VStack(alignment: .leading){
+                VStack(alignment: .leading, spacing: 4) {  // FIXED: Better structure
+                    Text("Schedule")
+                        .font(.headline)
+                        .foregroundColor(.secondary)
+                    
                     let (line1, line2) = eventDateDetails(start: project.startDate, end: project.endDate)
                     Text(line1)
                         .font(.callout)
+                        .fontWeight(.medium)
                     Text(line2)
                         .font(.callout)
+                        .foregroundColor(.secondary)
                 }
-                .padding(.bottom, 10)
                 
                 //MARK: - Notes
                 if !project.notes.isEmpty {
@@ -126,6 +156,10 @@ struct ProjectEventDetailView: View {
                         .padding(.top, 4)
                         .padding(.bottom, 5)
                     }
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        itemListIsShowing.toggle()
+                    }
                 }
                 
                 Divider()
@@ -160,42 +194,91 @@ struct ProjectEventDetailView: View {
                 
                 
                 //MARK: - Status
-                HStack{
+                HStack {
                     Text("Status")
+                        .font(.headline)
                     
                     Spacer()
                     
-                    Circle()
-                        .frame(height: 13)
-                        .foregroundStyle(status.statusColor)
-                    Picker("Status", selection: $status) {
-                        ForEach(Status.allCases) { stat in
-                            Text(stat.rawValue)
-                                .foregroundStyle(status.statusColor)
+                    // Calendar-style status picker with dot and menu
+                    Menu {
+                        ForEach(Status.allCases, id: \.self) { status in
+                            Button {
+                                project.status = status
+                                
+                                // FIXED: Update delivered and paid bools to match status
+                                switch status {
+                                case .open:
+                                    project.delivered = false
+                                    project.paid = false
+                                case .delivered:
+                                    project.delivered = true
+                                    project.paid = false
+                                case .closed:
+                                    project.delivered = true
+                                    project.paid = true
+                                }
+                                
+                                // Save the context to persist all changes
+                                do {
+                                    try modelContext.save()
+                                } catch {
+                                    print("Failed to save status change: \(error)")
+                                }
+                            } label: {
+                                HStack {
+                                    Circle()
+                                        .fill(status.statusColor)
+                                        .frame(width: 12, height: 12)
+                                    Text(status.rawValue)
+                                    if project.status == status {
+                                        Spacer()
+                                        Image(systemName: "checkmark")
+                                            .foregroundColor(.blue)
+                                    }
+                                }
+                            }
+                        }
+                    } label: {
+                        HStack(spacing: 8) {
+                            Circle()
+                                .fill(project.status.statusColor)
+                                .frame(width: 12, height: 12)
+                            Text(project.status.rawValue)
+                                .foregroundColor(.primary)
+                            Image(systemName: "chevron.up.chevron.down")
+                                .font(.caption2)
+                                .foregroundColor(.secondary)
                         }
                     }
-                    .pickerStyle(.menu)
                 }
-                // .padding(.top, 10)
                 
                 Divider()
                     .padding(.vertical, 8)
                 
-                //MARK: - Map (if available)
+                //MARK: - Map (if available) - Calendar style: non-interactive, tap to open Maps
                 if let location = project.location {
                     let cameraPosition: MapCameraPosition = .region(region)
                     let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+                    
+                    // Non-interactive map that just shows location and opens Maps on tap
                     Map(initialPosition: cameraPosition, content: {
-                        Marker("", systemImage: "mappin.circle.fill", coordinate: center )
+                        Marker(location.name.isEmpty ? "Event Location" : location.name, 
+                               systemImage: "mappin.circle.fill", 
+                               coordinate: center)
                     })
-                    .frame(height: 150)
+                    .frame(height: 180)
                     .cornerRadius(12)
-                    .onTapGesture(perform: {
+                    .allowsHitTesting(false)  // Makes map non-interactive
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 12)
+                            .stroke(Color(.systemGray4), lineWidth: 1)
+                    )
+                    .contentShape(Rectangle())  // Makes entire area tappable
+                    .onTapGesture {
+                        // Only action: open in Maps app (like Calendar)
                         openInMaps(location: location)
-                    })
-                    .padding(.top, 8)
-                    
-                    
+                    }
                 }
                 
             }
@@ -210,6 +293,9 @@ struct ProjectEventDetailView: View {
         }
         .sheet(isPresented: $projectDetialViewIsShowing) {
             ProjectDetailView(project: project)
+        }
+        .sheet(isPresented: $itemListIsShowing) {
+            ItemListView2(project: project)
         }
     }
     // MARK: - Helper Functions
@@ -264,7 +350,6 @@ struct ProjectEventDetailView: View {
         }
     }
 }
-
 
 
 // MARK: - Preview Data
