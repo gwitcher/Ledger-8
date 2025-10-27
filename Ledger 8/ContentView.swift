@@ -8,29 +8,93 @@ struct ContentView: View {
     var body: some View {
         NavigationStack(path: $coordinator.path) {
             ProjectListView()
-                .navigationDestination(for: Project.self) { project in
-                    coordinator.destination(for: project)
-                }
-                .navigationDestination(for: String.self) { pathString in
-                    coordinator.destination(for: pathString)
+                .navigationDestination(for: NavigationDestination.self) { destination in
+                    coordinator.destination(for: destination)
                 }
         }
         .environment(coordinator)
-        // Handle modal presentations at the root level
-        .sheet(isPresented: $coordinator.showingProjectDetail) {
+        
+        // MARK: - Centralized Modal Presentations
+        
+        // Project Detail - Sheet for editing
+        .sheet(isPresented: Binding(
+            get: { coordinator.showingProjectDetail },
+            set: { coordinator.showingProjectDetail = $0 }
+        )) {
             if let project = coordinator.presentedProject {
-                ProjectDetailView(project: project)
+                NavigationStack {
+                    ProjectDetailView(project: project)
+                        .environment(coordinator)
+                }
             }
         }
-        .fullScreenCover(isPresented: $coordinator.showingSettings) {
-            SettingsView()
+        
+        // Settings - Full screen for comprehensive settings
+        .fullScreenCover(isPresented: Binding(
+            get: { coordinator.showingSettings },
+            set: { coordinator.showingSettings = $0 }
+        )) {
+            NavigationStack {
+                SettingsView()
+                    .environment(coordinator)
+            }
         }
-        .fullScreenCover(isPresented: $coordinator.showingAnalytics) {
-            AnalyticsDashboardView()
+        
+        // Analytics - Sheet for dashboard
+        .sheet(isPresented: Binding(
+            get: { coordinator.showingAnalytics },
+            set: { coordinator.showingAnalytics = $0 }
+        )) {
+            NavigationStack {
+                AnalyticsDashboardView()
+                    .environment(coordinator)
+            }
         }
-        .sheet(isPresented: $coordinator.showingClientList) {
-            ClientListView()
+        
+        // Client List - Sheet for selection
+        .sheet(isPresented: Binding(
+            get: { coordinator.showingClientList },
+            set: { coordinator.showingClientList = $0 }
+        )) {
+            NavigationStack {
+                ClientListView()
+                    .environment(coordinator)
+            }
         }
+        
+        //TODO: Paywall
+        // Paywall - Sheet for subscription
+        .sheet(isPresented: Binding(
+            get: { coordinator.showingPaywall },
+            set: { coordinator.showingPaywall = $0 }
+        )) {
+            // You'll need to create this view or use a placeholder
+            PaywallView(trigger: .clientLimit)
+                .environment(coordinator)
+        }
+        
+        // MARK: - Centralized Alerts
+        .alert("Delete Project", isPresented: Binding(
+            get: { coordinator.showingDeleteConfirmation },
+            set: { coordinator.showingDeleteConfirmation = $0 }
+        )) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                if let project = coordinator.projectToDelete {
+                    deleteProject(project)
+                }
+            }
+        } message: {
+            if let project = coordinator.projectToDelete {
+                Text("Are you sure you want to delete '\(project.projectName)'? This action cannot be undone.")
+            }
+        }
+    }
+    
+    private func deleteProject(_ project: Project) {
+        modelContext.delete(project)
+        try? modelContext.save()
+        coordinator.projectToDelete = nil
     }
 }
 

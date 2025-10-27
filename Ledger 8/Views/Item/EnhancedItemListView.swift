@@ -141,7 +141,8 @@ struct EnhancedItemRowView: View {
         // Modern Liquid Glass approach
         ZStack {
             // Base glass effect
-            .regularMaterial
+            Color.clear
+                .background(.regularMaterial)
             
             // Subtle color accent
             LinearGradient(
