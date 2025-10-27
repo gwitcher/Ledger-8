@@ -7,37 +7,56 @@
 
 import SwiftUI
 import SwiftUIFontIcon
+import SwiftData
 
 // MARK: - Enhanced ItemListView
 
 struct EnhancedItemListView: View {
+    @Environment(\.modelContext) var modelContext
     let items: [Item]
     let onItemTap: ((Item) -> Void)?
-    let onItemDelete: ((Item) -> Void)?
+    let onItemEdit: ((Item) -> Void)?
     
     var body: some View {
         if items.isEmpty {
             EmptyItemsView()
         } else {
-            LazyVStack(spacing: 8) {
+            List {
                 ForEach(items) { item in
                     EnhancedItemRowView(
                         item: item,
                         onTap: { onItemTap?(item) },
-                        onDelete: { onItemDelete?(item) }
+                        onEdit: { onItemEdit?(item) }
                     )
+                    .listRowBackground(Color.clear)
+                    .listRowSeparator(.hidden)
+                    .listRowInsets(EdgeInsets(top: 4, leading: 16, bottom: 4, trailing: 16))
                 }
+                .onDelete(perform: deleteItems)
             }
-            .padding(.horizontal)
+            .listStyle(.plain)
+        }
+    }
+    
+    private func deleteItems(offsets: IndexSet) {
+        for index in offsets {
+            let item = items[index]
+            modelContext.delete(item)
+        }
+        
+        do {
+            try modelContext.save()
+        } catch {
+            print("😡 ERROR: Could not save after delete - \(error)")
         }
     }
 }
 
-// ENHANCED: Much better visual design
+// ENHANCED: Much better visual design with swipe actions
 struct EnhancedItemRowView: View {
     let item: Item
     let onTap: () -> Void
-    let onDelete: () -> Void
+    let onEdit: () -> Void
     
     @State private var isPressed = false
     
@@ -76,25 +95,17 @@ struct EnhancedItemRowView: View {
             
             Spacer()
             
-            // Right: Fee and actions
-            VStack(alignment: .trailing, spacing: 8) {
+            // Right: Fee
+            VStack(alignment: .trailing, spacing: 4) {
                 Text(item.fee, format: .currency(code: "USD"))
                     .font(.title3)
                     .fontWeight(.bold)
                     .foregroundColor(.primary)
                 
-                HStack(spacing: 8) {
-                    Button(action: {}) {
-                        Image(systemName: "pencil")
-                            .font(.caption)
-                            .foregroundColor(.blue)
-                    }
-                    
-                    Button(action: onDelete) {
-                        Image(systemName: "trash")
-                            .font(.caption)
-                            .foregroundColor(.red)
-                    }
+                Button(action: onEdit) {
+                    Image(systemName: "pencil")
+                        .font(.caption)
+                        .foregroundColor(.blue)
                 }
             }
         }
@@ -241,34 +252,32 @@ extension Item {
 
 #Preview("Enhanced Item List - With Items") {
     NavigationStack {
-        ScrollView {
-            EnhancedItemListView(
-                items: Item.mockItems,
-                onItemTap: { item in
-                    print("Tapped item: \(item.name)")
-                },
-                onItemDelete: { item in
-                    print("Delete item: \(item.name)")
-                }
-            )
-        }
+        EnhancedItemListView(
+            items: Item.mockItems,
+            onItemTap: { item in
+                print("Tapped item: \(item.name)")
+            },
+            onItemEdit: { item in
+                print("Edit item: \(item.name)")
+            }
+        )
         .navigationTitle("Project Items")
         .background(Color(.systemGroupedBackground))
     }
+    .modelContainer(for: [Item.self, Project.self], inMemory: true)
 }
 
 #Preview("Enhanced Item List - Empty State") {
     NavigationStack {
-        ScrollView {
-            EnhancedItemListView(
-                items: [],
-                onItemTap: nil,
-                onItemDelete: nil
-            )
-        }
+        EnhancedItemListView(
+            items: [],
+            onItemTap: nil,
+            onItemEdit: nil
+        )
         .navigationTitle("Project Items")
         .background(Color(.systemGroupedBackground))
     }
+    .modelContainer(for: [Item.self, Project.self], inMemory: true)
 }
 
 #Preview("Single Item Row") {
@@ -276,19 +285,19 @@ extension Item {
         EnhancedItemRowView(
             item: Item.mockItems[0],
             onTap: { print("Tapped") },
-            onDelete: { print("Delete") }
+            onEdit: { print("Edit") }
         )
         
         EnhancedItemRowView(
             item: Item.mockItems[1],
             onTap: { print("Tapped") },
-            onDelete: { print("Delete") }
+            onEdit: { print("Edit") }
         )
         
         EnhancedItemRowView(
             item: Item.mockItems[2],
             onTap: { print("Tapped") },
-            onDelete: { print("Delete") }
+            onEdit: { print("Edit") }
         )
     }
     .padding()
