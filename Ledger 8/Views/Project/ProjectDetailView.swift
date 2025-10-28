@@ -19,6 +19,15 @@ struct ProjectDetailView: View {
     
     var project: Project
     
+    // MARK: - ViewModel
+    @State private var viewModel: ProjectDetailViewModel?
+    
+    // MARK: - Initialization
+    init(project: Project) {
+        self.project = project
+        // ViewModel will be initialized in onAppear when modelContext is available
+    }
+    
     let dateAlertMessage = "The start date must be before the end date"
     
     @State private var projectName = ""
@@ -35,8 +44,7 @@ struct ProjectDetailView: View {
     @State private var itemSheetIsPresented = false
     @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
-    @State private var statusChange = false
-    @State private var showAlert = false
+    // Migrated to ViewModel: statusChange will be handled through computed property
     @State private var endDateSelected = false
     @State private var selectedTemplateProject: Project?
     @State private var showProjectSuggestions = false
@@ -51,6 +59,16 @@ struct ProjectDetailView: View {
     @State private var saveWorkItem: DispatchWorkItem?
     
     @FocusState private var focusField: ProjectField?
+    
+    // MARK: - Computed Properties
+    private var showAlert: Bool {
+        get { viewModel?.showAlert ?? false }
+        nonmutating set { viewModel?.showAlert = newValue }
+    }
+    
+    private var statusChange: Bool {
+        viewModel?.statusChange ?? false
+    }
     
     // Helper function to sort projects by frequency and then alphabetically
     private func sortedProjectsByFrequency(_ projects: [Project]) -> [Project] {
@@ -121,11 +139,18 @@ struct ProjectDetailView: View {
                 }
                 .listStyle(.insetGrouped)
                 .onAppear {
+                    // Initialize ViewModel with proper modelContext
+                    if viewModel == nil {
+                        viewModel = ProjectDetailViewModel(project: project, modelContext: modelContext)
+                    }
                     scrollProxy = proxy
                     loadProjectData()
                 }
             }
-            .alert(isPresented: $showAlert) {
+            .alert(isPresented: Binding(
+                get: { viewModel?.showAlert ?? false },
+                set: { viewModel?.showAlert = $0 }
+            )) {
                 Alert(
                     title: Text("Cannot Save Project"),
                     message: Text(dateAlertMessage),
@@ -623,7 +648,7 @@ struct ProjectDetailView: View {
             handlePaidChange()
         }
         .onChange(of: status) {
-            handleStatusChange()
+            viewModel?.handleStatusChange()
         }
     }
     
@@ -690,7 +715,7 @@ struct ProjectDetailView: View {
         ToolbarItem(placement: .topBarTrailing) {
             Button {
                 if endDate < startDate {
-                    showAlert.toggle()
+                    viewModel?.showAlert.toggle()
                 } else {
                     saveProject()
                     clearTextFields()
@@ -870,17 +895,6 @@ struct ProjectDetailView: View {
             status = .closed
         } else {
             status = .open
-        }
-    }
-    
-    private func handleStatusChange() {
-        switch status {
-        case .open:
-            statusChange = false
-        case .delivered:
-            statusChange = true
-        case .closed:
-            statusChange = true
         }
     }
     
