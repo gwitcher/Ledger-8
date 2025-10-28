@@ -49,9 +49,6 @@ struct ProjectDetailView: View {
     @State private var scrollProxy: ScrollViewProxy?
     @State var selectedLocation = Place(mapItem: MKMapItem())
     
-    // Track if project has been saved to database
-    @State private var hasBeenSaved: Bool = false
-    
     @FocusState private var focusField: ProjectField?
     
     // Helper function to sort projects by frequency and then alphabetically
@@ -553,8 +550,6 @@ struct ProjectDetailView: View {
             }
             
             Button {
-                // Save project before opening item sheet
-                saveProject()
                 itemSheetIsPresented.toggle()
             } label: {
                 HStack {
@@ -771,12 +766,6 @@ struct ProjectDetailView: View {
             mapItem.name = location.name
             selectedLocation = Place(mapItem: mapItem)
         }
-        
-        // Determine if this project has already been saved (has meaningful data)
-        hasBeenSaved = !project.projectName.isEmpty || 
-                      !project.artist.isEmpty || 
-                      project.client != nil ||
-                      (project.items?.isEmpty == false)
     }
     
     private func handleProjectFieldFocusChange() {
@@ -932,7 +921,7 @@ struct ProjectDetailView: View {
         project.endDateSelected = endDateSelected
         
         // Convert selectedLocation back to Spot if needed
-        if !selectedLocation.name.isEmpty {
+        if !selectedLocation.isEmpty {
             var spot = Spot()
             spot.name = selectedLocation.name
             spot.address = selectedLocation.address
@@ -942,10 +931,14 @@ struct ProjectDetailView: View {
             project.location = spot
         }
         
-        // Insert into context if not already saved
-        if !hasBeenSaved {
+        // Check if project is already in the context by checking if it has a persistent model ID
+        // or if it's in the inserted objects
+        let isAlreadyInContext = project.persistentModelID != nil || 
+                                modelContext.insertedModelsArray.contains { $0 === project }
+        
+        // Insert into context only if not already there
+        if !isAlreadyInContext {
             modelContext.insert(project)
-            hasBeenSaved = true
         }
         
         // Save to database

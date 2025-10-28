@@ -106,14 +106,23 @@ struct ItemDetailView: View {
     func saveItem(name: String, fee: Double, itemType: ItemType, notes: String) {
         let newItem = Item(name: name, fee: fee, itemType: itemType, notes: notes)
         
+        // Insert the new item into the model context first
+        modelContext.insert(newItem)
+        
+        // Establish the relationship
+        newItem.project = project
+        if project.items == nil {
+            project.items = []
+        }
         project.items?.append(newItem)
         
         // Flag project invoice for update since a new item was added
         project.flagInvoiceForUpdate()
         
-        guard let _ = try? modelContext.save() else {
-            print("ERROR: could not save")
-            return
+        do {
+            try modelContext.save()
+        } catch {
+            print("ERROR: could not save - \(error)")
         }
     }
 }

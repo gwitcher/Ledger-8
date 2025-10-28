@@ -99,14 +99,21 @@ struct ItemEditView: View {
                         item.name = name
                         item.itemType = itemType
                         item.fee = fee ?? .zero
+                        item.notes = notes
                         
                         // Flag project invoice for update if relevant changes occurred
                         if (feeChanged || nameChanged), let project = item.project {
                             project.flagInvoiceForUpdate()
                         }
                         
-                        dismiss()
+                        // Save the changes
+                        do {
+                            try modelContext.save()
+                        } catch {
+                            print("Error saving item changes: \(error)")
+                        }
                         
+                        dismiss()
                     }
                 }
             }
