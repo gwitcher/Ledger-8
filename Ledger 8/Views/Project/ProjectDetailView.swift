@@ -47,8 +47,8 @@ struct ProjectDetailView: View {
     @State private var scrollProxy: ScrollViewProxy?
     @State var selectedLocation = Place(mapItem: MKMapItem())
     
-    // Debounced saving
-    @State private var saveWorkItem: DispatchWorkItem?
+    // Track if project has been saved to database
+    @State private var hasBeenSaved: Bool = false
     
     @FocusState private var focusField: ProjectField?
     
@@ -155,7 +155,6 @@ struct ProjectDetailView: View {
             }
             .onChange(of: selectedClient) {
                 showProjectSuggestions = false
-                autoSaveProjectChanges()
             }
         }
     }
@@ -229,7 +228,7 @@ struct ProjectDetailView: View {
                         handleProjectFieldFocusChange()
                     }
                     .onChange(of: projectName) { _, newValue in
-                        debouncedAutoSave() // Use debounced for project name to avoid saving while typing
+                        // No automatic save - just track changes
                     }
                 projectSuggestionsToggleButton
             }
@@ -290,7 +289,7 @@ struct ProjectDetailView: View {
                     focusField = nil
                 }
                 .onChange(of: artist) { _, newValue in
-                    debouncedAutoSave() // Use debounced for artist to avoid saving while typing
+                    // No automatic save - just track changes
                 }
         } label: {
             Text("Artist").foregroundStyle(.primary)
@@ -525,7 +524,7 @@ struct ProjectDetailView: View {
                 }
             }
             .onChange(of: mediaType) { _, newValue in
-                autoSaveProjectChanges()
+                // No automatic save - just track changes
             }
         }
     }
@@ -552,6 +551,8 @@ struct ProjectDetailView: View {
             }
             
             Button {
+                // Save project before opening item sheet
+                saveProject()
                 itemSheetIsPresented.toggle()
             } label: {
                 HStack {
@@ -604,7 +605,7 @@ struct ProjectDetailView: View {
             TextField("", text: $notes, axis: .vertical)
                 .focused($focusField, equals: .notes)
                 .onChange(of: notes) { _, newValue in
-                    debouncedAutoSave() // Use debounced for notes to avoid saving while typing
+                    // No automatic save - just track changes
                 }
         }
         .id("notesSection")
@@ -692,8 +693,7 @@ struct ProjectDetailView: View {
                 if endDate < startDate {
                     showAlert.toggle()
                 } else {
-                    saveProject()
-                    clearTextFields()
+                    saveProject(withFeedback: true)
                     dismiss()
                 }
             } label: {
@@ -760,6 +760,7 @@ struct ProjectDetailView: View {
     // MARK: - Helper Methods
     
     private func loadProjectData() {
+        // Load existing project data into UI state
         selectedClient = project.client
         projectName = project.projectName
         artist = project.artist
@@ -774,15 +775,23 @@ struct ProjectDetailView: View {
         status = project.status
         endDateSelected = project.endDateSelected
         
-        // Ensure new projects are immediately persisted
-        // In SwiftData, we can't check if an object is registered like in Core Data
-        // Instead, we'll use a simple check based on whether the project has default values
-        if project.projectName.isEmpty && project.artist.isEmpty {
-            // This appears to be a new project, ensure it's inserted
-            modelContext.insert(project)
-            try? modelContext.save()
-        }
+        // Determine if this project has already been saved (has meaningful data)
+        hasBeenSaved = !project.projectName.isEmpty || 
+                      !project.artist.isEmpty || 
+                      project.client != nil ||
+                      (project.items?.isEmpty == false)
     }
+    
+    private func deleteProject() {
+        modelContext.delete(project)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error deleting project: \(error)")
+        }
+        dismiss()
+    }
+
     
     private func handleProjectFieldFocusChange() {
         if focusField == .project,
@@ -843,10 +852,9 @@ struct ProjectDetailView: View {
     
     private func handleDeliveredChange() {
         if delivered && dateDelivered == Date.distantPast {
-              dateDelivered = Date.now
-          }
+            dateDelivered = Date.now
+        }
         updateProjectStatus()
-        saveProject()
     }
     
     private func handlePaidChange() {
@@ -858,7 +866,6 @@ struct ProjectDetailView: View {
             delivered = true
         }
         updateProjectStatus()
-        saveProject()
     }
     
     private func updateProjectStatus() {
@@ -917,56 +924,13 @@ struct ProjectDetailView: View {
         }
     }
     
-    private func deleteProject() {
-        modelContext.delete(project)
-        try? modelContext.save()
-        dismiss()
-    }
+    // MARK: - Save Methods
     
-    func saveProject() {
+    /// Save project to database
+    private func saveProject(withFeedback: Bool = false) {
         let generator = UINotificationFeedbackGenerator()
         
-        print("Save before: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
-        
-        // Check for changes that would affect an invoice
-        let projectNameChanged = project.projectName != projectName
-        let clientChanged = project.client != selectedClient
-        
-        // Apply the changes
-        project.client = selectedClient
-        
-        print("Save after: Project Client: \(project.client?.fullName ?? "NIL"), SelectedClient: \(selectedClient?.fullName ?? "NIL")")
-        
-        project.projectName = projectName
-        project.artist = artist
-        project.startDate = startDate
-        project.endDate = endDate
-        project.mediaType = mediaType
-        project.notes = notes
-        project.delivered = delivered
-        project.paid = paid
-        project.dateDelivered = dateDelivered
-        project.dateClosed = dateClosed
-        project.status = status
-        project.endDateSelected = endDateSelected
-        
-        // Flag invoice for update if invoice-relevant changes occurred
-        if projectNameChanged || clientChanged {
-            project.flagInvoiceForUpdate()
-        }
-        
-        modelContext.insert(project)
-        
-        guard let _ = try? modelContext.save() else{
-            print("😡 ERROR: Cannot save")
-            return
-        }
-        generator.notificationOccurred(.success)
-    }
-    
-    /// Auto-save project changes without feedback or validation - Apple's recommended approach
-    private func autoSaveProjectChanges() {
-        // Apply current field values to the project
+        // Apply all current UI state to the project model
         project.client = selectedClient
         project.projectName = projectName
         project.artist = artist
@@ -981,28 +945,23 @@ struct ProjectDetailView: View {
         project.status = status
         project.endDateSelected = endDateSelected
         
-        // Ensure project is in context and save
-        // In SwiftData, we don't need to check if object is registered
-        // The insert operation is safe to call multiple times
-        modelContext.insert(project)
-        
-        // Save quietly without feedback
-        try? modelContext.save()
-    }
-    
-    /// Debounced auto-save to reduce frequent saves (Apple's recommended performance optimization)
-    private func debouncedAutoSave() {
-        // Cancel previous save work item
-        saveWorkItem?.cancel()
-        
-        // Create new work item with delay
-        saveWorkItem = DispatchWorkItem {
-            self.autoSaveProjectChanges()
+        // Insert into context if not already saved
+        if !hasBeenSaved {
+            modelContext.insert(project)
+            hasBeenSaved = true
         }
         
-        // Execute after delay (0.5 seconds is Apple's suggested debounce time)
-        if let workItem = saveWorkItem {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5, execute: workItem)
+        // Save to database
+        do {
+            try modelContext.save()
+            if withFeedback {
+                generator.notificationOccurred(.success)
+            }
+        } catch {
+            print("Error saving project: \(error)")
+            if withFeedback {
+                generator.notificationOccurred(.error)
+            }
         }
     }
     
