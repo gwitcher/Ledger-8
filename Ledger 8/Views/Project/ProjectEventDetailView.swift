@@ -4,22 +4,16 @@ import SwiftUIFontIcon
 import SwiftData
 
 struct ProjectEventDetailView: View {
-    @Bindable var project: Project  // FIXED: Use @Bindable instead of @State
+    @Bindable var project: Project  // Keep @Bindable for direct project updates in UI
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @State private var region: MKCoordinateRegion = MKCoordinateRegion()
-    @State private var projectDetialViewIsShowing = false
-    @State private var itemListIsShowing = false
-    @State private var showingDeleteConfirmation = false
+    @State private var viewModel: ProjectEventDetailViewModel
     
     var customDismissAction: (() -> Void)? = nil
     
     init(project: Project) {
-        self.project = project  // FIXED: Direct assignment with @Bindable
-        if let location = project.location {
-            let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-            self._region = State(initialValue: MKCoordinateRegion(center: center, span: MKCoordinateSpan(latitudeDelta: 0.01, longitudeDelta: 0.01)))
-        }
+        self.project = project
+        self._viewModel = State(initialValue: ProjectEventDetailViewModel(project: project))
     }
     
     var body: some View {
@@ -78,7 +72,7 @@ struct ProjectEventDetailView: View {
                 //MARK: - Location Address (Tappable)
                 if let location = project.location, !location.address.isEmpty {
                     Button(action: {
-                        openInMaps(location: location)
+                        viewModel.openInMaps(location: location)
                     }) {
                         HStack(alignment: .top) {
                             VStack(alignment: .leading){
@@ -103,7 +97,7 @@ struct ProjectEventDetailView: View {
                         .font(.headline)
                         .foregroundColor(.secondary)
                     
-                    let (line1, line2) = eventDateDetails(start: project.startDate, end: project.endDate)
+                    let (line1, line2) = viewModel.eventDateDetails(start: project.startDate, end: project.endDate)
                     Text(line1)
                         .font(.callout)
                         .fontWeight(.medium)
@@ -153,7 +147,7 @@ struct ProjectEventDetailView: View {
                                 .fontWeight(.semibold)
                             
                             Spacer()
-                            Text(totalFee(items: items), format: .currency(code: "USD"))
+                            Text(viewModel.totalFee(items: items), format: .currency(code: "USD"))
                                 .fontWeight(.bold)
                                 .foregroundStyle(.green)
                         }
@@ -162,7 +156,7 @@ struct ProjectEventDetailView: View {
                     }
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        itemListIsShowing.toggle()
+                        viewModel.toggleItemList()
                     }
                 }
                 
@@ -208,27 +202,7 @@ struct ProjectEventDetailView: View {
                     Menu {
                         ForEach(Status.allCases, id: \.self) { status in
                             Button {
-                                project.status = status
-                                
-                                // FIXED: Update delivered and paid bools to match status
-                                switch status {
-                                case .open:
-                                    project.delivered = false
-                                    project.paid = false
-                                case .delivered:
-                                    project.delivered = true
-                                    project.paid = false
-                                case .closed:
-                                    project.delivered = true
-                                    project.paid = true
-                                }
-                                
-                                // Save the context to persist all changes
-                                do {
-                                    try modelContext.save()
-                                } catch {
-                                    print("Failed to save status change: \(error)")
-                                }
+                                viewModel.updateProjectStatus(status, in: modelContext)
                             } label: {
                                 HStack {
                                     Circle()
@@ -262,7 +236,7 @@ struct ProjectEventDetailView: View {
                 
                 //MARK: - Map (if available) - Calendar style: non-interactive, tap to open Maps
                 if let location = project.location {
-                    let cameraPosition: MapCameraPosition = .region(region)
+                    let cameraPosition: MapCameraPosition = .region(viewModel.region)
                     let center = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
                     
                     // Non-interactive map that just shows location and opens Maps on tap
@@ -281,7 +255,7 @@ struct ProjectEventDetailView: View {
                     .contentShape(Rectangle())  // Makes entire area tappable
                     .onTapGesture {
                         // Only action: open in Maps app (like Calendar)
-                        openInMaps(location: location)
+                        viewModel.openInMaps(location: location)
                     }
                 }
                 
@@ -293,7 +267,7 @@ struct ProjectEventDetailView: View {
         .toolbar {
             ToolbarItem(placement: .topBarTrailing) {
                 Button {
-                    projectDetialViewIsShowing.toggle()
+                    viewModel.toggleProjectDetailView()
                 } label: {
                     Image(systemName: "pencil")
                 }
@@ -301,95 +275,26 @@ struct ProjectEventDetailView: View {
             
             ToolbarItem(placement: .bottomBar) {
                 Button(role: .destructive) {
-                    showingDeleteConfirmation = true
+                    viewModel.showDeleteConfirmation()
                 } label: {
                     Image(systemName: "trash")
                         .foregroundStyle(Color(.systemRed))
                 }
             }
         }
-        .sheet(isPresented: $projectDetialViewIsShowing) {
+        .sheet(isPresented: $viewModel.projectDetailViewIsShowing) {
             ProjectDetailView(project: project)
         }
-        .sheet(isPresented: $itemListIsShowing) {
+        .sheet(isPresented: $viewModel.itemListIsShowing) {
             EnhancedProjectItemListView(project: project)
         }
-        .alert("Delete Project", isPresented: $showingDeleteConfirmation) {
+        .alert("Delete Project", isPresented: $viewModel.showingDeleteConfirmation) {
             Button("Cancel", role: .cancel) { }
             Button("Delete", role: .destructive) {
-                deleteProject()
+                viewModel.deleteProject(from: modelContext, customDismissAction: customDismissAction, dismiss: dismiss)
             }
         } message: {
             Text("Are you sure you want to delete this project? This action cannot be undone.")
-        }
-    }
-    
-    // MARK: - Delete Functionality
-    private func deleteProject() {
-        modelContext.delete(project)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting project: \(error)")
-        }
-        
-        // Use custom dismiss action if provided, otherwise use simple dismiss
-        if let customDismissAction = customDismissAction {
-            customDismissAction()
-        } else {
-            dismiss()
-        }
-    }
-    
-    // MARK: - Helper Functions
-    private func dateTimeString(_ date: Date) -> String {
-        let formatter = DateFormatter()
-        formatter.dateStyle = .medium
-        formatter.timeStyle = .short
-        return formatter.string(from: date)
-    }
-    
-    private func totalFee(items: [Item]) -> Double {
-        items.reduce(0) { $0 + $1.fee }
-    }
-    
-    private func openInMaps(location: Spot) {
-        let coordinate = CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-        let mapItem = MKMapItem(placemark: MKPlacemark(coordinate: coordinate))
-        mapItem.name = location.name.isEmpty ? "Project Location" : location.name
-        mapItem.openInMaps(launchOptions: [MKLaunchOptionsDirectionsModeKey: MKLaunchOptionsDirectionsModeDriving])
-    }
-    
-    private func eventDateDetails(start: Date, end: Date) -> (String, String) {
-        let calendar = Calendar.current
-        
-        let longDateFormatter = DateFormatter()
-        longDateFormatter.dateFormat = "EEEE, MMM d, yyyy"
-        
-        let shortDateFormatter = DateFormatter()
-        shortDateFormatter.dateFormat = "E, MMM d, yyyy"
-        
-        let hourFormatter = DateFormatter()
-        hourFormatter.dateFormat = "ha"
-        hourFormatter.amSymbol = "AM"
-        hourFormatter.pmSymbol = "PM"
-        
-        if calendar.isDate(start, inSameDayAs: end) {
-            // Same day: line 1 is the full date, line 2 is "11AM–12PM"
-            let dateString = longDateFormatter.string(from: start)
-            let startTime = hourFormatter.string(from: start).replacingOccurrences(of: " ", with: "")
-            let endTime = hourFormatter.string(from: end).replacingOccurrences(of: " ", with: "")
-            let timeString = "\(startTime)–\(endTime)"
-            return (dateString, timeString)
-        } else {
-            // Different days: "from 11AM Thu, Oct 30, 2025", "to 12PM Fri, Oct 31, 2025"
-            let startTime = hourFormatter.string(from: start).replacingOccurrences(of: " ", with: "")
-            let startDate = shortDateFormatter.string(from: start)
-            let endTime = hourFormatter.string(from: end).replacingOccurrences(of: " ", with: "")
-            let endDate = shortDateFormatter.string(from: end)
-            let line1 = "from \(startTime) \(startDate)"
-            let line2 = "to \(endTime) \(endDate)"
-            return (line1, line2)
         }
     }
 }

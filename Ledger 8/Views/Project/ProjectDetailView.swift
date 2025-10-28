@@ -18,92 +18,23 @@ struct ProjectDetailView: View {
     @Environment(\.colorScheme) var colorScheme
     @Environment(NavigationCoordinator.self) private var navigationCoordinator
     
-    var project: Project
+    @State private var viewModel: ProjectDetailViewModel
     var customDismissAction: (() -> Void)? = nil
     
-    let dateAlertMessage = "The start date must be before the end date"
-    
-    @State private var projectName = ""
-    @State private var artist = ""
-    @State private var startDate = Date()
-    @State private var endDate = Date()
-    @State private var mediaType = MediaType.recording
-    @State private var notes = ""
-    @State private var delivered = false
-    @State private var paid = false
-    @State private var dateDelivered = Date()
-    @State private var dateClosed = Date()
-    @State private var status = Status.open
+    // UI-only state that doesn't belong in ViewModel
     @State private var clientSelectSheetIsPresented = false
-    @State private var selectedClient: Client?
-    @State private var statusChange = false
-    @State private var showAlert = false
-    @State private var endDateSelected = false
-    @State private var selectedTemplateProject: Project?
-    @State private var showProjectSuggestions = false
-    @State private var showStartDatePicker = false
-    @State private var showStartTimePicker = false
-    @State private var showEndDatePicker = false
-    @State private var showEndTimePicker = false
     @State private var scrollProxy: ScrollViewProxy?
-    @State var selectedLocation = Place(mapItem: MKMapItem())
     
     @FocusState private var focusField: ProjectField?
     
-    // Helper function to sort projects by frequency and then alphabetically
-    private func sortedProjectsByFrequency(_ projects: [Project]) -> [Project] {
-        // Filter out projects with empty names first
-        let projectsWithNames = projects.filter { !$0.projectName.isEmpty }
-        
-        // Group projects by name and count occurrences
-        let projectCounts = Dictionary(grouping: projectsWithNames, by: { $0.projectName })
-            .mapValues { $0.count }
-        
-        // Get unique projects (one per project name) using the most recent one for each name
-        let uniqueProjects = Dictionary(grouping: projectsWithNames, by: { $0.projectName })
-            .compactMapValues { projectsWithSameName in
-                // Return the most recent project for each name
-                projectsWithSameName.max(by: { $0.startDate < $1.startDate })
-            }
-            .values
-        
-        // Sort first by frequency (descending), then alphabetically (ascending)
-        return Array(uniqueProjects).sorted { project1, project2 in
-            let count1 = projectCounts[project1.projectName] ?? 0
-            let count2 = projectCounts[project2.projectName] ?? 0
-            
-            // If counts are different, sort by count (higher first)
-            if count1 != count2 {
-                return count1 > count2
-            }
-            
-            // If counts are the same, sort alphabetically
-            return project1.projectName.localizedStandardCompare(project2.projectName) == .orderedAscending
-        }
+    init(project: Project) {
+        self._viewModel = State(initialValue: ProjectDetailViewModel(project: project))
     }
     
     // Helper function to get system icons for media types
     private func getMediaIcon(for mediaType: MediaType) -> String {
-        switch mediaType {
-        case .film:
-            return "film"
-        case .tv:
-            return "tv"
-        case .recording:
-            return "mic"
-        case .concert:
-            return "person.3"
-        case .tour:
-            return "bus"
-        case .lesson:
-            return "graduationcap"
-        case .other:
-            return "questionmark.circle"
-        case .game:
-            return "gamecontroller"
-        }
+        return viewModel.getMediaIcon(for: mediaType)
     }
-    
     
     var body: some View {
         NavigationStack {
@@ -120,13 +51,13 @@ struct ProjectDetailView: View {
                 .listStyle(.insetGrouped)
                 .onAppear {
                     scrollProxy = proxy
-                    loadProjectData()
+                    // Data is already loaded in ViewModel init
                 }
             }
-            .alert(isPresented: $showAlert) {
+            .alert(isPresented: $viewModel.showAlert) {
                 Alert(
                     title: Text("Cannot Save Project"),
-                    message: Text(dateAlertMessage),
+                    message: Text(viewModel.dateAlertMessage),
                     dismissButton: .default(Text("OK"))
                 )
             }
@@ -137,19 +68,27 @@ struct ProjectDetailView: View {
             .navigationBarTitleDisplayMode(.automatic)
             .navigationBarBackButtonHidden()
             .sheet(isPresented: $clientSelectSheetIsPresented) {
-                ClientSelectView(selectedClient: $selectedClient)
+                ClientSelectView(selectedClient: $viewModel.selectedClient)
             }
-            .onChange(of: startDate) {
-                handleStartDateChange()
+            .onChange(of: viewModel.startDate) { _, _ in
+                viewModel.handleStartDateChange()
             }
-            .onChange(of: endDate) {
-                handleEndDateChange()
+            .onChange(of: viewModel.endDate) { _, _ in
+                viewModel.handleEndDateChange()
             }
-            .onChange(of: selectedTemplateProject) {
-                handleTemplateProjectChange()
+            .onChange(of: viewModel.selectedTemplateProject) { _, _ in
+                viewModel.handleTemplateProjectChange()
             }
-            .onChange(of: selectedClient) {
-                showProjectSuggestions = false
+            .onChange(of: viewModel.selectedClient) { _, _ in
+                viewModel.handleClientChange()
+            }
+            // Sync FocusState with ViewModel
+            .onChange(of: focusField) { _, newValue in
+                viewModel.focusField = newValue
+                viewModel.handleProjectFieldFocusChange()
+            }
+            .onChange(of: viewModel.focusField) { _, newValue in
+                focusField = newValue
             }
         }
     }
@@ -167,7 +106,7 @@ struct ProjectDetailView: View {
                         .foregroundStyle(.primary)
                         .font(.title3)
                     
-                    if let client = selectedClient {
+                    if let client = viewModel.selectedClient {
                         VStack(alignment: .leading, spacing: 2) {
                             Text(client.fullName)
                                 .foregroundStyle(.primary)
@@ -191,7 +130,7 @@ struct ProjectDetailView: View {
             }
             .buttonStyle(.plain)
             
-            LocationView(selectedLocation: $selectedLocation)
+            LocationView(selectedLocation: $viewModel.selectedLocation)
         }
         .id("clientSection")
     }
@@ -212,18 +151,16 @@ struct ProjectDetailView: View {
     private var projectNameField: some View {
         LabeledContent {
             HStack {
-                TextField("", text: $projectName)
+                TextField("", text: $viewModel.projectName)
                     .autocorrectionDisabled()
                     .submitLabel(.next)
                     .focused($focusField, equals: .project)
                     .onSubmit {
                         focusField = .artist
                     }
-                    .onChange(of: focusField) {
-                        handleProjectFieldFocusChange()
-                    }
-                    .onChange(of: projectName) { _, newValue in
-                        // No automatic save - just track changes
+                    .onChange(of: focusField) { _, _ in
+                        viewModel.focusField = focusField
+                        viewModel.handleProjectFieldFocusChange()
                     }
                 projectSuggestionsToggleButton
             }
@@ -234,13 +171,13 @@ struct ProjectDetailView: View {
     
     @ViewBuilder
     private var projectSuggestionsToggleButton: some View {
-        if let client = selectedClient,
+        if let client = viewModel.selectedClient,
            let clientProjects = client.project,
            !clientProjects.isEmpty {
             Button {
-                toggleProjectSuggestions()
+                viewModel.toggleProjectSuggestions()
             } label: {
-                Image(systemName: showProjectSuggestions ? "chevron.up.circle.fill" : "chevron.down.circle")
+                Image(systemName: viewModel.showProjectSuggestions ? "chevron.up.circle.fill" : "chevron.down.circle")
                     .foregroundStyle(.blue)
                     .font(.system(size: 16))
             }
@@ -250,20 +187,20 @@ struct ProjectDetailView: View {
     
     @ViewBuilder
     private var projectSuggestionsList: some View {
-        if showProjectSuggestions,
-           let client = selectedClient,
+        if viewModel.showProjectSuggestions,
+           let client = viewModel.selectedClient,
            let clientProjects = client.project,
            !clientProjects.isEmpty {
-            let suggestions = sortedProjectsByFrequency(clientProjects)
+            let suggestions = viewModel.sortedProjectsByFrequency(clientProjects)
             
             ScrollView {
                 LazyVStack(spacing: 8) {
                     ForEach(suggestions) { project in
                         ProjectSuggestionRow(project: project) {
-                            selectedTemplateProject = project
+                            viewModel.selectedTemplateProject = project
                             focusField = nil
                             withAnimation(.easeInOut(duration: 0.2)) {
-                                showProjectSuggestions = false
+                                viewModel.showProjectSuggestions = false
                             }
                         }
                     }
@@ -277,14 +214,11 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var artistField: some View {
         LabeledContent {
-            TextField("", text: $artist)
+            TextField("", text: $viewModel.artist)
                 .autocorrectionDisabled()
                 .focused($focusField, equals: .artist)
                 .onSubmit {
                     focusField = nil
-                }
-                .onChange(of: artist) { _, newValue in
-                    // No automatic save - just track changes
                 }
         } label: {
             Text("Artist").foregroundStyle(.primary)
@@ -305,14 +239,14 @@ struct ProjectDetailView: View {
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                             focusField = nil // Dismiss keyboard
-                            showEndTimePicker = false
-                            showEndDatePicker = false
+                            viewModel.showEndTimePicker = false
+                            viewModel.showEndDatePicker = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
-                                if showStartTimePicker && !showStartDatePicker {
-                                    showStartTimePicker = false
-                                    showStartDatePicker = false
+                                if viewModel.showStartTimePicker && !viewModel.showStartDatePicker {
+                                    viewModel.showStartTimePicker = false
+                                    viewModel.showStartDatePicker = false
                                 } else {
-                                    showStartDatePicker.toggle()
+                                    viewModel.showStartDatePicker.toggle()
                                 }
                             }
                         }
@@ -320,32 +254,32 @@ struct ProjectDetailView: View {
                 
                 Spacer()
                 
-                Button("\(startDate.formatted(date: .abbreviated, time: .omitted))") {
+                Button("\(viewModel.startDate.formatted(date: .abbreviated, time: .omitted))") {
                     focusField = nil // Dismiss keyboard
                     DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                            showEndTimePicker = false
-                            showEndDatePicker = false
-                            if showStartTimePicker {
-                                showStartTimePicker = false
+                            viewModel.showEndTimePicker = false
+                            viewModel.showEndDatePicker = false
+                            if viewModel.showStartTimePicker {
+                                viewModel.showStartTimePicker = false
                             }
-                            showStartDatePicker.toggle()
+                            viewModel.showStartDatePicker.toggle()
                         }
                     }
                 }
                 .buttonStyle(.bordered)
                 .foregroundStyle(.primary)
                 
-                Button("\(startDate.formatted(date: .omitted, time: .shortened))") {
+                Button("\(viewModel.startDate.formatted(date: .omitted, time: .shortened))") {
                     focusField = nil // Dismiss keyboard
                     DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                            showEndTimePicker = false
-                            showEndDatePicker = false
-                            if showStartDatePicker {
-                                showStartDatePicker = false
+                            viewModel.showEndTimePicker = false
+                            viewModel.showEndDatePicker = false
+                            if viewModel.showStartDatePicker {
+                                viewModel.showStartDatePicker = false
                             }
-                            showStartTimePicker.toggle()
+                            viewModel.showStartTimePicker.toggle()
                         }
                     }
                 }
@@ -353,9 +287,9 @@ struct ProjectDetailView: View {
                 .foregroundStyle(.primary)
             }
             
-            if showStartDatePicker {
+            if viewModel.showStartDatePicker {
                 VStack {
-                    DatePicker("", selection: $startDate, displayedComponents: .date)
+                    DatePicker("", selection: $viewModel.startDate, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                         .focused($focusField, equals: .startDate)
                 }
@@ -363,9 +297,9 @@ struct ProjectDetailView: View {
                 .id("startDatePicker")
             }
             
-            if showStartTimePicker {
+            if viewModel.showStartTimePicker {
                 VStack {
-                    DatePicker("", selection: $startDate, displayedComponents: .hourAndMinute)
+                    DatePicker("", selection: $viewModel.startDate, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .focused($focusField, equals: .startDate)
                 }
@@ -380,14 +314,14 @@ struct ProjectDetailView: View {
                     .onTapGesture {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
                             focusField = nil // Dismiss keyboard
-                            showStartTimePicker = false
-                            showStartDatePicker = false
+                            viewModel.showStartTimePicker = false
+                            viewModel.showStartDatePicker = false
                             DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
-                                if showEndTimePicker && !showEndDatePicker {
-                                    showEndTimePicker = false
-                                    showEndDatePicker = false
+                                if viewModel.showEndTimePicker && !viewModel.showEndDatePicker {
+                                    viewModel.showEndTimePicker = false
+                                    viewModel.showEndDatePicker = false
                                 } else {
-                                    showEndDatePicker.toggle()
+                                    viewModel.showEndDatePicker.toggle()
                                 }
                             }
                         }
@@ -395,32 +329,32 @@ struct ProjectDetailView: View {
                 
                 Spacer()
                 
-                Button("\(endDate.formatted(date: .abbreviated, time: .omitted))") {
+                Button("\(viewModel.endDate.formatted(date: .abbreviated, time: .omitted))") {
                     focusField = nil // Dismiss keyboard
                     DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                            showStartTimePicker = false
-                            showStartDatePicker = false
-                            if showEndTimePicker {
-                                showEndTimePicker = false
+                            viewModel.showStartTimePicker = false
+                            viewModel.showStartDatePicker = false
+                            if viewModel.showEndTimePicker {
+                                viewModel.showEndTimePicker = false
                             }
-                            showEndDatePicker.toggle()
+                            viewModel.showEndDatePicker.toggle()
                         }
                     }
                 }
                 .buttonStyle(.bordered)
                 .foregroundStyle(.primary)
                 
-                Button("\(endDate.formatted(date: .omitted, time: .shortened))") {
+                Button("\(viewModel.endDate.formatted(date: .omitted, time: .shortened))") {
                     focusField = nil // Dismiss keyboard
                     DispatchQueue.main.asyncAfter(deadline: .now() + datePickerExpandDelay) {
                         withAnimation(.easeInOut(duration: datePickerExpandDuration)){
-                            showStartTimePicker = false
-                            showStartDatePicker = false
-                            if showEndDatePicker {
-                                showEndDatePicker = false
+                            viewModel.showStartTimePicker = false
+                            viewModel.showStartDatePicker = false
+                            if viewModel.showEndDatePicker {
+                                viewModel.showEndDatePicker = false
                             }
-                            showEndTimePicker.toggle()
+                            viewModel.showEndTimePicker.toggle()
                         }
                     }
                 }
@@ -428,9 +362,9 @@ struct ProjectDetailView: View {
                 .foregroundStyle(.primary)
             }
             
-            if showEndDatePicker {
+            if viewModel.showEndDatePicker {
                 VStack {
-                    DatePicker("", selection: $endDate, displayedComponents: .date)
+                    DatePicker("", selection: $viewModel.endDate, displayedComponents: .date)
                         .datePickerStyle(.graphical)
                         .focused($focusField, equals: .endDate)
                 }
@@ -438,9 +372,9 @@ struct ProjectDetailView: View {
                 .id("endDatePicker")
             }
             
-            if showEndTimePicker {
+            if viewModel.showEndTimePicker {
                 VStack {
-                    DatePicker("", selection: $endDate, displayedComponents: .hourAndMinute)
+                    DatePicker("", selection: $viewModel.endDate, displayedComponents: .hourAndMinute)
                         .datePickerStyle(.wheel)
                         .focused($focusField, equals: .endDate)
                 }
@@ -452,10 +386,10 @@ struct ProjectDetailView: View {
         }
         .onChange(of: focusField) { oldValue, newValue in
             if newValue != .endDate && newValue != .startDate {
-                showStartDatePicker = false
-                showStartTimePicker = false
-                showEndDatePicker = false
-                showEndTimePicker = false
+                viewModel.showStartDatePicker = false
+                viewModel.showStartTimePicker = false
+                viewModel.showEndDatePicker = false
+                viewModel.showEndTimePicker = false
                 
                 // Scroll to top when all date pickers are closed, unless focusing notes
                 if newValue != .notes {
@@ -470,7 +404,7 @@ struct ProjectDetailView: View {
                 }
             }
         }
-        .onChange(of: showStartDatePicker) { _, isShowing in
+        .onChange(of: viewModel.showStartDatePicker) { _, isShowing in
             if isShowing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     scrollToProjectInfo()
@@ -479,7 +413,7 @@ struct ProjectDetailView: View {
                 checkAndScrollToTopIfAllPickersClosed()
             }
         }
-        .onChange(of: showStartTimePicker) { _, isShowing in
+        .onChange(of: viewModel.showStartTimePicker) { _, isShowing in
             if isShowing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     scrollToProjectInfo()
@@ -488,7 +422,7 @@ struct ProjectDetailView: View {
                 checkAndScrollToTopIfAllPickersClosed()
             }
         }
-        .onChange(of: showEndDatePicker) { _, isShowing in
+        .onChange(of: viewModel.showEndDatePicker) { _, isShowing in
             if isShowing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     scrollToProjectInfo()
@@ -497,7 +431,7 @@ struct ProjectDetailView: View {
                 checkAndScrollToTopIfAllPickersClosed()
             }
         }
-        .onChange(of: showEndTimePicker) { _, isShowing in
+        .onChange(of: viewModel.showEndTimePicker) { _, isShowing in
             if isShowing {
                 DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
                     scrollToProjectInfo()
@@ -513,13 +447,10 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var mediaSection: some View {
         Section {
-            Picker("Media", selection: $mediaType) {
+            Picker("Media", selection: $viewModel.mediaType) {
                 ForEach(MediaType.allCases) { type in
                     Text(type.rawValue)
                 }
-            }
-            .onChange(of: mediaType) { _, newValue in
-                // No automatic save - just track changes
             }
         }
     }
@@ -527,9 +458,9 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var itemsSection: some View {
         Section {
-            if let items = project.items, !items.isEmpty {
+            if let items = viewModel.project.items, !items.isEmpty {
                 NavigationLink {
-                    EnhancedProjectItemListView(project: project)
+                    EnhancedProjectItemListView(project: viewModel.project)
                 } label: {
                     HStack {
                         Image(systemName: "list.bullet")
@@ -537,7 +468,7 @@ struct ProjectDetailView: View {
                         Text("Items: \(items.count)")
                         Spacer()
                         VStack(alignment: .trailing, spacing: 4) {
-                            Text(project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))
+                            Text(viewModel.project.calculateFeeTotal(items: items).formatted(.currency(code: "USD")))
                                 .font(.headline)
                                 .fontWeight(.semibold)
                         }
@@ -546,7 +477,7 @@ struct ProjectDetailView: View {
             }
             
             NavigationLink {
-                ItemDetailView(project: project)
+                ItemDetailView(project: viewModel.project)
             } label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
@@ -562,17 +493,17 @@ struct ProjectDetailView: View {
     
     @ViewBuilder
     private var invoiceSection: some View {
-        if statusChange {
+        if viewModel.statusChange {
             Section("Invoice") {
-                if project.invoice != nil {
+                if viewModel.project.invoice != nil {
                     VStack(alignment: .leading, spacing: 8) {
-                        InvoiceLinkView(project: project)
+                        InvoiceLinkView(project: viewModel.project)
                         
                         invoiceWarningAlert
                         
                     }
                 } else {
-                    AddInvoiceView(project: project)
+                    AddInvoiceView(project: viewModel.project)
                 }
             }
         }
@@ -582,7 +513,7 @@ struct ProjectDetailView: View {
     private var invoiceWarningAlert: some View {
         
         // Warning message when invoice needs update
-        if project.invoiceNeedsUpdate {
+        if viewModel.project.invoiceNeedsUpdate {
             Divider()
             Text("⚠️ Warning: Project info has changed. Please delete invoice and create new.")
                 .font(.caption)
@@ -595,11 +526,8 @@ struct ProjectDetailView: View {
     @ViewBuilder
     private var notesSection: some View {
         Section("Notes") {
-            TextField("", text: $notes, axis: .vertical)
+            TextField("", text: $viewModel.notes, axis: .vertical)
                 .focused($focusField, equals: .notes)
-                .onChange(of: notes) { _, newValue in
-                    // No automatic save - just track changes
-                }
         }
         .id("notesSection")
     }
@@ -610,43 +538,40 @@ struct ProjectDetailView: View {
             deliveredToggle
             paidToggle
         }
-        .onChange(of: delivered) {
-            handleDeliveredChange()
+        .onChange(of: viewModel.delivered) { _, _ in
+            viewModel.handleDeliveredChange()
         }
-        .onChange(of: paid) {
-            handlePaidChange()
-        }
-        .onChange(of: status) {
-            handleStatusChange()
+        .onChange(of: viewModel.paid) { _, _ in
+            viewModel.handlePaidChange()
         }
     }
     
     @ViewBuilder
     private var deliveredToggle: some View {
-        Toggle(isOn: $delivered) {
-            if !delivered {
+        Toggle(isOn: $viewModel.delivered) {
+            if !viewModel.delivered {
                 Text("Delivered")
             } else {
                 HStack {
                     Text("Delivered")
-                    DatePicker("", selection: $dateDelivered, displayedComponents: [.date])
+                    DatePicker("", selection: $viewModel.dateDelivered, displayedComponents: [.date])
                         .datePickerStyle(.automatic)
                         .padding(.horizontal)
                 }
             }
         }
-        .tint(paid ? .green : .red)
+        .tint(viewModel.paid ? .green : .red)
     }
     
     @ViewBuilder
     private var paidToggle: some View {
-        Toggle(isOn: $paid) {
-            if !paid {
+        Toggle(isOn: $viewModel.paid) {
+            if !viewModel.paid {
                 Text("Paid")
             } else {
                 HStack {
                     Text("Paid")
-                    DatePicker("", selection: $dateClosed, displayedComponents: [.date])
+                    DatePicker("", selection: $viewModel.dateClosed, displayedComponents: [.date])
                         .datePickerStyle(.automatic)
                         .padding(.horizontal)
                 }
@@ -668,10 +593,8 @@ struct ProjectDetailView: View {
         
         ToolbarItem(placement: .topBarTrailing) {
             Button {
-                if endDate < startDate {
-                    showAlert.toggle()
-                } else {
-                    saveProject(withFeedback: true)
+                if viewModel.validateAndPrepareForSave() {
+                    viewModel.saveProject(to: modelContext, withFeedback: true)
                     dismiss()
                 }
             } label: {
@@ -735,130 +658,14 @@ struct ProjectDetailView: View {
         }
     }
     
-    // MARK: - Helper Methods
+    // MARK: - Helper Methods (UI-focused)
     
-    private func loadProjectData() {
-        // Load existing project data into UI state
-        selectedClient = project.client
-        projectName = project.projectName
-        artist = project.artist
-        startDate = project.startDate
-        endDate = project.endDate
-        mediaType = project.mediaType
-        notes = project.notes
-        delivered = project.delivered
-        paid = project.paid
-        dateDelivered = project.dateDelivered
-        dateClosed = project.dateClosed
-        status = project.status
-        endDateSelected = project.endDateSelected
-        
-        // Load location if it exists
-        if let location = project.location {
-            // Convert Spot back to Place for UI state
-            let mapItem = MKMapItem(placemark: MKPlacemark(
-                coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
-            ))
-            mapItem.name = location.name
-            selectedLocation = Place(mapItem: mapItem)
-        }
-    }
-    
-    private func handleProjectFieldFocusChange() {
-        if focusField == .project,
-           let client = selectedClient,
-           let clientProjects = client.project,
-           !clientProjects.isEmpty {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showProjectSuggestions = true
-            }
-        } else if focusField != .project {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showProjectSuggestions = false
-            }
-        }
-    }
-    
-    private func toggleProjectSuggestions() {
-        if showProjectSuggestions {
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showProjectSuggestions = false
-            }
-            focusField = nil
-        } else {
-            focusField = .project
-            withAnimation(.easeInOut(duration: 0.2)) {
-                showProjectSuggestions = true
-            }
-        }
-    }
-    
-    private func handleStartDateChange() {
-        if !endDateSelected {
-            print("🟢 On Change initialized")
-            print("End Date selected: \(endDateSelected)")
-            endDate = startDate.adding(hours: 1)
-        }
-    }
-    
-    private func handleEndDateChange() {
-        if endDate != startDate.adding(hours: 1) {
-            endDateSelected = true
-            print("End Date selected: \(endDateSelected)")
-        }
-    }
-    
-    private func handleTemplateProjectChange() {
-        if let templateProject = selectedTemplateProject {
-            projectName = templateProject.projectName
-            artist = templateProject.artist
-            mediaType = templateProject.mediaType
-            notes = templateProject.notes
-            
+    private func checkAndScrollToTopIfAllPickersClosed() {
+        // Check if all date pickers are closed
+        if !viewModel.showStartDatePicker && !viewModel.showStartTimePicker && !viewModel.showEndDatePicker && !viewModel.showEndTimePicker {
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                selectedTemplateProject = nil
+                scrollToTop()
             }
-        }
-    }
-    
-    private func handleDeliveredChange() {
-        if delivered && dateDelivered == Date.distantPast {
-            dateDelivered = Date.now
-        }
-        updateProjectStatus()
-    }
-    
-    private func handlePaidChange() {
-        if paid && dateClosed == Date.distantFuture {
-            dateClosed = Date.now
-        }
-        
-        if !delivered {
-            delivered = true
-        }
-        updateProjectStatus()
-    }
-    
-    private func updateProjectStatus() {
-        if delivered && paid {
-            status = .closed
-        } else if delivered && !paid {
-            status = .delivered
-        } else if !delivered && paid {
-            status = .closed
-        } else {
-            status = .open
-        }
-    }
-    
-    private func handleStatusChange() {
-        switch status {
-        case .open:
-            statusChange = false
-        case .delivered:
-            statusChange = true
-        case .closed:
-            statusChange = true
         }
     }
     
@@ -886,76 +693,8 @@ struct ProjectDetailView: View {
         }
     }
     
-    private func checkAndScrollToTopIfAllPickersClosed() {
-        // Check if all date pickers are closed
-        if !showStartDatePicker && !showStartTimePicker && !showEndDatePicker && !showEndTimePicker {
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.1) {
-                scrollToTop()
-            }
-        }
-    }
-    
-    // MARK: - Save Methods
-    
-    /// Save project to database
-    private func saveProject(withFeedback: Bool = false) {
-        let generator = UINotificationFeedbackGenerator()
-        
-        // Apply all current UI state to the project model
-        project.client = selectedClient
-        project.projectName = projectName
-        project.artist = artist
-        project.startDate = startDate
-        project.endDate = endDate
-        project.mediaType = mediaType
-        project.notes = notes
-        project.delivered = delivered
-        project.paid = paid
-        project.dateDelivered = dateDelivered
-        project.dateClosed = dateClosed
-        project.status = status
-        project.endDateSelected = endDateSelected
-        
-        // Convert selectedLocation back to Spot if needed
-        if !selectedLocation.isEmpty {
-            var spot = Spot()
-            spot.name = selectedLocation.name
-            spot.address = selectedLocation.address
-            spot.latitude = selectedLocation.lattitude
-            spot.longitude = selectedLocation.longitude
-            spot.addedDate = Date()
-            project.location = spot
-        }
-        
-        // Check if project is already in the context by checking if it has a persistent model ID
-        // or if it's in the inserted objects
-        let isAlreadyInContext = project.persistentModelID != nil || 
-                                modelContext.insertedModelsArray.contains { $0 === project }
-        
-        // Insert into context only if not already there
-        if !isAlreadyInContext {
-            modelContext.insert(project)
-        }
-        
-        // Save to database
-        do {
-            try modelContext.save()
-            if withFeedback {
-                generator.notificationOccurred(.success)
-            }
-        } catch {
-            print("Error saving project: \(error)")
-            if withFeedback {
-                generator.notificationOccurred(.error)
-            }
-        }
-    }
-    
     func clearTextFields() {
-        projectName = ""
-        artist = ""
-        notes = ""
-        startDate = Date()
+        viewModel.clearTextFields()
     }
     
 }
