@@ -34,7 +34,6 @@ struct ProjectDetailView: View {
     @State private var dateDelivered = Date()
     @State private var dateClosed = Date()
     @State private var status = Status.open
-    @State private var itemSheetIsPresented = false
     @State private var clientSelectSheetIsPresented = false
     @State private var selectedClient: Client?
     @State private var statusChange = false
@@ -139,9 +138,6 @@ struct ProjectDetailView: View {
             .navigationBarBackButtonHidden()
             .sheet(isPresented: $clientSelectSheetIsPresented) {
                 ClientSelectView(selectedClient: $selectedClient)
-            }
-            .sheet(isPresented: $itemSheetIsPresented) {
-                ItemDetailView(project: project)
             }
             .onChange(of: startDate) {
                 handleStartDateChange()
@@ -549,8 +545,8 @@ struct ProjectDetailView: View {
                 }
             }
             
-            Button {
-                itemSheetIsPresented.toggle()
+            NavigationLink {
+                ItemDetailView(project: project)
             } label: {
                 HStack {
                     Image(systemName: "plus.circle.fill")
