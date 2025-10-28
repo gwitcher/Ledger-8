@@ -24,6 +24,7 @@
 		66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616272DAF2BA100161D7E /* ContentView.swift */; };
 		66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66C616292DAF2BA100161D7E /* Ledger_8App.swift */; };
 		66C616602DB00BBF00161D7E /* SwiftUIFontIcon in Frameworks */ = {isa = PBXBuildFile; productRef = 66C6165F2DB00BBF00161D7E /* SwiftUIFontIcon */; };
+		66E072462EB18E910012E807 /* ClientListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66E072452EB18E910012E807 /* ClientListViewModel.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -63,6 +64,7 @@
 		66C616262DAF2BA100161D7E /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
 		66C616272DAF2BA100161D7E /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
 		66C616292DAF2BA100161D7E /* Ledger_8App.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Ledger_8App.swift; sourceTree = "<group>"; };
+		66E072452EB18E910012E807 /* ClientListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ClientListViewModel.swift; sourceTree = "<group>"; };
 		66F677F42EA8A25D00145C15 /* Ledger 8Tests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
@@ -125,6 +127,7 @@
 				6608D5F12EAF404100B104FA /* Freelance_Musician_App_Review.md */,
 				6608D47F2EAEDCDE00B104FA /* Integrated_Production_Plan.md */,
 				6608D5EF2EAF3A1A00B104FA /* Integrated_Production_Plan_With_UI_Modernization.md */,
+				66E072452EB18E910012E807 /* ClientListViewModel.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -324,6 +327,7 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				66E072462EB18E910012E807 /* ClientListViewModel.swift in Sources */,
 				66C6162E2DAF2BA100161D7E /* ContentView.swift in Sources */,
 				66622B142EABE37E00B5E990 /* ProjectModalViews.swift in Sources */,
 				66C616302DAF2BA100161D7E /* Ledger_8App.swift in Sources */,
