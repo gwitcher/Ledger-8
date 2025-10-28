@@ -6,9 +6,13 @@ import SwiftData
 struct ProjectEventDetailView: View {
     @Bindable var project: Project  // FIXED: Use @Bindable instead of @State
     @Environment(\.modelContext) private var modelContext
+    @Environment(\.dismiss) private var dismiss
     @State private var region: MKCoordinateRegion = MKCoordinateRegion()
     @State private var projectDetialViewIsShowing = false
     @State private var itemListIsShowing = false
+    @State private var showingDeleteConfirmation = false
+    
+    var customDismissAction: (() -> Void)? = nil
     
     init(project: Project) {
         self.project = project  // FIXED: Direct assignment with @Bindable
@@ -287,8 +291,21 @@ struct ProjectEventDetailView: View {
         .navigationTitle("Event Details")
         .navigationBarTitleDisplayMode(.inline)
         .toolbar {
-            Button("Edit") {
-                projectDetialViewIsShowing.toggle()
+            ToolbarItem(placement: .topBarTrailing) {
+                Button {
+                    projectDetialViewIsShowing.toggle()
+                } label: {
+                    Image(systemName: "pencil")
+                }
+            }
+            
+            ToolbarItem(placement: .bottomBar) {
+                Button(role: .destructive) {
+                    showingDeleteConfirmation = true
+                } label: {
+                    Image(systemName: "trash")
+                        .foregroundStyle(Color(.systemRed))
+                }
             }
         }
         .sheet(isPresented: $projectDetialViewIsShowing) {
@@ -297,7 +314,33 @@ struct ProjectEventDetailView: View {
         .sheet(isPresented: $itemListIsShowing) {
             EnhancedProjectItemListView(project: project)
         }
+        .alert("Delete Project", isPresented: $showingDeleteConfirmation) {
+            Button("Cancel", role: .cancel) { }
+            Button("Delete", role: .destructive) {
+                deleteProject()
+            }
+        } message: {
+            Text("Are you sure you want to delete this project? This action cannot be undone.")
+        }
     }
+    
+    // MARK: - Delete Functionality
+    private func deleteProject() {
+        modelContext.delete(project)
+        do {
+            try modelContext.save()
+        } catch {
+            print("Error deleting project: \(error)")
+        }
+        
+        // Use custom dismiss action if provided, otherwise use simple dismiss
+        if let customDismissAction = customDismissAction {
+            customDismissAction()
+        } else {
+            dismiss()
+        }
+    }
+    
     // MARK: - Helper Functions
     private func dateTimeString(_ date: Date) -> String {
         let formatter = DateFormatter()

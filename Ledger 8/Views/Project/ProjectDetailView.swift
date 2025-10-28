@@ -16,8 +16,10 @@ struct ProjectDetailView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     @Environment(\.colorScheme) var colorScheme
+    @Environment(NavigationCoordinator.self) private var navigationCoordinator
     
     var project: Project
+    var customDismissAction: (() -> Void)? = nil
     
     let dateAlertMessage = "The start date must be before the end date"
     
@@ -674,21 +676,6 @@ struct ProjectDetailView: View {
         }
         
         ToolbarItem(placement: .topBarTrailing) {
-            Menu {
-                Button(role: .destructive) {
-                    let generator = UINotificationFeedbackGenerator()
-                    deleteProject()
-                    generator.notificationOccurred(.success)
-                } label: {
-                    Label("Delete Project", systemImage: "trash")
-                }
-            } label: {
-                Image(systemName: "ellipsis.circle")
-                    .foregroundStyle(.primary)
-            }
-        }
-        
-        ToolbarItem(placement: .topBarTrailing) {
             Button {
                 if endDate < startDate {
                     showAlert.toggle()
@@ -781,17 +768,6 @@ struct ProjectDetailView: View {
                       project.client != nil ||
                       (project.items?.isEmpty == false)
     }
-    
-    private func deleteProject() {
-        modelContext.delete(project)
-        do {
-            try modelContext.save()
-        } catch {
-            print("Error deleting project: \(error)")
-        }
-        dismiss()
-    }
-
     
     private func handleProjectFieldFocusChange() {
         if focusField == .project,
@@ -974,7 +950,9 @@ struct ProjectDetailView: View {
     
 }
 
+
 #Preview {
     ProjectDetailView(project: Project(projectName: "", startDate: Date.now, items: [Item]()))
         .modelContainer(for: Project.self, inMemory: true)
 }
+
