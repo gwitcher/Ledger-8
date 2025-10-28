@@ -198,7 +198,7 @@ struct ProjectDetailView: View {
             }
             .buttonStyle(.plain)
             
-            LocationView(project: project)
+            LocationView(selectedLocation: $selectedLocation)
         }
         .id("clientSection")
     }
@@ -762,6 +762,16 @@ struct ProjectDetailView: View {
         status = project.status
         endDateSelected = project.endDateSelected
         
+        // Load location if it exists
+        if let location = project.location {
+            // Convert Spot back to Place for UI state
+            let mapItem = MKMapItem(placemark: MKPlacemark(
+                coordinate: CLLocationCoordinate2D(latitude: location.latitude, longitude: location.longitude)
+            ))
+            mapItem.name = location.name
+            selectedLocation = Place(mapItem: mapItem)
+        }
+        
         // Determine if this project has already been saved (has meaningful data)
         hasBeenSaved = !project.projectName.isEmpty || 
                       !project.artist.isEmpty || 
@@ -920,6 +930,17 @@ struct ProjectDetailView: View {
         project.dateClosed = dateClosed
         project.status = status
         project.endDateSelected = endDateSelected
+        
+        // Convert selectedLocation back to Spot if needed
+        if !selectedLocation.name.isEmpty {
+            var spot = Spot()
+            spot.name = selectedLocation.name
+            spot.address = selectedLocation.address
+            spot.latitude = selectedLocation.lattitude
+            spot.longitude = selectedLocation.longitude
+            spot.addedDate = Date()
+            project.location = spot
+        }
         
         // Insert into context if not already saved
         if !hasBeenSaved {
