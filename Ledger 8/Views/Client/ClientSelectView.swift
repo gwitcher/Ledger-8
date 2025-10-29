@@ -3,6 +3,7 @@
 //  Ledger 8
 //
 //  Created by Gabe Witcher on 4/24/25.
+//  Refactored to MVVM Architecture
 //
 
 import SwiftUI
@@ -12,85 +13,247 @@ struct ClientSelectView: View {
     @Environment(\.modelContext) var modelContext
     @Environment(\.dismiss) var dismiss
     
-    
-    
-    @Query(sort: \Client.firstName) var allClients: [Client]
-    
-    @Binding var selectedClient:  Client?
-    @State private var searchText = ""
-    @State private var clientSheetIsPresented = false
-    
-    var filteredClient: [Client] {
-        if searchText.isEmpty {
-            allClients
-        } else {
-            allClients.filter {
-                $0.firstName.localizedStandardContains(searchText)
-            }
-        }
-    }
-    
-    var groupedClients: [(key: String, value: [Client])] {
-        let grouped = Dictionary(grouping: filteredClient) { client in
-            if !client.lastName.isEmpty {
-                return String(client.lastName.prefix(1)).uppercased()
-            } else if !client.firstName.isEmpty {
-                return String(client.firstName.prefix(1)).uppercased()
-            } else if !client.company.isEmpty {
-                return String(client.company.prefix(1)).uppercased()
-            } else {
-                return "#"
-            }
-        }
-        return grouped.sorted { $0.key < $1.key }
-    }
+    @Binding var selectedClient: Client?
+    @State private var viewModel = ClientSelectViewModel()
     
     var body: some View {
         NavigationStack {
-            
             Group {
-                if !allClients.isEmpty {
-                    List {
-                        ForEach(groupedClients, id: \.key) { group in
-                            Section(header: Text(group.key).font(.headline)) {
-                                ForEach(group.value) { client in
-                                    Text(client.fullName)
-                                        .onTapGesture {
-                                            selectedClient = client
-                                            print("Client Select View Selected Client on tap: \(selectedClient?.fullName ?? "NIL")")
-                                            dismiss()
-                                        }
-                                }
-                            }
-                        }
-                    }
-                    .listStyle(.plain)
-                    .searchable(text: $searchText)
+                if viewModel.isLoading {
+                    loadingView
+                } else if viewModel.hasClients {
+                    clientListView
                 } else {
-                    ContentUnavailableView("Add Client", systemImage: "person.crop.circle.badge.questionmark")
+                    emptyStateView
                 }
             }
+            .searchable(
+                text: viewModel.searchTextBinding(),
+                prompt: "Search clients..."
+            )
+            .searchSuggestions {
+                searchSuggestionsView
+            }
+            .navigationTitle("Select Client")
+            .navigationBarTitleDisplayMode(.inline)
             .toolbar {
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                toolbarContent
+            }
+            .sheet(isPresented: $viewModel.showingNewClientSheet) {
+                NewClientView()
+                    .onDisappear {
+                        viewModel.hideNewClientSheet()
                     }
-                }
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button("", systemImage: "plus") {
-                        clientSheetIsPresented.toggle()
-                    }
+            }
+            .alert("Error", isPresented: $viewModel.showError) {
+                Button("OK") { }
+            } message: {
+                Text(viewModel.errorMessage)
+            }
+            .onAppear {
+                viewModel.setModelContext(modelContext)
+            }
+            .onChange(of: viewModel.selectedClient) { _, newClient in
+                selectedClient = newClient
+                if newClient != nil {
+                    dismiss()
                 }
             }
-        }
-        .sheet(isPresented: $clientSheetIsPresented) {
-            NewClientView()
         }
     }
     
+    // MARK: - View Components
+    
+    @ViewBuilder
+    private var loadingView: some View {
+        VStack(spacing: 16) {
+            ProgressView()
+            Text("Loading clients...")
+                .font(.subheadline)
+                .foregroundStyle(.secondary)
+        }
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+    }
+    
+    @ViewBuilder
+    private var clientListView: some View {
+        List {
+            if viewModel.isSearching {
+                searchResultsHeader
+            }
+            
+            ForEach(viewModel.groupedClients, id: \.key) { group in
+                Section {
+                    ForEach(group.value) { client in
+                        ClientRowView(
+                            client: client,
+                            searchText: viewModel.searchText
+                        ) {
+                            viewModel.selectClient(client)
+                        }
+                    }
+                } header: {
+                    Text(group.key)
+                        .font(.headline)
+                        .foregroundStyle(.primary)
+                }
+            }
+        }
+        .listStyle(.plain)
+    }
+    
+    @ViewBuilder
+    private var searchResultsHeader: some View {
+        if viewModel.searchResultsCount > 0 {
+            Section {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    Text("\(viewModel.searchResultsCount) result\(viewModel.searchResultsCount == 1 ? "" : "s")")
+                        .font(.caption)
+                        .foregroundStyle(.secondary)
+                    Spacer()
+                    Button("Clear") {
+                        viewModel.clearSearch()
+                    }
+                    .font(.caption)
+                }
+                .padding(.vertical, 4)
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var searchSuggestionsView: some View {
+        ForEach(viewModel.searchSuggestions, id: \.self) { suggestion in
+            Button {
+                viewModel.updateSearch(suggestion)
+            } label: {
+                HStack {
+                    Image(systemName: "magnifyingglass")
+                        .foregroundStyle(.secondary)
+                    Text(suggestion)
+                        .foregroundStyle(.primary)
+                    Spacer()
+                }
+            }
+        }
+    }
+    
+    @ViewBuilder
+    private var emptyStateView: some View {
+        ContentUnavailableView {
+            Label("No Clients", systemImage: "person.crop.circle.badge.questionmark")
+        } description: {
+            Text("Add your first client to get started")
+        } actions: {
+            Button("Add Client") {
+                viewModel.showNewClientSheet()
+            }
+            .buttonStyle(.borderedProminent)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolbarContent: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button("Cancel") {
+                dismiss()
+            }
+        }
+        
+        ToolbarItem(placement: .topBarTrailing) {
+            Button {
+                viewModel.showNewClientSheet()
+            } label: {
+                Image(systemName: "plus")
+            }
+            .accessibilityLabel("Add new client")
+        }
+    }
 }
 
-//#Preview {
-//    ClientSelectView(project: Project())
-//}
+// MARK: - Supporting Views
+
+struct ClientRowView: View {
+    let client: Client
+    let searchText: String
+    let onTap: () -> Void
+    
+    var body: some View {
+        Button(action: onTap) {
+            VStack(alignment: .leading, spacing: 4) {
+                // Main name with search highlighting
+                Text(highlightedText(client.fullName, searchText: searchText))
+                    .font(.body)
+                    .foregroundStyle(.primary)
+                    .frame(maxWidth: .infinity, alignment: .leading)
+                
+                // Company and email as secondary info
+                if !client.company.isEmpty || !client.email.isEmpty {
+                    HStack {
+                        if !client.company.isEmpty {
+                            Text(highlightedText(client.company, searchText: searchText))
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        if !client.company.isEmpty && !client.email.isEmpty {
+                            Text("•")
+                                .font(.caption2)
+                                .foregroundStyle(.tertiary)
+                        }
+                        
+                        if !client.email.isEmpty {
+                            Text(client.email)
+                                .font(.caption)
+                                .foregroundStyle(.secondary)
+                        }
+                        
+                        Spacer()
+                    }
+                }
+                
+                // Project count if available
+                if let projectCount = client.project?.count, projectCount > 0 {
+                    HStack {
+                        Image(systemName: "folder")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                        Text("\(projectCount) project\(projectCount == 1 ? "" : "s")")
+                            .font(.caption2)
+                            .foregroundStyle(.tertiary)
+                        Spacer()
+                    }
+                }
+            }
+            .padding(.vertical, 2)
+        }
+        .buttonStyle(.plain)
+    }
+    
+    /// Highlights search text within the given string
+    private func highlightedText(_ text: String, searchText: String) -> AttributedString {
+        guard !searchText.isEmpty else {
+            return AttributedString(text)
+        }
+        
+        var attributed = AttributedString(text)
+        
+        if let range = attributed.range(of: searchText, options: [.caseInsensitive, .diacriticInsensitive]) {
+            attributed[range].backgroundColor = .yellow.opacity(0.3)
+            attributed[range].foregroundColor = .primary
+        }
+        
+        return attributed
+    }
+}
+
+// MARK: - Preview
+#Preview {
+    @Previewable @State var selectedClient: Client? = nil
+    
+    return ClientSelectView(selectedClient: $selectedClient)
+        .modelContainer(for: [Client.self, Project.self], inMemory: true)
+}
 

@@ -13,9 +13,12 @@ import SwiftData
 struct AutoBackupDiagnosticsViewModelTests {
     
     @Test("ViewModel initializes correctly")
+    @MainActor
     func testInitialization() async throws {
         // Arrange
-        let container = try ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self, inMemory: true)
+        let schema = Schema([Project.self, Client.self, Item.self, Invoice.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
         
         // Act
@@ -31,14 +34,17 @@ struct AutoBackupDiagnosticsViewModelTests {
     }
     
     @Test("ViewModel loads diagnostics")
+    @MainActor
     func testLoadDiagnostics() async throws {
         // Arrange
-        let container = try ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self, inMemory: true)
+        let schema = Schema([Project.self, Client.self, Item.self, Invoice.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
         let viewModel = AutoBackupDiagnosticsViewModel(backupManager: backupManager)
         
         // Act
-        await viewModel.loadDiagnostics()
+        viewModel.loadDiagnostics()
         
         // Wait a bit for the async operation to complete
         try await Task.sleep(nanoseconds: 600_000_000) // 0.6 seconds
@@ -49,14 +55,17 @@ struct AutoBackupDiagnosticsViewModelTests {
     }
     
     @Test("ViewModel provides correct computed properties")
+    @MainActor
     func testComputedProperties() async throws {
         // Arrange
-        let container = try ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self, inMemory: true)
+        let schema = Schema([Project.self, Client.self, Item.self, Invoice.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
         let viewModel = AutoBackupDiagnosticsViewModel(backupManager: backupManager)
         
         // Act
-        await viewModel.loadDiagnostics()
+        viewModel.loadDiagnostics()
         try await Task.sleep(nanoseconds: 600_000_000) // 0.6 seconds
         
         // Assert
@@ -68,9 +77,12 @@ struct AutoBackupDiagnosticsViewModelTests {
     }
     
     @Test("ViewModel handles restart confirmation correctly")
+    @MainActor
     func testRestartConfirmation() async throws {
         // Arrange
-        let container = try ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self, inMemory: true)
+        let schema = Schema([Project.self, Client.self, Item.self, Invoice.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
         let viewModel = AutoBackupDiagnosticsViewModel(backupManager: backupManager)
         
@@ -85,14 +97,17 @@ struct AutoBackupDiagnosticsViewModelTests {
     }
     
     @Test("ViewModel section visibility logic")
+    @MainActor
     func testSectionVisibility() async throws {
         // Arrange
-        let container = try ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self, inMemory: true)
+        let schema = Schema([Project.self, Client.self, Item.self, Invoice.self])
+        let modelConfiguration = ModelConfiguration(schema: schema, isStoredInMemoryOnly: true)
+        let container = try ModelContainer(for: schema, configurations: [modelConfiguration])
         let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
         let viewModel = AutoBackupDiagnosticsViewModel(backupManager: backupManager)
         
         // Act
-        await viewModel.loadDiagnostics()
+        viewModel.loadDiagnostics()
         try await Task.sleep(nanoseconds: 600_000_000) // 0.6 seconds
         
         // Assert - These will depend on the actual diagnostic results

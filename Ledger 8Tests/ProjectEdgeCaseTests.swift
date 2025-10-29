@@ -10,6 +10,7 @@ import SwiftData
 import Foundation
 import MapKit
 @testable import Ledger_8
+internal import SwiftUIFontIcon
 
 @Suite("Project Edge Cases and Error Handling Tests")
 struct ProjectEdgeCaseTests {
@@ -543,9 +544,9 @@ struct ProjectEdgeCaseTests {
             
             context.insert(project)
             
-            // Verify icon exists for each media type
-            let icon = project.icon
-            #expect(icon != nil, "Media type \(mediaType.rawValue) should have an icon")
+            // Verify media type is properly set
+            #expect(project.mediaType == mediaType)
+            #expect(project.projectName == "Project \(index)")
         }
         
         try context.save()
@@ -576,9 +577,9 @@ struct ProjectEdgeCaseTests {
             items.append(item)
             context.insert(item)
             
-            // Verify icon exists for each item type
-            let icon = item.icon
-            #expect(icon != nil, "Item type \(itemType.rawValue) should have an icon")
+            // Verify item type is properly set
+            #expect(item.itemType == itemType)
+            #expect(item.name == "Item \(index)")
         }
         
         project.items = items

@@ -70,25 +70,10 @@ class Project: Identifiable {
         self.location = location
     }
 
-    var icon: FontAwesomeCode {
-        switch mediaType {
-        case .film:
-                .film
-        case .tv:
-                .tv
-        case .recording:
-                .microphone
-        case .concert:
-                .users
-        case .tour:
-                .bus
-        case .lesson:
-                .graduation_cap
-        case .other:
-                .question
-        case .game:
-                .gamepad
-        }
+    // MARK: - Business Logic Methods (Consider moving to ViewModel)
+    func calculateFeeTotal(items: [Item]?) -> Double {
+        guard let items = items else { return 0.0 }
+        return items.reduce(0) { $0 + $1.fee }
     }
     
     // Computed property to check if invoice needs updating
