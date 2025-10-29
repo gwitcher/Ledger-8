@@ -28,6 +28,8 @@
 		66651D302EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */; };
 		66651D322EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */; };
 		66651D342EB1EE4C005A0EB4 /* BackupDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */; };
+		66651D362EB1EF54005A0EB4 /* AutoBackupSettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D352EB1EF54005A0EB4 /* AutoBackupSettingsView.swift */; };
+		66651D382EB1EFB3005A0EB4 /* MVVM_Refactoring_Completion_Status.md in Resources */ = {isa = PBXBuildFile; fileRef = 66651D372EB1EFB3005A0EB4 /* MVVM_Refactoring_Completion_Status.md */; };
 		66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */; };
 		66BF7E3F2EAB492400D24754 /* InvoiceIconPreviewOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
@@ -79,6 +81,8 @@
 		66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOperationsViewModel.swift; sourceTree = "<group>"; };
 		66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoBackupSettingsViewModel.swift; sourceTree = "<group>"; };
 		66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDataModels.swift; sourceTree = "<group>"; };
+		66651D352EB1EF54005A0EB4 /* AutoBackupSettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoBackupSettingsView.swift; sourceTree = "<group>"; };
+		66651D372EB1EFB3005A0EB4 /* MVVM_Refactoring_Completion_Status.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = MVVM_Refactoring_Completion_Status.md; sourceTree = "<group>"; };
 		66A540BC2EA9340300C6E21E /* Ledger 8Tests2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Ledger8_Core_UI_Development_Plan.md; sourceTree = "<group>"; };
 		66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceIconPreviewOptions.swift; sourceTree = "<group>"; };
@@ -191,6 +195,8 @@
 				66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */,
 				66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */,
 				66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */,
+				66651D352EB1EF54005A0EB4 /* AutoBackupSettingsView.swift */,
+				66651D372EB1EFB3005A0EB4 /* MVVM_Refactoring_Completion_Status.md */,
 			);
 			sourceTree = "<group>";
 		};
@@ -363,6 +369,7 @@
 				66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */,
 				66C6162D2DAF2BA100161D7E /* Assets.xcassets in Resources */,
 				6608D47A2EAEC7C000B104FA /* ledger8_production_plan (1).md in Resources */,
+				66651D382EB1EFB3005A0EB4 /* MVVM_Refactoring_Completion_Status.md in Resources */,
 				66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */,
 				6608D5F22EAF404100B104FA /* Freelance_Musician_App_Review.md in Resources */,
 				6608D5F02EAF3A1A00B104FA /* Integrated_Production_Plan_With_UI_Modernization.md in Resources */,
@@ -399,6 +406,7 @@
 				663538A92EAFC97200E64E63 /* SharedUIComponents.swift in Sources */,
 				66651C3F2EB1E60E005A0EB4 /* ClientSelectViewModel.swift in Sources */,
 				66651D322EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */,
+				66651D362EB1EF54005A0EB4 /* AutoBackupSettingsView.swift in Sources */,
 				66651D2C2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift in Sources */,
 				66651CA42EB1E60E005A0EB4 /* AnalyticsDashboardViewModel.swift in Sources */,
 				66651CA82EB1E60E005A0EB4 /* AutoBackupListViewModel.swift in Sources */,
