@@ -101,10 +101,11 @@ class LegacyBackupManagerBridge {
         try await coordinator.backupService.restoreCompleteBackup(
             fileURL: fileURL,
             replaceExisting: replaceExisting,
-            skipValidation: false
-        ) { _, _ in
-            // Legacy version doesn't report progress
-        }
+            skipChecksumValidation: false,
+            progressHandler: { _, _ in
+                // Legacy version doesn't report progress
+            }
+        )
     }
     
     func validateBackupFile(at fileURL: URL) async throws -> BackupIntegrityResult {
