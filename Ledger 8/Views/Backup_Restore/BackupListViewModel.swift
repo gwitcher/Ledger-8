@@ -1,4 +1,8 @@
 //
+//  ✅ KEEP THIS FILE - BackupListViewModel.swift (MAIN VERSION) 
+//  ✅ COMPLETE IMPLEMENTATION: Full file management with 216 lines
+//  ❌ DELETE INSTEAD: "AutoBackupListViewModel.swift" (basic 106 line version)
+//
 //  BackupListViewModel.swift
 //  Ledger 8
 //

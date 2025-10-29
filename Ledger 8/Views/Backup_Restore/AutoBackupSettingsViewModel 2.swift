@@ -1,5 +1,10 @@
 //
-//  AutoBackupSettingsViewModel.swift
+//
+//  ✅ KEEP THIS FILE - AutoBackupSettingsViewModel 2.swift (MAIN VERSION)
+//  ✅ COMPLETE IMPLEMENTATION: Full implementation with 321 lines
+//  ❌ DELETE INSTEAD: AutoBackupSettingsViewModel.swift (incomplete 86 line version)
+//
+//  AutoBackupSettingsViewModel 2.swift (KEEP THIS ONE - RENAME TO MAIN)
 //  Ledger 8
 //
 //  Created by MVVM Refactoring on 10/28/25.

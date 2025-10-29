@@ -1,156 +1,225 @@
 //
-//  AutoBackupSettingsView.swift
+//
+//  ✅ KEEP THIS FILE - AutoBackupSettingsView 4.swift (NEW MVVM ARCHITECTURE)
+//  ✅ MODERN IMPLEMENTATION: Uses new MVVM BackupCoordinator approach
+//  ✅ UP-TO-DATE: Uses @Observable and @Bindable patterns
+//  ❌ DELETE INSTEAD: AutoBackupSettingsView.swift (old ComprehensiveBackupManager version)
+//  📝 RENAME TO: AutoBackupSettingsView.swift (after deleting the old one)
+//
+//  AutoBackupSettingsView 4.swift (KEEP & RENAME THIS ONE)
 //  Ledger 8
 //
-//  Created by Backup System
+//  Created by MVVM Refactoring on 10/28/25.
 //
 
 import SwiftUI
 import SwiftData
 
 struct AutoBackupSettingsView: View {
-    @ObservedObject var backupManager: ComprehensiveBackupManager
+    @State var viewModel: AutoBackupSettingsViewModel
     @Environment(\.dismiss) private var dismiss
-    @State private var viewModel: AutoBackupSettingsViewModel
-    
-    init(backupManager: ComprehensiveBackupManager) {
-        self.backupManager = backupManager
-        self._viewModel = State(initialValue: AutoBackupSettingsViewModel(backupManager: backupManager))
-    }
     
     var body: some View {
         NavigationStack {
-            List {
-                autoBackupSection
-                backupHistorySection
-                backupInfoSection
+            Form {
+                mainSettingsSection
+                statusSection
+                actionsSection
+                diagnosticsSection
             }
             .navigationTitle("Auto-Backup Settings")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
                 ToolbarItem(placement: .topBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
+                    Button("Reset") {
+                        viewModel.resetToDefaults()
                     }
+                    .disabled(!viewModel.canPerformOperations)
                 }
                 
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("Save") {
-                        viewModel.saveSettings()
+                    Button("Done") {
                         dismiss()
                     }
                 }
             }
-            .sheet(isPresented: $viewModel.showingBackupsList) {
-                AutoBackupListView(backupManager: backupManager)
+            .alert("Error", isPresented: .constant(viewModel.hasError)) {
+                Button("OK") {
+                    viewModel.clearError()
+                }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
             }
             .sheet(isPresented: $viewModel.showingDiagnostics) {
-                AutoBackupDiagnosticsView(backupManager: backupManager)
+                AutoBackupDiagnosticsView(diagnostics: viewModel.diagnostics ?? AutoBackupDiagnostics(
+                    status: .healthy,
+                    issues: [],
+                    warnings: [],
+                    info: [],
+                    lastValidated: Date()
+                ))
             }
         }
     }
     
-    private var autoBackupSection: some View {
-        Section {
-            Toggle("Enable Auto-Backup", isOn: $viewModel.autoBackupEnabled)
-                .tint(.blue)
+    private var mainSettingsSection: some View {
+        Section("Auto-Backup Configuration") {
+            HStack {
+                VStack(alignment: .leading, spacing: 4) {
+                    Toggle("Enable Auto-Backup", isOn: $viewModel.autoBackupEnabled)
+                        .disabled(!viewModel.canPerformOperations)
+                    
+                    if !viewModel.autoBackupEnabled {
+                        Text("Automatic backups are disabled")
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                }
+            }
             
             if viewModel.shouldShowFrequencyPicker {
-                Picker("Frequency", selection: $viewModel.autoBackupFrequency) {
-                    ForEach(viewModel.getFrequencyOptions(), id: \.self) { frequency in
+                Picker("Backup Frequency", selection: $viewModel.autoBackupFrequency) {
+                    ForEach(viewModel.availableFrequencies, id: \.self) { frequency in
                         Text(frequency.displayName).tag(frequency)
                     }
                 }
-                .pickerStyle(.menu)
+                .disabled(!viewModel.canPerformOperations)
+            }
+            
+            HStack {
+                Text("Keep Maximum Backups")
+                Spacer()
+                Stepper(value: $viewModel.maxBackupsToKeep, in: viewModel.maxBackupsRange) {
+                    Text("\(viewModel.maxBackupsToKeep)")
+                        .font(.headline)
+                }
+                .disabled(!viewModel.canPerformOperations)
+            }
+        }
+    }
+    
+    private var statusSection: some View {
+        Section("Status") {
+            HStack {
+                Image(systemName: viewModel.systemStatusIcon)
+                    .foregroundColor(viewModel.systemStatusColor)
                 
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(viewModel.maxBackupsDisplayText)
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("System Status")
                         .font(.subheadline)
-                    
-                    Slider(value: $viewModel.maxBackupsToKeep, in: 3...20, step: 1)
-                        .tint(.blue)
-                }
-                .padding(.vertical, 4)
-            }
-            
-            if let lastBackup = viewModel.lastAutoBackupDate {
-                HStack {
-                    Text("Last Auto-Backup")
-                    Spacer()
-                    Text(lastBackup, style: .relative)
-                        .foregroundColor(.secondary)
-                        .font(.caption)
-                }
-            }
-        } header: {
-            Text("Automatic Backups")
-        } footer: {
-            if !viewModel.footerText.isEmpty {
-                Text(viewModel.footerText)
-            }
-        }
-    }
-    
-    private var backupHistorySection: some View {
-        Section {
-            Button(action: { viewModel.showBackupsList() }) {
-                HStack {
-                    Image(systemName: "clock.arrow.circlepath")
-                        .foregroundColor(.blue)
-                    Text("View Auto-Backup History")
-                    Spacer()
-                    Image(systemName: "chevron.right")
+                    Text(viewModel.systemHealthSummary)
                         .font(.caption)
                         .foregroundColor(.secondary)
                 }
-            }
-            .foregroundColor(.primary)
-            
-            Button(action: { viewModel.showDiagnostics() }) {
-                HStack {
-                    Image(systemName: "stethoscope")
+                
+                Spacer()
+                
+                if viewModel.shouldShowHealthWarning {
+                    Image(systemName: "exclamationmark.triangle")
                         .foregroundColor(.orange)
-                    Text("System Diagnostics")
-                    Spacer()
-                    Image(systemName: "chevron.right")
-                        .font(.caption)
-                        .foregroundColor(.secondary)
                 }
             }
-            .foregroundColor(.primary)
-        } header: {
-            Text("Backup History")
-        }
-    }
-    
-    private var backupInfoSection: some View {
-        Section {
-            VStack(alignment: .leading, spacing: 8) {
+            
+            HStack {
+                Text("Last Auto-Backup")
+                    .font(.subheadline)
+                Spacer()
+                Text(viewModel.formattedLastBackupDate)
+                    .font(.subheadline)
+                    .foregroundColor(.secondary)
+            }
+            
+            if let statusMessage = viewModel.statusMessage, !statusMessage.isEmpty {
                 HStack {
                     Image(systemName: "info.circle")
                         .foregroundColor(.blue)
-                    Text("How Auto-Backup Works")
-                        .font(.headline)
+                    Text(statusMessage)
+                        .font(.caption)
+                        .foregroundColor(.blue)
                 }
-                
-                VStack(alignment: .leading, spacing: 6) {
-                    Label("Automatic backups happen in the background", systemImage: "clock")
-                    Label("Triggered when you close the app", systemImage: "app.badge")
-                    Label("Also runs on your selected schedule", systemImage: "calendar")
-                    Label("Older backups are cleaned up automatically", systemImage: "trash")
-                    Label("Manual backups are kept separately", systemImage: "hand.raised")
-                }
-                .font(.caption)
-                .foregroundColor(.secondary)
             }
-            .padding(.vertical, 4)
+        }
+    }
+    
+    private var actionsSection: some View {
+        Section("Actions") {
+            Button(action: {
+                Task {
+                    await viewModel.performManualBackup()
+                }
+            }) {
+                HStack {
+                    Image(systemName: viewModel.isPerformingManualBackup ? "arrow.clockwise" : "play.fill")
+                    Text(viewModel.isPerformingManualBackup ? "Performing Backup..." : "Perform Backup Now")
+                    
+                    if viewModel.isPerformingManualBackup {
+                        Spacer()
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    }
+                }
+            }
+            .disabled(!viewModel.canTriggerManualBackup)
+            
+            Button(action: {
+                viewModel.restartSystem()
+            }) {
+                HStack {
+                    Image(systemName: viewModel.isRestartingSystem ? "arrow.clockwise" : "arrow.counterclockwise")
+                    Text(viewModel.isRestartingSystem ? "Restarting..." : "Restart Auto-Backup System")
+                    
+                    if viewModel.isRestartingSystem {
+                        Spacer()
+                        ProgressView()
+                            .scaleEffect(0.8)
+                    }
+                }
+            }
+            .disabled(!viewModel.canPerformOperations)
+        }
+    }
+    
+    private var diagnosticsSection: some View {
+        Section("Diagnostics") {
+            Button(action: {
+                viewModel.showDiagnostics()
+            }) {
+                HStack {
+                    Image(systemName: "stethoscope")
+                    Text("View System Diagnostics")
+                    Spacer()
+                    Image(systemName: "chevron.right")
+                        .font(.caption)
+                        .foregroundColor(.secondary)
+                }
+            }
+            
+            if viewModel.shouldShowHealthWarning {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.orange)
+                    
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("System Warning")
+                            .font(.subheadline)
+                            .foregroundColor(.orange)
+                        
+                        Text(viewModel.healthWarningMessage)
+                            .font(.caption)
+                            .foregroundColor(.secondary)
+                    }
+                    
+                    Spacer()
+                }
+            }
         }
     }
 }
 
-#Preview {
-    let container = try! ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self)
-    let backupManager = ComprehensiveBackupManager(modelContext: container.mainContext)
-    
-    AutoBackupSettingsView(backupManager: backupManager)
+// Extension for preview support
+extension ModelContext {
+    static var preview: ModelContext {
+        let container = try! ModelContainer(for: Client.self, Project.self, Item.self, Invoice.self)
+        return container.mainContext
+    }
 }
