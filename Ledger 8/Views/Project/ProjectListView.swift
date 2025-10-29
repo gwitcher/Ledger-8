@@ -8,21 +8,21 @@
 import SwiftUI
 import SwiftData
 
-
 struct ProjectListView: View {
+    // MARK: - Environment Properties
     @Environment(\.modelContext) var modelContext
     @Environment(\.colorScheme) var colorScheme
     
+    // MARK: - SwiftData Query
+    /// SwiftData query to fetch all projects sorted by start date
     @Query(sort: \Project.startDate) var projects: [Project]
     
-    @State private var projectSheetIsPresented = false
-    @State private var clientListIsPresented = false
-    @State private var userInfoSheetIsPresented = false
-    @State private var settingsSheetIsPresented = false
-    @State private var chartSheetIsPresented = false
-    @State private var sortSelection: Status = Status.open
-    @State private var searchText = ""
-    @State private var isSearching = false
+    // MARK: - ViewModel
+    /// The ViewModel that handles all business logic and state management
+    @State private var viewModel = ProjectListViewModel()
+    
+    // MARK: - Focus State
+    /// FocusState remains in the View since it's UI-specific and needs to work with SwiftUI's focus system
     @FocusState private var searchFieldFocused: Bool
     
     var body: some View {
@@ -36,17 +36,17 @@ struct ProjectListView: View {
                 .ignoresSafeArea()
                 
                 Group {
-                    if !projects.isEmpty {
+                    if viewModel.hasProjects(projects) {
                         VStack(spacing: 0) {
-                            FeeTotalsView(sortSelection: sortSelection)
+                            FeeTotalsView(sortSelection: viewModel.sortSelection)
                             
                             SortedProjectView(
-                                sortSelection: sortSelection,
-                                searchText: searchText
+                                sortSelection: viewModel.sortSelection,
+                                searchText: viewModel.searchText
                             )
                             .padding(4)
                             
-                            Picker("", selection: $sortSelection) {
+                            Picker("", selection: $viewModel.sortSelection) {
                                 ForEach(Status.allCases) {status in
                                     Text(status.rawValue)
                                 }
@@ -59,27 +59,27 @@ struct ProjectListView: View {
                     }
                 }
             }
-            .navigationTitle(isSearching ? "" : "Project Ledger")  // Hide title when searching
+            .navigationTitle(viewModel.navigationTitle)  // Using ViewModel computed property
             .navigationBarTitleDisplayMode(.automatic)  // Back to large
             .toolbar {
                 // Custom search bar in the toolbar
                 ToolbarItem(placement: .topBarTrailing) {
-                    if isSearching {
+                    if viewModel.isSearching {
                         HStack(spacing: 8) {
                             HStack(spacing: 8) {
                                 Image(systemName: "magnifyingglass")
                                     .foregroundStyle(.secondary)
                                     .font(.system(size: 16))
                                 
-                                TextField("Search projects, artists, or clients", text: $searchText)
+                                TextField("Search projects, artists, or clients", text: $viewModel.searchText)
                                     .focused($searchFieldFocused)
                                     .autocorrectionDisabled()
                                     .textInputAutocapitalization(.never)
                                     .textFieldStyle(.plain)
                                 
-                                if !searchText.isEmpty {
+                                if !viewModel.searchText.isEmpty {
                                     Button {
-                                        searchText = ""
+                                        viewModel.clearSearchText()
                                     } label: {
                                         Image(systemName: "xmark.circle.fill")
                                             .foregroundStyle(.secondary)
@@ -88,15 +88,10 @@ struct ProjectListView: View {
                             }
                             .padding(.horizontal, 10)
                             .padding(.vertical, 8)
-                            //.background(Color(.systemGray5))
                             .cornerRadius(10)
                             
                             Button("Cancel") {
-                                withAnimation(.easeInOut(duration: 0.25)) {
-                                    isSearching = false
-                                    searchText = ""
-                                    searchFieldFocused = false
-                                }
+                                viewModel.cancelSearching()
                             }
                             .foregroundStyle(.blue)
                         }
@@ -105,10 +100,10 @@ struct ProjectListView: View {
                 }
                 
                 // Top leading - settings and charts (hidden when searching)
-                if !isSearching {
+                if !viewModel.isSearching {
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            settingsSheetIsPresented.toggle()
+                            viewModel.showSettings()
                         } label: {
                             Image(systemName: "gear")
                                 .foregroundStyle(.primary)
@@ -117,7 +112,7 @@ struct ProjectListView: View {
                     
                     ToolbarItem(placement: .topBarLeading) {
                         Button {
-                            chartSheetIsPresented.toggle()
+                            viewModel.showChart()
                         } label: {
                             Image(systemName: "chart.bar.xaxis")
                                 .foregroundStyle(.primary)
@@ -126,15 +121,10 @@ struct ProjectListView: View {
                 }
                 
                 // Top trailing - search, plus, and person icons (hidden when searching)
-                if !isSearching {
+                if !viewModel.isSearching {
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            withAnimation(.easeInOut(duration: 0.25)) {
-                                isSearching = true
-                            }
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                searchFieldFocused = true
-                            }
+                            viewModel.startSearching()
                         } label: {
                             Image(systemName: "magnifyingglass")
                                 .foregroundStyle(.primary)
@@ -143,7 +133,7 @@ struct ProjectListView: View {
                     
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            clientListIsPresented.toggle()
+                            viewModel.showClientList()
                         } label: {
                             Image(systemName: "person.circle")
                                 .foregroundStyle(.primary)
@@ -152,7 +142,7 @@ struct ProjectListView: View {
                     
                     ToolbarItem(placement: .topBarTrailing) {
                         Button {
-                            projectSheetIsPresented.toggle()
+                            viewModel.showProjectSheet()
                         } label: {
                             Image(systemName: "plus")
                                 .foregroundStyle(.primary)
@@ -160,18 +150,26 @@ struct ProjectListView: View {
                     }
                 }
             }
-            .fullScreenCover(isPresented: $projectSheetIsPresented, content: {
+            .fullScreenCover(isPresented: $viewModel.projectSheetIsPresented, content: {
                 ProjectDetailView(project: Project())
             })
-            .sheet(isPresented: $clientListIsPresented) {
+            .sheet(isPresented: $viewModel.clientListIsPresented) {
                 ClientListView()
             }
-            .fullScreenCover(isPresented: $settingsSheetIsPresented, content: {
+            .fullScreenCover(isPresented: $viewModel.settingsSheetIsPresented, content: {
                 SettingsView()
             })
-            .fullScreenCover(isPresented: $chartSheetIsPresented, content: {
+            .fullScreenCover(isPresented: $viewModel.chartSheetIsPresented, content: {
                 AnalyticsDashboardView()
             })
+            // MARK: - Focus State Synchronization
+            // This keeps the SwiftUI FocusState in sync with the ViewModel
+            .onChange(of: searchFieldFocused) { _, newValue in
+                viewModel.searchFieldFocused = newValue
+            }
+            .onChange(of: viewModel.searchFieldFocused) { _, newValue in
+                searchFieldFocused = newValue
+            }
         }
     }
 }

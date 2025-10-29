@@ -30,7 +30,7 @@ struct ProjectEventDetailView: View {
                         .fill(Color.mintyFresh3.opacity(0.6))
                         .frame(width: 37, height: 34)
                         .overlay {
-                            FontIcon.text(.awesome5Solid(code: project.icon), fontsize: 20, color: Color.quiteClear2)
+                            FontIcon.text(.awesome5Solid(code: project.mediaType.icon), fontsize: 20, color: Color.quiteClear2)
                         }
                 }
                 .padding(.bottom, 4)  // FIXED: Consistent bottom spacing
@@ -298,6 +298,7 @@ struct ProjectEventDetailView: View {
         }
     }
 }
+
 
 
 // MARK: - Preview Data

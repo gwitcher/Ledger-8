@@ -20,7 +20,7 @@ struct ProjectView: View {
                 .fill(Color.mintyFresh3.opacity(0.6))
                 .frame(width: 44, height: 44)
                 .overlay {
-                    FontIcon.text(.awesome5Solid(code: project.icon), fontsize: 24, color: Color.quiteClear2)
+                    FontIcon.text(.awesome5Solid(code: project.mediaType.icon), fontsize: 24, color: Color.quiteClear2)
                 }
             VStack(alignment: .leading, spacing: 6) {
                 

@@ -7,6 +7,7 @@
 
 import Foundation
 import SwiftUI
+import SwiftUIFontIcon
 
 enum Status: String, CaseIterable, Identifiable, Codable {
     case open = "Open"
@@ -60,6 +61,27 @@ enum MediaType: String, CaseIterable, Identifiable, Codable {
     case other = "Other"
     
     var id: Self {self}
+    
+    var icon: FontAwesomeCode {
+        switch self {
+        case .film:
+            return .film
+        case .tv:
+            return .tv
+        case .recording:
+            return .microphone_alt
+        case .game:
+            return .gamepad
+        case .concert:
+            return .music
+        case .tour:
+            return .bus
+        case .lesson:
+            return .graduation_cap
+        case .other:
+            return .question_circle
+        }
+    }
 }
 
 enum ItemType: String, CaseIterable, Identifiable, Codable {
