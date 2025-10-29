@@ -22,6 +22,12 @@
 		66651CDA2EB1E60E005A0EB4 /* ProjectDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C902EB1E60E005A0EB4 /* ProjectDetailViewModel.swift */; };
 		66651CDC2EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C922EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift */; };
 		66651CDE2EB1E60E005A0EB4 /* ProjectListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C942EB1E60E005A0EB4 /* ProjectListViewModel.swift */; };
+		66651D2A2EB1ED89005A0EB4 /* BackupTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D292EB1ED89005A0EB4 /* BackupTypes.swift */; };
+		66651D2C2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2B2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift */; };
+		66651D2E2EB1EDD0005A0EB4 /* BackupFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2D2EB1EDD0005A0EB4 /* BackupFileService.swift */; };
+		66651D302EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */; };
+		66651D322EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */; };
+		66651D342EB1EE4C005A0EB4 /* BackupDataModels.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */; };
 		66BF7E3D2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md in Resources */ = {isa = PBXBuildFile; fileRef = 66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */; };
 		66BF7E3F2EAB492400D24754 /* InvoiceIconPreviewOptions.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */; };
 		66C6162C2DAF2BA100161D7E /* Preview Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 66C616242DAF2BA100161D7E /* Preview Assets.xcassets */; };
@@ -67,6 +73,12 @@
 		66651C902EB1E60E005A0EB4 /* ProjectDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailViewModel.swift; sourceTree = "<group>"; };
 		66651C922EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEventDetailViewModel.swift; sourceTree = "<group>"; };
 		66651C942EB1E60E005A0EB4 /* ProjectListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListViewModel.swift; sourceTree = "<group>"; };
+		66651D292EB1ED89005A0EB4 /* BackupTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTypes.swift; sourceTree = "<group>"; };
+		66651D2B2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceProtocols.swift; sourceTree = "<group>"; };
+		66651D2D2EB1EDD0005A0EB4 /* BackupFileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFileService.swift; sourceTree = "<group>"; };
+		66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOperationsViewModel.swift; sourceTree = "<group>"; };
+		66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AutoBackupSettingsViewModel.swift; sourceTree = "<group>"; };
+		66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupDataModels.swift; sourceTree = "<group>"; };
 		66A540BC2EA9340300C6E21E /* Ledger 8Tests2.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = "Ledger 8Tests2.xctest"; sourceTree = BUILT_PRODUCTS_DIR; };
 		66BF7E3C2EAB40C300D24754 /* Ledger8_Core_UI_Development_Plan.md */ = {isa = PBXFileReference; lastKnownFileType = net.daringfireball.markdown; path = Ledger8_Core_UI_Development_Plan.md; sourceTree = "<group>"; };
 		66BF7E3E2EAB492400D24754 /* InvoiceIconPreviewOptions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InvoiceIconPreviewOptions.swift; sourceTree = "<group>"; };
@@ -173,6 +185,12 @@
 				6608D5F12EAF404100B104FA /* Freelance_Musician_App_Review.md */,
 				6608D47F2EAEDCDE00B104FA /* Integrated_Production_Plan.md */,
 				6608D5EF2EAF3A1A00B104FA /* Integrated_Production_Plan_With_UI_Modernization.md */,
+				66651D292EB1ED89005A0EB4 /* BackupTypes.swift */,
+				66651D2B2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift */,
+				66651D2D2EB1EDD0005A0EB4 /* BackupFileService.swift */,
+				66651D2F2EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift */,
+				66651D312EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift */,
+				66651D332EB1EE4C005A0EB4 /* BackupDataModels.swift */,
 			);
 			sourceTree = "<group>";
 		};
@@ -380,10 +398,16 @@
 				66E0724E2EB1B0220012E807 /* AutoBackupDiagnosticsViewModel.swift in Sources */,
 				663538A92EAFC97200E64E63 /* SharedUIComponents.swift in Sources */,
 				66651C3F2EB1E60E005A0EB4 /* ClientSelectViewModel.swift in Sources */,
+				66651D322EB1EE2A005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */,
+				66651D2C2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift in Sources */,
 				66651CA42EB1E60E005A0EB4 /* AnalyticsDashboardViewModel.swift in Sources */,
 				66651CA82EB1E60E005A0EB4 /* AutoBackupListViewModel.swift in Sources */,
 				66651CAA2EB1E60E005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */,
+				66651D342EB1EE4C005A0EB4 /* BackupDataModels.swift in Sources */,
 				66651CB62EB1E60E005A0EB4 /* ClientListViewModel.swift in Sources */,
+				66651D2A2EB1ED89005A0EB4 /* BackupTypes.swift in Sources */,
+				66651D2E2EB1EDD0005A0EB4 /* BackupFileService.swift in Sources */,
+				66651D302EB1EE0C005A0EB4 /* BackupOperationsViewModel.swift in Sources */,
 				66651CDA2EB1E60E005A0EB4 /* ProjectDetailViewModel.swift in Sources */,
 				66651CDC2EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift in Sources */,
 				66651CDE2EB1E60E005A0EB4 /* ProjectListViewModel.swift in Sources */,

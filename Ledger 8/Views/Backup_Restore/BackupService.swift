@@ -11,7 +11,7 @@ import CryptoKit
 
 /// Pure business service for backup operations - no UI concerns
 @MainActor
-class BackupService {
+class BackupService: BackupServiceProtocol {
     
     // MARK: - Properties
     private var modelContext: ModelContext

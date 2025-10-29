@@ -13,7 +13,7 @@ import UIKit
 
 /// Pure business service for auto-backup functionality - no UI concerns
 @MainActor
-class AutoBackupService {
+class AutoBackupService: AutoBackupServiceProtocol {
     
     // MARK: - Properties
     private var modelContext: ModelContext

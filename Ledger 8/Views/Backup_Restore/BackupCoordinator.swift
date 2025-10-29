@@ -11,35 +11,28 @@ import SwiftData
 /// Coordinates between all backup-related services
 /// This replaces the old ComprehensiveBackupManager's coordination role
 @MainActor
-class BackupCoordinator {
+class BackupCoordinator: BackupCoordinatorProtocol {
     
     // MARK: - Services
-    let backupService: BackupService
-    let autoBackupService: AutoBackupService
-    let integrityService: BackupIntegrityService
-    let fileService: BackupFileService
+    let backupService: BackupServiceProtocol
+    let autoBackupService: AutoBackupServiceProtocol
+    let integrityService: BackupIntegrityServiceProtocol
+    let fileService: BackupFileServiceProtocol
     
     // MARK: - Initialization
     init(modelContext: ModelContext) {
         self.integrityService = ComprehensiveBackupIntegrityService()
-        self.backupService = ComprehensiveBackupService(
-            modelContext: modelContext,
-            integrityService: integrityService
-        )
-        self.autoBackupService = ComprehensiveAutoBackupService(modelContext: modelContext)
-        self.fileService = ComprehensiveBackupFileService()
+        self.backupService = BackupService(modelContext: modelContext)
+        self.autoBackupService = AutoBackupService(modelContext: modelContext)
+        self.fileService = BackupFileService()
     }
     
     // MARK: - Convenience Methods
     
     /// Updates model context across all services
     func updateModelContext(_ context: ModelContext) {
-        if let backupService = backupService as? ComprehensiveBackupService {
-            backupService.updateModelContext(context)
-        }
-        if let autoBackupService = autoBackupService as? ComprehensiveAutoBackupService {
-            autoBackupService.updateModelContext(context)
-        }
+        backupService.updateModelContext(context)
+        autoBackupService.updateModelContext(context)
     }
     
     /// Creates ViewModels with proper dependency injection

@@ -22,11 +22,11 @@ class BackupListViewModel {
     var searchText = ""
     
     // MARK: - Private Properties
-    private let backupFileService: BackupFileService
-    private let autoBackupService: AutoBackupService
+    private let backupFileService: BackupFileServiceProtocol
+    private let autoBackupService: AutoBackupServiceProtocol
     
     // MARK: - Initialization
-    init(backupFileService: BackupFileService, autoBackupService: AutoBackupService) {
+    init(backupFileService: BackupFileServiceProtocol, autoBackupService: AutoBackupServiceProtocol) {
         self.backupFileService = backupFileService
         self.autoBackupService = autoBackupService
         

@@ -9,16 +9,7 @@ import Foundation
 import CryptoKit
 
 @MainActor
-protocol BackupIntegrityService {
-    var isValidationEnabled: Bool { get }
-    func setValidationEnabled(_ enabled: Bool)
-    func validateBackupFile(at fileURL: URL) async throws -> BackupIntegrityResult
-    func validateBackup(fileData: Data, extractedJSON: Data, backup: CompleteLedgerBackup) async throws -> Bool
-    func recalculateChecksum(for fileURL: URL) async throws -> String
-}
-
-@MainActor
-class ComprehensiveBackupIntegrityService: BackupIntegrityService {
+class ComprehensiveBackupIntegrityService: BackupIntegrityServiceProtocol {
     
     // MARK: - Properties
     private(set) var isValidationEnabled: Bool = true
@@ -75,6 +66,18 @@ class ComprehensiveBackupIntegrityService: BackupIntegrityService {
         let headerValidation = BackupFileHeader.extractJSONData(from: rawData)
         
         return BackupChecksumValidator.calculateChecksum(for: headerValidation.jsonData)
+    }
+    
+    func calculateChecksum(for data: Data) -> String {
+        return BackupChecksumValidator.calculateChecksum(for: data)
+    }
+    
+    func validateChecksum(jsonData: Data, expectedChecksum: String?) -> ChecksumValidationResult {
+        return BackupChecksumValidator.validateChecksum(jsonData: jsonData, expectedChecksum: expectedChecksum)
+    }
+    
+    func validateBackupIntegrity(fileData: Data, extractedJSON: Data, backup: CompleteLedgerBackup) -> BackupIntegrityResult {
+        return BackupChecksumValidator.validateBackupIntegrity(fileData: fileData, extractedJSON: extractedJSON, backup: backup)
     }
 }
 
