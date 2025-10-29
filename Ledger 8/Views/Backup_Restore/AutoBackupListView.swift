@@ -12,21 +12,24 @@ import Foundation
 struct AutoBackupListView: View {
     @ObservedObject var backupManager: ComprehensiveBackupManager
     @Environment(\.dismiss) private var dismiss
-    @State private var backupFiles: [AutoBackupInfo] = []
-    @State private var showingShareSheet = false
-    @State private var selectedBackup: AutoBackupInfo?
+    @State private var viewModel: AutoBackupListViewModel
+    
+    init(backupManager: ComprehensiveBackupManager) {
+        self.backupManager = backupManager
+        self._viewModel = State(initialValue: AutoBackupListViewModel(backupManager: backupManager))
+    }
     
     var body: some View {
         NavigationStack {
             List {
-                if backupFiles.isEmpty {
+                if !viewModel.hasBackupFiles {
                     ContentUnavailableView(
-                        "No Auto-Backups Found",
-                        systemImage: "clock.arrow.circlepath",
-                        description: Text("Auto-backups will appear here when they are created")
+                        viewModel.contentUnavailableTitle,
+                        systemImage: viewModel.contentUnavailableSystemImage,
+                        description: Text(viewModel.contentUnavailableDescription)
                     )
                 } else {
-                    ForEach(backupFiles, id: \.fileName) { backup in
+                    ForEach(viewModel.backupFiles, id: \.fileName) { backup in
                         backupRow(backup)
                     }
                 }
@@ -41,16 +44,14 @@ struct AutoBackupListView: View {
                 }
             }
             .refreshable {
-                loadBackupFiles()
+                await viewModel.refreshBackupFiles()
             }
-            .sheet(isPresented: $showingShareSheet) {
-                if let backup = selectedBackup {
-                    ShareSheet(activityItems: [backup.url])
-                }
+            .sheet(isPresented: $viewModel.showingShareSheet) {
+                ShareSheet(activityItems: viewModel.getShareItems())
             }
         }
         .onAppear {
-            loadBackupFiles()
+            viewModel.loadBackupFiles()
         }
     }
     
@@ -58,9 +59,9 @@ struct AutoBackupListView: View {
         VStack(alignment: .leading, spacing: 4) {
             HStack {
                 VStack(alignment: .leading, spacing: 2) {
-                    Text("Auto-Backup")
+                    Text(viewModel.formatBackupTitle(backup))
                         .font(.headline)
-                    Text(backup.formattedDate)
+                    Text(viewModel.formatBackupDate(backup))
                         .font(.subheadline)
                         .foregroundColor(.secondary)
                 }
@@ -68,13 +69,12 @@ struct AutoBackupListView: View {
                 Spacer()
                 
                 VStack(alignment: .trailing, spacing: 2) {
-                    Text(backup.formattedFileSize)
+                    Text(viewModel.formatBackupFileSize(backup))
                         .font(.caption)
                         .foregroundColor(.secondary)
                     
                     Button(action: {
-                        selectedBackup = backup
-                        showingShareSheet = true
+                        viewModel.shareBackup(backup)
                     }) {
                         Image(systemName: "square.and.arrow.up")
                             .font(.caption)
@@ -83,11 +83,6 @@ struct AutoBackupListView: View {
             }
         }
         .padding(.vertical, 4)
-    }
-    
-    private func loadBackupFiles() {
-        backupFiles = backupManager.getAutoBackupFiles()
-    }
 }
 
 #Preview {
