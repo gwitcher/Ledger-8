@@ -12,7 +12,8 @@ import UniformTypeIdentifiers
 struct CompleteBackupView: View {
     @Environment(\.modelContext) private var modelContext
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var backupManager: ComprehensiveBackupManager
+    @State private var backupCoordinator: BackupCoordinator?
+    @State private var backupViewModel: BackupViewModel?
     @State private var showingFilePicker = false
     @State private var showingShareSheet = false
     @State private var showingDeleteConfirmation = false
@@ -23,12 +24,6 @@ struct CompleteBackupView: View {
     @State private var showingAutoBackupSettings = false
     @State private var showingBackupInfo = false
     @State private var showingRestoreInfo = false
-    
-    init() {
-        // Initialize with a temporary context - will be updated in onAppear
-        let container = try! ModelContainer(for: Project.self, Client.self, Item.self, Invoice.self)
-        self._backupManager = StateObject(wrappedValue: ComprehensiveBackupManager(modelContext: container.mainContext))
-    }
     
     var body: some View {
         NavigationStack {
@@ -53,12 +48,12 @@ struct CompleteBackupView: View {
                     }
                 }
             }
-            .alert("Error", isPresented: .constant(backupManager.errorMessage != nil)) {
+            .alert("Error", isPresented: .constant(backupViewModel?.errorMessage != nil)) {
                 Button("OK") {
-                    backupManager.errorMessage = nil
+                    backupViewModel?.clearError()
                 }
             } message: {
-                Text(backupManager.errorMessage ?? "")
+                Text(backupViewModel?.errorMessage ?? "")
             }
             .alert("Success", isPresented: $showingSuccessAlert) {
                 
@@ -126,17 +121,26 @@ struct CompleteBackupView: View {
                 }
             }
             .sheet(isPresented: $showingAutoBackupSettings) {
-                AutoBackupSettingsView(backupManager: backupManager)
+                if let viewModel = backupViewModel {
+                    AutoBackupSettingsView(backupViewModel: viewModel)
+                }
             }
             .sheet(isPresented: $showingBackupInfo) {
-                BackupInfoSheet(backupManager: backupManager)
+                if let viewModel = backupViewModel {
+                    BackupInfoSheet(backupViewModel: viewModel)
+                }
             }
             .sheet(isPresented: $showingRestoreInfo) {
                 RestoreInfoSheet()
             }
         }
         .onAppear {
-            backupManager.updateModelContext(modelContext)
+            if backupCoordinator == nil {
+                backupCoordinator = BackupCoordinator(modelContext: modelContext)
+                backupViewModel = backupCoordinator?.createBackupOperationsViewModel()
+            } else {
+                backupCoordinator?.updateModelContext(modelContext)
+            }
         }
     }
     
@@ -170,10 +174,10 @@ struct CompleteBackupView: View {
                     
                     Spacer()
                     
-                    Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
+                    Text(backupViewModel?.autoBackupEnabled == true ? "Enabled" : "Disabled")
                         .font(.subheadline)
                         .fontWeight(.medium)
-                        .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
+                        .foregroundColor(backupViewModel?.autoBackupEnabled == true ? .green : .orange)
                     
                     Button("Configure") {
                         showingAutoBackupSettings = true
@@ -196,15 +200,15 @@ struct CompleteBackupView: View {
                         Image(systemName: "square.and.arrow.up.fill")
                         Text("Create Backup")
                         Spacer()
-                        if backupManager.isBackingUp {
+                        if backupViewModel?.isBackingUp == true {
                             ProgressView()
                                 .scaleEffect(0.8)
                         }
                     }
                 }
-                .disabled(backupManager.isBackingUp || backupManager.isRestoring)
+                .disabled(backupViewModel?.isBackingUp == true || backupViewModel?.isRestoring == true)
                 
-                if backupFileURL != nil && !backupManager.isBackingUp {
+                if backupFileURL != nil && backupViewModel?.isBackingUp != true {
                     Button(action: { showingShareSheet = true }) {
                         HStack {
                             Image(systemName: "square.and.arrow.up")
@@ -215,14 +219,14 @@ struct CompleteBackupView: View {
                     .foregroundColor(.blue)
                 }
                 
-                if backupManager.isBackingUp {
+                if backupViewModel?.isBackingUp == true {
                     VStack(spacing: 8) {
-                        ProgressView(value: backupManager.progress) {
+                        ProgressView(value: backupViewModel?.progress) {
                             Text("Creating backup...")
                         }
                         .progressViewStyle(LinearProgressViewStyle(tint: .blue))
                         
-                        Text(backupManager.statusMessage)
+                        Text(backupViewModel?.statusMessage ?? "")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -255,25 +259,25 @@ struct CompleteBackupView: View {
                         Image(systemName: "square.and.arrow.down.fill")
                         Text("Choose Backup File")
                         Spacer()
-                        if backupManager.isRestoring {
+                        if backupViewModel?.isRestoring == true {
                             ProgressView()
                                 .scaleEffect(0.8)
                         }
                     }
                 }
-                .disabled(backupManager.isBackingUp || backupManager.isRestoring)
+                .disabled(backupViewModel?.isBackingUp == true || backupViewModel?.isRestoring == true)
                 
                 Toggle("Replace ALL existing data", isOn: $replaceExistingData)
                     .font(.subheadline)
                 
-                if backupManager.isRestoring {
+                if backupViewModel?.isRestoring == true {
                     VStack(spacing: 8) {
-                        ProgressView(value: backupManager.progress) {
+                        ProgressView(value: backupViewModel?.progress) {
                             Text(replaceExistingData ? "Replacing all data..." : "Importing data...")
                         }
                         .progressViewStyle(LinearProgressViewStyle(tint: .green))
                         
-                        Text(backupManager.statusMessage)
+                        Text(backupViewModel?.statusMessage ?? "")
                             .font(.caption)
                             .foregroundColor(.secondary)
                             .multilineTextAlignment(.center)
@@ -294,7 +298,7 @@ struct CompleteBackupView: View {
                         .foregroundColor(.red)
                 }
             }
-            .disabled(backupManager.isBackingUp || backupManager.isRestoring)
+            .disabled(backupViewModel?.isBackingUp == true || backupViewModel?.isRestoring == true)
             
             Text("This will delete everything including settings, making the app like a fresh install.")
                 .font(.caption)
@@ -305,47 +309,33 @@ struct CompleteBackupView: View {
     // MARK: - Actions
     
     private func createCompleteBackup() {
+        guard let viewModel = backupViewModel else { return }
+        
         Task {
-            do {
-                let fileURL = try await backupManager.createCompleteBackup()
-                
-                // Verify the file exists and get its size
-                await MainActor.run {
-                    self.backupFileURL = fileURL
-                    
-                    let fileExists = FileManager.default.fileExists(atPath: fileURL.path)
-                    print("Backup file created at: \(fileURL.path)")
-                    print("File exists: \(fileExists)")
+            await viewModel.createCompleteBackup()
+            
+            // Handle success/error at completion
+            await MainActor.run {
+                if let error = viewModel.errorMessage {
+                    print("Backup creation error: \(error)")
+                } else {
+                    let fileExists = backupFileURL != nil
+                    print("Backup completed successfully")
                     
                     if fileExists {
-                        do {
-                            let attributes = try FileManager.default.attributesOfItem(atPath: fileURL.path)
-                            let fileSize = attributes[.size] as? Int64 ?? 0
-                            print("File size: \(fileSize) bytes")
-                            
-                            self.successMessage = """
-                            Complete backup created successfully!
-                            File size: \(ByteCountFormatter.string(fromByteCount: fileSize, countStyle: .file))
-                            
-                            Saved to: Files > Browse > Ledger 8 > Backups
-                            Your invoices are in: Files > Browse > Ledger 8 > Invoices
-                            
-                            Tap OK to share the backup file.
-                            """
-                        } catch {
-                            print("Error getting file attributes: \(error)")
-                            self.successMessage = "Complete backup created successfully!\n\nTap OK to share the backup file."
-                        }
+                        self.successMessage = """
+                        Complete backup created successfully!
+                        
+                        Saved to: Files > Browse > Ledger 8 > Backups
+                        Your invoices are in: Files > Browse > Ledger 8 > Invoices
+                        
+                        Tap OK to share the backup file.
+                        """
                     } else {
-                        self.successMessage = "Backup created but file verification failed. Please try again."
+                        self.successMessage = "Complete backup created successfully!\n\nTap OK to share the backup file."
                     }
                     
                     self.showingSuccessAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    print("Backup creation error: \(error)")
-                    backupManager.errorMessage = error.localizedDescription
                 }
             }
         }
@@ -374,36 +364,37 @@ struct CompleteBackupView: View {
     }
     
     private func restoreCompleteBackup(fileURL: URL) {
+        guard let viewModel = backupViewModel else { return }
+        
         Task {
-            do {
-                try await backupManager.restoreCompleteBackup(
-                    fileURL: fileURL,
-                    replaceExisting: replaceExistingData
-                )
-                await MainActor.run {
-                    successMessage = replaceExistingData ? 
-                        "Complete restore successful! All data has been replaced." : 
+            await viewModel.restoreCompleteBackup(fileURL: fileURL, replaceExisting: replaceExistingData)
+            
+            await MainActor.run {
+                if let error = viewModel.errorMessage {
+                    // Error is already set in viewModel, UI will show it
+                    print("Restore error: \(error)")
+                } else {
+                    successMessage = replaceExistingData ?
+                        "Complete restore successful! All data has been replaced." :
                         "Complete restore successful! Data has been imported."
                     showingSuccessAlert = true
-                }
-            } catch {
-                await MainActor.run {
-                    backupManager.errorMessage = error.localizedDescription
                 }
             }
         }
     }
     
     private func deleteAllData() async {
+        guard let backupService = backupCoordinator?.backupService else { return }
+        
         do {
-            try await backupManager.clearAllData()
+            try await backupService.clearAllData()
             await MainActor.run {
                 successMessage = "All app data has been successfully deleted."
                 showingSuccessAlert = true
             }
         } catch {
             await MainActor.run {
-                backupManager.errorMessage = error.localizedDescription
+                backupViewModel?.errorMessage = error.localizedDescription
             }
         }
     }
@@ -412,7 +403,7 @@ struct CompleteBackupView: View {
 // MARK: - Info Sheets
 
 struct BackupInfoSheet: View {
-    let backupManager: ComprehensiveBackupManager
+    let backupViewModel: BackupViewModel
     @Environment(\.dismiss) private var dismiss
     
     var body: some View {
@@ -466,19 +457,19 @@ struct BackupInfoSheet: View {
                                     .font(.subheadline)
                                     .foregroundColor(.secondary)
                                 Spacer()
-                                Text(backupManager.autoBackupEnabled ? "Enabled" : "Disabled")
+                                Text(backupViewModel.autoBackupEnabled ? "Enabled" : "Disabled")
                                     .font(.subheadline)
                                     .fontWeight(.medium)
-                                    .foregroundColor(backupManager.autoBackupEnabled ? .green : .orange)
+                                    .foregroundColor(backupViewModel.autoBackupEnabled ? .green : .orange)
                             }
                             
-                            if backupManager.autoBackupEnabled {
+                            if backupViewModel.autoBackupEnabled {
                                 HStack {
                                     Text("Frequency:")
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    Text(backupManager.autoBackupFrequency.displayName)
+                                    Text(backupViewModel.autoBackupFrequency.displayName)
                                         .font(.subheadline)
                                         .foregroundColor(.primary)
                                 }
@@ -488,7 +479,7 @@ struct BackupInfoSheet: View {
                                         .font(.subheadline)
                                         .foregroundColor(.secondary)
                                     Spacer()
-                                    if let lastBackup = backupManager.lastAutoBackupDate {
+                                    if let lastBackup = backupViewModel.lastAutoBackupDate {
                                         Text(lastBackup, style: .relative)
                                             .font(.subheadline)
                                             .foregroundColor(.primary)
