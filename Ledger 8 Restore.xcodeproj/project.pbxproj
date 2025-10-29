@@ -22,6 +22,7 @@
 		66651CDA2EB1E60E005A0EB4 /* ProjectDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C902EB1E60E005A0EB4 /* ProjectDetailViewModel.swift */; };
 		66651CDC2EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C922EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift */; };
 		66651CDE2EB1E60E005A0EB4 /* ProjectListViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651C942EB1E60E005A0EB4 /* ProjectListViewModel.swift */; };
+		66651D1A2EB1E951005A0EB4 /* BackupOperationsViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D192EB1E951005A0EB4 /* BackupOperationsViewModel.swift */; };
 		66651D2A2EB1ED89005A0EB4 /* BackupTypes.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D292EB1ED89005A0EB4 /* BackupTypes.swift */; };
 		66651D2C2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2B2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift */; };
 		66651D2E2EB1EDD0005A0EB4 /* BackupFileService.swift in Sources */ = {isa = PBXBuildFile; fileRef = 66651D2D2EB1EDD0005A0EB4 /* BackupFileService.swift */; };
@@ -75,6 +76,7 @@
 		66651C902EB1E60E005A0EB4 /* ProjectDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectDetailViewModel.swift; sourceTree = "<group>"; };
 		66651C922EB1E60E005A0EB4 /* ProjectEventDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectEventDetailViewModel.swift; sourceTree = "<group>"; };
 		66651C942EB1E60E005A0EB4 /* ProjectListViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProjectListViewModel.swift; sourceTree = "<group>"; };
+		66651D192EB1E951005A0EB4 /* BackupOperationsViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupOperationsViewModel.swift; sourceTree = "<group>"; };
 		66651D292EB1ED89005A0EB4 /* BackupTypes.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupTypes.swift; sourceTree = "<group>"; };
 		66651D2B2EB1ED9C005A0EB4 /* BackupServiceProtocols.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupServiceProtocols.swift; sourceTree = "<group>"; };
 		66651D2D2EB1EDD0005A0EB4 /* BackupFileService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BackupFileService.swift; sourceTree = "<group>"; };
@@ -167,6 +169,7 @@
 				66E0724D2EB1B0220012E807 /* AutoBackupDiagnosticsViewModel.swift */,
 				66651C572EB1E60E005A0EB4 /* AutoBackupListViewModel.swift */,
 				66651C592EB1E60E005A0EB4 /* AutoBackupSettingsViewModel.swift */,
+				66651D192EB1E951005A0EB4 /* BackupOperationsViewModel.swift */,
 				66651C672EB1E60E005A0EB4 /* ClientListViewModel.swift */,
 				66651C302EB1E60E005A0EB4 /* ClientSelectViewModel.swift */,
 				66651C902EB1E60E005A0EB4 /* ProjectDetailViewModel.swift */,
@@ -412,6 +415,7 @@
 				66651CA82EB1E60E005A0EB4 /* AutoBackupListViewModel.swift in Sources */,
 				66651CAA2EB1E60E005A0EB4 /* AutoBackupSettingsViewModel.swift in Sources */,
 				66651D342EB1EE4C005A0EB4 /* BackupDataModels.swift in Sources */,
+				66651D1A2EB1E951005A0EB4 /* BackupOperationsViewModel.swift in Sources */,
 				66651CB62EB1E60E005A0EB4 /* ClientListViewModel.swift in Sources */,
 				66651D2A2EB1ED89005A0EB4 /* BackupTypes.swift in Sources */,
 				66651D2E2EB1EDD0005A0EB4 /* BackupFileService.swift in Sources */,
