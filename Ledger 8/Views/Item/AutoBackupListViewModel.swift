@@ -59,7 +59,7 @@ class AutoBackupListViewModel {
         }
         
         // Perform refresh logic
-        let files = backupManager.getAutoBackupFiles()
+        let files = await backupManager.getAutoBackupFiles()
         
         await MainActor.run {
             self.backupFiles = files

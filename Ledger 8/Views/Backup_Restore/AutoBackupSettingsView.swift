@@ -145,6 +145,7 @@ struct AutoBackupSettingsView: View {
             }
             .padding(.vertical, 4)
         }
+    }
 }
 
 #Preview {

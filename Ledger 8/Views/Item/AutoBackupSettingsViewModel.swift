@@ -9,6 +9,7 @@ import Foundation
 import SwiftUI
 
 @Observable
+@MainActor
 class AutoBackupSettingsViewModel {
     // MARK: - UI State
     var autoBackupEnabled: Bool
